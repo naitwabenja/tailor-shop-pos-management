@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { 
-  Search, 
-  Plus, 
-  ShoppingCart, 
-  Trash2, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Search,
+  Plus,
+  ShoppingCart,
+  Trash2,
   UserPlus,
   CreditCard,
-  ChevronRight
+  ChevronRight,
+  Scissors
 } from 'lucide-react';
 import { MOCK_CUSTOMERS, MOCK_GARMENT_TYPES } from '@shared/mock-data';
 import { cn } from '@/lib/utils';
@@ -20,6 +29,7 @@ export default function POSPage() {
   const [selectedCustomer, setSelectedCustomer] = useState(MOCK_CUSTOMERS[0]);
   const [cart, setCart] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [newCustName, setNewCustName] = useState('');
   const total = cart.reduce((acc, item) => acc + item.price, 0);
   const addToCart = (type: string, price: number) => {
     setCart([...cart, { id: Math.random().toString(), type, price }]);
@@ -29,25 +39,46 @@ export default function POSPage() {
     setCart(cart.filter(item => item.id !== id));
   };
   return (
-    <AppLayout fullBleed contentClassName="flex flex-col h-[calc(100vh-theme(spacing.14))] lg:h-screen">
-      <div className="grid grid-cols-1 lg:grid-cols-12 flex-1 overflow-hidden">
-        {/* Left Side: Order Configuration (8 cols) */}
+    <AppLayout fullBleed contentClassName="flex flex-col h-[calc(100vh-theme(spacing.14))] lg:h-screen overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-12 flex-1 overflow-hidden h-full">
+        {/* Left Side: Order Configuration */}
         <div className="lg:col-span-8 flex flex-col overflow-y-auto p-6 space-y-8 bg-slate-50 dark:bg-slate-950">
-          {/* Customer Selection */}
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <Search className="h-5 w-5 text-indigo-600" />
                 Customer Selection
               </h2>
-              <Button variant="outline" size="sm" className="gap-2">
-                <UserPlus className="h-4 w-4" /> New Customer
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2 rounded-xl">
+                    <UserPlus className="h-4 w-4" /> New Customer
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Quick Add Customer</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      <Input id="name" placeholder="John Doe" value={newCustName} onChange={(e) => setNewCustName(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input id="phone" placeholder="555-0000" />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={() => toast.success("Customer added locally")}>Create Profile</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-              <Input 
-                placeholder="Search by name or phone..." 
+              <Input
+                placeholder="Search by name or phone..."
                 className="pl-10 h-12 rounded-xl bg-white shadow-sm border-slate-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -55,13 +86,13 @@ export default function POSPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {MOCK_CUSTOMERS.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 4).map(customer => (
-                <div 
+                <div
                   key={customer.id}
                   onClick={() => setSelectedCustomer(customer)}
                   className={cn(
                     "flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border-2",
-                    selectedCustomer?.id === customer.id 
-                      ? "bg-indigo-50 border-indigo-600 shadow-md" 
+                    selectedCustomer?.id === customer.id
+                      ? "bg-indigo-50 border-indigo-600 shadow-md"
                       : "bg-white border-transparent hover:border-indigo-200 shadow-sm"
                   )}
                 >
@@ -76,7 +107,6 @@ export default function POSPage() {
               ))}
             </div>
           </section>
-          {/* Garment Selection */}
           <section className="space-y-4">
             <h2 className="text-xl font-bold flex items-center gap-2">
               <Scissors className="h-5 w-5 text-indigo-600" />
@@ -84,8 +114,8 @@ export default function POSPage() {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {MOCK_GARMENT_TYPES.map(type => (
-                <Card 
-                  key={type.id} 
+                <Card
+                  key={type.id}
                   className="cursor-pointer hover:shadow-md transition-shadow border-none shadow-sm active:scale-95 duration-75 overflow-hidden group"
                   onClick={() => addToCart(type.name, type.basePrice)}
                 >
@@ -100,7 +130,6 @@ export default function POSPage() {
               ))}
             </div>
           </section>
-          {/* Measurements Quick Check */}
           {selectedCustomer && (
             <section className="space-y-4">
               <div className="flex items-center justify-between">
@@ -113,8 +142,8 @@ export default function POSPage() {
                     {Object.entries(selectedCustomer.measurements).map(([key, val]) => (
                       <div key={key} className="space-y-1">
                         <Label className="text-xs uppercase text-slate-400 tracking-wider">{key}</Label>
-                        <Input 
-                          defaultValue={val} 
+                        <Input
+                          defaultValue={val}
                           className="font-bold text-lg border-none bg-slate-50 text-slate-900 focus-visible:ring-1 focus-visible:ring-indigo-600"
                         />
                       </div>
@@ -125,9 +154,9 @@ export default function POSPage() {
             </section>
           )}
         </div>
-        {/* Right Side: Order Summary (4 cols) */}
-        <div className="lg:col-span-4 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col">
-          <div className="p-6 flex-1 flex flex-col">
+        {/* Right Side: Order Summary */}
+        <div className="lg:col-span-4 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
+          <div className="p-6 flex-1 flex flex-col overflow-hidden">
             <div className="flex items-center gap-2 mb-6">
               <ShoppingCart className="h-6 w-6 text-indigo-600" />
               <h2 className="text-2xl font-bold">Order Summary</h2>
@@ -147,9 +176,9 @@ export default function POSPage() {
                       <div className="font-semibold text-slate-900">{item.type}</div>
                       <div className="text-sm text-indigo-600 font-medium">${item.price}</div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="text-slate-400 hover:text-red-500 hover:bg-red-50"
                       onClick={() => removeFromCart(item.id)}
                     >
@@ -160,11 +189,11 @@ export default function POSPage() {
               )}
             </div>
             <div className="pt-6 mt-6 border-t border-slate-100 space-y-4">
-              <div className="flex items-center justify-between text-slate-600">
+              <div className="flex items-center justify-between text-slate-600 text-sm">
                 <span>Subtotal</span>
                 <span className="font-medium">${total}</span>
               </div>
-              <div className="flex items-center justify-between text-slate-600">
+              <div className="flex items-center justify-between text-slate-600 text-sm">
                 <span>Tax (Mock 5%)</span>
                 <span className="font-medium">${(total * 0.05).toFixed(2)}</span>
               </div>
@@ -175,7 +204,7 @@ export default function POSPage() {
             </div>
           </div>
           <div className="p-6 bg-slate-50 dark:bg-slate-950/50">
-            <Button 
+            <Button
               className="w-full h-16 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-xl shadow-indigo-200 dark:shadow-none gap-3"
               disabled={cart.length === 0}
               onClick={() => toast.success("Order processed successfully")}

@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Search, 
-  UserPlus, 
-  Mail, 
-  Phone, 
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Search,
+  UserPlus,
+  Mail,
+  Phone,
   Calendar,
   MoreVertical,
-  Filter
+  Filter,
+  Users,
+  Ruler
 } from 'lucide-react';
 import { MOCK_CUSTOMERS } from '@shared/mock-data';
 import { format } from 'date-fns';
@@ -23,8 +32,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 export default function CustomersPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const filteredCustomers = MOCK_CUSTOMERS.filter(c => 
-    c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const filteredCustomers = MOCK_CUSTOMERS.filter(c =>
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.phone.includes(searchTerm)
   );
   return (
@@ -35,15 +44,15 @@ export default function CustomersPage() {
             <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Customers</h1>
             <p className="text-slate-500">Manage client profiles and measurement records</p>
           </div>
-          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-2 shadow-lg shadow-indigo-100">
+          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-2 shadow-lg shadow-indigo-100 rounded-xl">
             <UserPlus className="h-5 w-5" /> Add New Customer
           </Button>
         </div>
         <div className="flex gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-            <Input 
-              placeholder="Search by name, email or phone number..." 
+            <Input
+              placeholder="Search by name, email or phone number..."
               className="pl-10 h-12 rounded-xl bg-white shadow-sm border-slate-200"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -63,18 +72,17 @@ export default function CustomersPage() {
                   </div>
                   <div>
                     <CardTitle className="text-xl font-bold group-hover:text-indigo-600 transition-colors">{customer.name}</CardTitle>
-                    <Badge variant="secondary" className="mt-1 bg-slate-100 text-slate-600 font-medium">Regular Client</Badge>
+                    <Badge variant="secondary" className="mt-1 bg-slate-100 text-slate-600 font-medium border-none">Regular Client</Badge>
                   </div>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-slate-400">
+                    <Button variant="ghost" size="icon" className="text-slate-400 hover:bg-slate-100 rounded-full">
                       <MoreVertical className="h-5 w-5" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuContent align="end" className="w-48 rounded-xl">
                     <DropdownMenuItem>Edit Profile</DropdownMenuItem>
-                    <DropdownMenuItem>View Measurements</DropdownMenuItem>
                     <DropdownMenuItem>Order History</DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">Delete Client</DropdownMenuItem>
                   </DropdownMenuContent>
@@ -96,7 +104,33 @@ export default function CustomersPage() {
                   </div>
                 </div>
                 <div className="pt-4 flex gap-2 border-t border-slate-100">
-                  <Button variant="outline" size="sm" className="flex-1 rounded-lg">Measurements</Button>
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="outline" size="sm" className="flex-1 rounded-lg gap-2">
+                        <Ruler className="h-3.5 w-3.5" /> Measurements
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent className="sm:max-w-md">
+                      <SheetHeader className="mb-6">
+                        <SheetTitle className="text-2xl flex items-center gap-3">
+                          <Ruler className="h-6 w-6 text-indigo-600" />
+                          {customer.name}'s Measurements
+                        </SheetTitle>
+                      </SheetHeader>
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-2 gap-4">
+                          {Object.entries(customer.measurements).map(([key, val]) => (
+                            <div key={key} className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                              <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">{key}</p>
+                              <p className="text-2xl font-bold text-slate-900">{val}<span className="text-sm ml-1 text-slate-400 font-normal">in</span></p>
+                            </div>
+                          ))}
+                        </div>
+                        <Button className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700">Update Measurements</Button>
+                        <p className="text-center text-xs text-slate-400 italic">Last updated: {format(customer.createdAt, 'MMMM do, yyyy')}</p>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
                   <Button variant="outline" size="sm" className="flex-1 rounded-lg">New Order</Button>
                 </div>
               </CardContent>
@@ -107,7 +141,7 @@ export default function CustomersPage() {
           <div className="flex flex-col items-center justify-center py-20 text-slate-400 space-y-4">
             <Users className="h-16 w-16 opacity-20" />
             <p className="text-xl">No customers found matching your search</p>
-            <Button variant="outline" onClick={() => setSearchTerm('')}>Clear Search</Button>
+            <Button variant="outline" className="rounded-xl" onClick={() => setSearchTerm('')}>Clear Search</Button>
           </div>
         )}
       </div>

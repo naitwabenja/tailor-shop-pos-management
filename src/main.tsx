@@ -14,6 +14,7 @@ import '@/index.css'
 import { HomePage } from '@/pages/HomePage'
 import POSPage from '@/pages/POSPage'
 import CustomersPage from '@/pages/CustomersPage'
+import OrdersPage from '@/pages/OrdersPage'
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/orders",
-    element: <HomePage />, // Placeholder for Phase 1
+    element: <OrdersPage />,
     errorElement: <RouteErrorBoundary />,
   }
 ]);

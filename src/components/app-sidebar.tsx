@@ -1,11 +1,10 @@
 import React from "react";
-import { 
-  LayoutDashboard, 
-  Calculator, 
-  Users, 
-  Scissors, 
-  Settings, 
-  ChevronRight,
+import {
+  LayoutDashboard,
+  Calculator,
+  Users,
+  Scissors,
+  Settings,
   Store
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -37,7 +36,7 @@ export function AppSidebar(): JSX.Element {
             <Store className="h-6 w-6" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Stitch</span>
+            <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-tight">Stitch</span>
             <span className="text-xs font-medium text-slate-500">Master Tailors</span>
           </div>
         </div>
@@ -52,13 +51,13 @@ export function AppSidebar(): JSX.Element {
               const isActive = location.pathname === item.href;
               return (
                 <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton 
-                    asChild 
+                  <SidebarMenuButton
+                    asChild
                     isActive={isActive}
                     className={cn(
-                      "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200",
-                      isActive 
-                        ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400" 
+                      "group relative flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-200 h-11",
+                      isActive
+                        ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 shadow-sm"
                         : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                     )}
                   >
@@ -67,9 +66,9 @@ export function AppSidebar(): JSX.Element {
                         "h-5 w-5 shrink-0 transition-colors",
                         isActive ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400 group-hover:text-slate-600"
                       )} />
-                      <span className="font-medium">{item.name}</span>
+                      <span className="font-semibold">{item.name}</span>
                       {isActive && (
-                        <div className="absolute right-2 h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                        <div className="absolute left-0 w-1 h-6 bg-indigo-600 dark:bg-indigo-400 rounded-r-full" />
                       )}
                     </Link>
                   </SidebarMenuButton>
@@ -82,8 +81,8 @@ export function AppSidebar(): JSX.Element {
       <SidebarFooter className="border-t border-slate-200 dark:border-slate-800 p-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="text-slate-500 hover:text-slate-900 dark:hover:text-slate-100">
-              <Link to="/settings" className="flex items-center gap-3">
+            <SidebarMenuButton asChild className="text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 rounded-xl">
+              <Link to="/" className="flex items-center gap-3">
                 <Settings className="h-5 w-5" />
                 <span className="font-medium">Settings</span>
               </Link>

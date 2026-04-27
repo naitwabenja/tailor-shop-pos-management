@@ -2,17 +2,18 @@ import React from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  TrendingUp, 
-  Clock, 
-  CheckCircle2, 
-  AlertCircle,
+import {
+  TrendingUp,
+  Clock,
+  CheckCircle2,
+  Scissors,
   ArrowRight
 } from 'lucide-react';
 import { MOCK_ORDERS } from '@shared/mock-data';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 export function HomePage() {
   const pendingCount = MOCK_ORDERS.filter(o => o.status === 'Pending').length;
   const inProgressCount = MOCK_ORDERS.filter(o => o.status === 'In Progress').length;
@@ -35,7 +36,6 @@ export function HomePage() {
               </Button>
             </div>
           </div>
-          {/* Subtle background decoration */}
           <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
           <div className="absolute -bottom-20 left-20 h-64 w-64 rounded-full bg-indigo-400/20 blur-3xl" />
         </div>
@@ -118,7 +118,7 @@ export function HomePage() {
                   </div>
                   <div className="flex items-center gap-4">
                     <Badge className={cn(
-                      "px-2.5 py-0.5 rounded-full text-xs font-semibold",
+                      "px-2.5 py-0.5 rounded-full text-xs font-semibold border-none",
                       order.status === 'Ready' && "bg-emerald-100 text-emerald-700",
                       order.status === 'Pending' && "bg-amber-100 text-amber-700",
                       order.status === 'In Progress' && "bg-indigo-100 text-indigo-700"
