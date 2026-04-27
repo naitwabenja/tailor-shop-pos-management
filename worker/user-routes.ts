@@ -8,7 +8,6 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
   app.get('/api/customers', async (c) => {
     await CustomerEntity.ensureSeed(c.env);
     const { items, next } = await CustomerEntity.list(c.env);
-    // Join latest measurements for each active customer
     const activeCustomers = await Promise.all(
       items
         .filter(cust => !cust.deletedAt)
@@ -31,7 +30,6 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       deletedAt: null
     };
     const created = await CustomerEntity.create(c.env, customer);
-    // Create initial measurement record if provided
     if (data.measurements && Object.keys(data.measurements).length > 0) {
       await MeasurementEntity.create(c.env, {
         id: crypto.randomUUID(),
@@ -43,7 +41,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     }
     return ok(c, { ...created, measurements: data.measurements || {} });
   });
-  // GARMENTS (Products)
+  // GARMENTS
   app.get('/api/garments', async (c) => {
     await GarmentEntity.ensureSeed(c.env);
     const list = await GarmentEntity.list(c.env);
@@ -61,13 +59,29 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     if (!data.customerId || !data.items?.length) return bad(c, 'customerId and items required');
     const now = Date.now();
     const orderId = crypto.randomUUID();
-    // Create Order Items
+    // Persist measurements if passed in notes JSON
+    if (data.notes) {
+      try {
+        const parsed = JSON.parse(data.notes);
+        if (parsed.measurements && Object.keys(parsed.measurements).length > 0) {
+          await MeasurementEntity.create(c.env, {
+            id: crypto.randomUUID(),
+            customerId: data.customerId,
+            values: parsed.measurements,
+            createdAt: now,
+            updatedAt: now
+          });
+        }
+      } catch (e) {
+        // Carry on if notes weren't JSON
+      }
+    }
     const orderItems = await Promise.all(data.items.map(async (item: any) => {
       const oi = {
         id: crypto.randomUUID(),
         orderId,
         garmentId: item.garmentId || 'custom',
-        garmentName: item.type,
+        garmentName: item.type || item.garmentName,
         quantity: 1,
         price: item.price,
         fabric: item.fabric,
@@ -77,7 +91,6 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       };
       return await OrderItemEntity.create(c.env, oi);
     }));
-    // Create Order
     const order = {
       id: orderId,
       customerId: data.customerId,
@@ -91,7 +104,6 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       deletedAt: null
     };
     const createdOrder = await OrderEntity.create(c.env, order);
-    // Create Payment Record (Simulated)
     await PaymentEntity.create(c.env, {
       id: crypto.randomUUID(),
       orderId,
@@ -110,12 +122,11 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     if (!await order.exists()) return notFound(c, 'order not found');
     return ok(c, await order.updateStatus(status));
   });
-  // SOFT DELETES
   app.delete('/api/customers/:id', async (c) => {
     const id = c.req.param('id');
     const entity = new CustomerEntity(c.env, id);
     if (await entity.exists()) {
-      await entity.softDelete();
+      await entity.mutate(s => ({ ...s, deletedAt: Date.now() }));
       return ok(c, { id, deleted: true });
     }
     return notFound(c);

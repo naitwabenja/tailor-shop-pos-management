@@ -1,5 +1,5 @@
 import React from 'react';
-import { Order, GarmentItem } from '@shared/types';
+import { Order, OrderItem } from '@shared/types';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Printer, Scissors } from 'lucide-react';
@@ -35,10 +35,10 @@ export function ReceiptView({ order }: ReceiptViewProps) {
       </div>
       <div className="space-y-4 mb-8">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Garment Commission</p>
-        {order.items.map((item: GarmentItem, idx: number) => (
+        {order.items.map((item: OrderItem, idx: number) => (
           <div key={idx} className="space-y-1">
             <div className="flex justify-between font-bold text-sm">
-              <span>{item.type}</span>
+              <span>{item.garmentName}</span>
               <span>${item.price.toFixed(2)}</span>
             </div>
             {item.fabric && (
@@ -69,9 +69,9 @@ export function ReceiptView({ order }: ReceiptViewProps) {
           Thank you for choosing Stitch.<br />
           Your bespoke garment will be ready by {format(order.dueDate, 'MMM dd')}.
         </p>
-        <Button 
-          variant="outline" 
-          onClick={handlePrint} 
+        <Button
+          variant="outline"
+          onClick={handlePrint}
           className="w-full print:hidden gap-2 rounded-xl border-slate-200"
         >
           <Printer className="h-4 w-4" /> Print Receipt

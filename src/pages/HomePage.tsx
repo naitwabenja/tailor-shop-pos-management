@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -21,11 +20,9 @@ export function HomePage() {
   const pendingCount = orders.filter(o => o.status === 'Pending').length;
   const inProgressCount = orders.filter(o => o.status === 'In Progress').length;
   const readyCount = orders.filter(o => o.status === 'Ready').length;
-  // Calculate revenue from all non-cancelled orders
   const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Hero Section */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-12 text-white shadow-2xl">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
@@ -43,7 +40,6 @@ export function HomePage() {
         <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-20 left-20 h-64 w-64 rounded-full bg-indigo-400/20 blur-3xl" />
       </div>
-      {/* Stats Grid */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border-none shadow-soft">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -86,7 +82,6 @@ export function HomePage() {
           </CardContent>
         </Card>
       </div>
-      {/* Recent Commissions */}
       <Card className="border-none shadow-soft overflow-hidden">
         <CardHeader className="border-b border-slate-100 bg-slate-50/50">
           <div className="flex items-center justify-between">
@@ -117,7 +112,7 @@ export function HomePage() {
                     <div>
                       <h4 className="font-bold text-slate-900 text-lg">{order.customerName}</h4>
                       <div className="flex items-center gap-2 text-sm text-slate-500">
-                        <span className="font-medium text-indigo-500">{order.items[0]?.type}</span>
+                        <span className="font-medium text-indigo-500">{order.items[0]?.garmentName}</span>
                         <span>•</span>
                         <span>Due {format(order.dueDate, 'MMM d')}</span>
                       </div>

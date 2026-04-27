@@ -20,12 +20,17 @@ export function MeasurementForm() {
   const draftMeasurements = usePOSStore((s) => s.draftMeasurements);
   const updateDraftMeasurement = usePOSStore((s) => s.updateDraftMeasurement);
   const { register } = useForm<MeasurementValues>({
-    resolver: zodResolver(measurementSchema) as any,
-    defaultValues: draftMeasurements as MeasurementValues,
+    resolver: zodResolver(measurementSchema),
+    defaultValues: (draftMeasurements || {}) as MeasurementValues,
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const numValue = value === '' ? 0 : parseFloat(value);
+    // Graceful handling of empty or invalid input
+    if (value === '') {
+      updateDraftMeasurement(name, 0);
+      return;
+    }
+    const numValue = parseFloat(value);
     updateDraftMeasurement(name, isNaN(numValue) ? 0 : numValue);
   };
   const fields = [

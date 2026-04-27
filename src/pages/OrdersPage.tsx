@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, Clock, Scissors, CheckCircle2, AlertTriangle, MoreVertical, LayoutGrid, SortAsc, Sparkles } from 'lucide-react';
+import { Search, Clock, Scissors, CheckCircle2, AlertTriangle, MoreVertical, Sparkles } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { OrderStatus } from '@shared/types';
@@ -53,7 +53,7 @@ export default function OrdersPage() {
     }
     if (orders.length === 0) {
       return (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col items-center justify-center py-24 text-muted-foreground bg-white rounded-3xl border-2 border-dashed border-slate-100 mt-6"
@@ -65,10 +65,7 @@ export default function OrdersPage() {
       );
     }
     return (
-      <motion.div 
-        layout
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6"
-      >
+      <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         <AnimatePresence mode="popLayout">
           {orders.map((order) => {
             const isUrgent = order.dueDate - Date.now() < 86400000 * 3;
@@ -125,7 +122,7 @@ export default function OrdersPage() {
                         <div key={idx} className="flex items-center justify-between text-sm p-2 rounded-lg bg-slate-50">
                           <span className="text-slate-600 flex items-center gap-2">
                             <Scissors className="h-3.5 w-3.5 text-slate-400" />
-                            {item.type}
+                            {item.garmentName}
                           </span>
                           <span className="font-semibold text-slate-900">${item.price}</span>
                         </div>
@@ -158,9 +155,9 @@ export default function OrdersPage() {
             <p className="text-slate-500">Track bespoke garments from bench to client delivery</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              variant={filterUrgent ? "destructive" : "outline"} 
-              size="sm" 
+            <Button
+              variant={filterUrgent ? "destructive" : "outline"}
+              size="sm"
               className="rounded-xl gap-2 font-bold h-10 px-4"
               onClick={() => setFilterUrgent(!filterUrgent)}
             >
@@ -194,15 +191,15 @@ export default function OrdersPage() {
               </TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200">
-               <Button 
-                 variant={sortBy === 'due' ? 'secondary' : 'ghost'} 
-                 size="sm" 
+               <Button
+                 variant={sortBy === 'due' ? 'secondary' : 'ghost'}
+                 size="sm"
                  className="rounded-lg h-8 text-[10px] uppercase tracking-wider font-bold"
                  onClick={() => setSortBy('due')}
                >Due</Button>
-               <Button 
-                 variant={sortBy === 'created' ? 'secondary' : 'ghost'} 
-                 size="sm" 
+               <Button
+                 variant={sortBy === 'created' ? 'secondary' : 'ghost'}
+                 size="sm"
                  className="rounded-lg h-8 text-[10px] uppercase tracking-wider font-bold"
                  onClick={() => setSortBy('created')}
                >Recent</Button>

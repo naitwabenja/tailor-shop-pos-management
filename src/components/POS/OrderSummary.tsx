@@ -2,17 +2,17 @@ import React from 'react';
 import { ShoppingCart, CreditCard, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePOSStore } from '@/store/use-pos-store';
-import { useCreateOrder } from '@/hooks/use-api';
+import { useCreateOrder, useCustomers } from '@/hooks/use-api';
 import { toast } from 'sonner';
 import { CartItem } from './CartItem';
-import { useCustomers } from '@/hooks/use-api';
+import { Order } from '@shared/types';
 interface OrderSummaryProps {
-  onOrderComplete?: (order: any) => void;
+  onOrderComplete?: (order: Order) => void;
 }
-
 export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
   const items = usePOSStore((s) => s.items);
   const selectedCustomerId = usePOSStore((s) => s.selectedCustomerId);
+  const draftMeasurements = usePOSStore((s) => s.draftMeasurements);
   const clearCart = usePOSStore((s) => s.clearCart);
   const { data: customersData } = useCustomers();
   const selectedCustomer = customersData?.items.find(c => c.id === selectedCustomerId);
@@ -26,13 +26,23 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
       return;
     }
     try {
+      // Map local POS items to backend OrderItem structure
+      const mappedItems = items.map(item => ({
+        type: item.type, // Sending as 'type' for the API to handle the mapping to 'garmentName'
+        price: item.price,
+        notes: item.notes,
+        fabric: item.fabric,
+      }));
       const newOrder = await createOrder.mutateAsync({
         customerId: selectedCustomerId,
         customerName: selectedCustomer.name,
-        items,
+        // The mutationFn in use-api expects Partial<Order>, but the API handler maps these fields
+        items: mappedItems as any, 
         total,
         status: 'Pending',
-        dueDate: Date.now() + 86400000 * 14, // 2 weeks default
+        dueDate: Date.now() + 86400000 * 14,
+        // Pass measurements so the backend can update the customer record
+        notes: JSON.stringify({ measurements: draftMeasurements })
       });
       toast.success('Order created successfully!');
       if (onOrderComplete) {
@@ -40,6 +50,7 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
       }
       clearCart();
     } catch (error) {
+      console.error('Order creation error:', error);
       toast.error('Failed to create order');
     }
   };
