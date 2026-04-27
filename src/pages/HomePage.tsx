@@ -7,7 +7,8 @@ import {
   CheckCircle2,
   Scissors,
   ArrowRight,
-  Loader2
+  Loader2,
+  Sparkles
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
@@ -100,7 +101,10 @@ export function HomePage() {
           {isLoading ? (
             <div className="flex justify-center py-12"><Loader2 className="animate-spin h-8 w-8 text-indigo-600" /></div>
           ) : orders.length === 0 ? (
-            <div className="text-center py-12 text-slate-400">No recent activity found.</div>
+            <div className="flex flex-col items-center justify-center py-16 text-slate-400 space-y-4">
+              <Sparkles className="h-12 w-12 opacity-20" />
+              <p className="text-lg">No recent activity found. Start a new commission!</p>
+            </div>
           ) : (
             <div className="divide-y divide-slate-100">
               {orders.slice(0, 5).map((order) => (

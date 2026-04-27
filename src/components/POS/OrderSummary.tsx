@@ -17,8 +17,9 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
   const { data: customersData } = useCustomers();
   const selectedCustomer = customersData?.items.find(c => c.id === selectedCustomerId);
   const createOrder = useCreateOrder();
-  const subtotal = items.length > 0 ? items.reduce((acc, item) => acc + item.price, 0) : 0;
-  const tax = subtotal * 0.05;
+  const subtotal = items.reduce((acc, item) => acc + item.price, 0);
+  const taxRate = 0.05;
+  const tax = subtotal * taxRate;
   const total = subtotal + tax;
   const handleProcessOrder = async () => {
     if (!selectedCustomerId || !selectedCustomer) {
@@ -27,8 +28,9 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
     }
     try {
       // Map local POS items to backend OrderItem structure
+      // The API handler in worker/user-routes.ts maps 'type' to 'garmentName'
       const mappedItems = items.map(item => ({
-        type: item.type, // Sending as 'type' for the API to handle the mapping to 'garmentName'
+        type: item.type,
         price: item.price,
         notes: item.notes,
         fabric: item.fabric,
@@ -36,12 +38,12 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
       const newOrder = await createOrder.mutateAsync({
         customerId: selectedCustomerId,
         customerName: selectedCustomer.name,
-        // The mutationFn in use-api expects Partial<Order>, but the API handler maps these fields
-        items: mappedItems as any, 
+        // The mutationFn in use-api expects Partial<Order>, but the API handler maps items
+        items: mappedItems as any,
         total,
         status: 'Pending',
         dueDate: Date.now() + 86400000 * 14,
-        // Pass measurements so the backend can update the customer record
+        // Send measurements in notes JSON for the backend to process
         notes: JSON.stringify({ measurements: draftMeasurements })
       });
       toast.success('Order created successfully!');

@@ -1,35 +1,10 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { usePOSStore } from '@/store/use-pos-store';
-
-type MeasurementValues = {
-  neck?: number | '';
-  chest?: number | '';
-  waist?: number | '';
-  hips?: number | '';
-  shoulder?: number | '';
-  sleeve?: number | '';
-  inseam?: number | '';
-  length?: number | '';
-};
 export function MeasurementForm() {
   const draftMeasurements = usePOSStore((s) => s.draftMeasurements);
   const updateDraftMeasurement = usePOSStore((s) => s.updateDraftMeasurement);
-  const { register } = useForm<MeasurementValues>({
-    defaultValues: (draftMeasurements || {}) as MeasurementValues,
-  });
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    // Graceful handling of empty or invalid input
-    if (value === '') {
-      updateDraftMeasurement(name, 0);
-      return;
-    }
-    const numValue = parseFloat(value);
-    updateDraftMeasurement(name, isNaN(numValue) ? 0 : numValue);
-  };
   const fields = [
     { name: 'neck', label: 'Neck' },
     { name: 'chest', label: 'Chest' },
@@ -40,6 +15,14 @@ export function MeasurementForm() {
     { name: 'inseam', label: 'Inseam' },
     { name: 'length', label: 'Length' },
   ];
+  const handleChange = (name: string, value: string) => {
+    if (value === '') {
+      updateDraftMeasurement(name, 0);
+      return;
+    }
+    const numValue = parseFloat(value);
+    updateDraftMeasurement(name, isNaN(numValue) ? 0 : numValue);
+  };
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {fields.map((field) => (
@@ -51,8 +34,8 @@ export function MeasurementForm() {
             id={field.name}
             type="number"
             step="0.1"
-            {...register(field.name as keyof MeasurementValues)}
-            onChange={handleChange}
+            value={draftMeasurements[field.name] ?? ''}
+            onChange={(e) => handleChange(field.name, e.target.value)}
             className="h-12 text-lg font-bold bg-white border-slate-200 focus:ring-indigo-500 rounded-xl"
             placeholder="0.0"
           />
