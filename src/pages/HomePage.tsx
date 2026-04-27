@@ -1,138 +1,140 @@
-// Home page of the app.
-// Currently a demo placeholder "please wait" screen.
-// Replace this file with your actual app UI. Do not delete it to use some other file as homepage. Simply replace the entire contents of this file.
-
-import { useEffect, useMemo, useState } from 'react'
-import { Sparkles } from 'lucide-react'
-
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { HAS_TEMPLATE_DEMO, TemplateDemo } from '@/components/TemplateDemo'
-import { Button } from '@/components/ui/button'
-import { Toaster, toast } from '@/components/ui/sonner'
-
-function formatDuration(ms: number): string {
-  const total = Math.max(0, Math.floor(ms / 1000))
-  const m = Math.floor(total / 60)
-  const s = total % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
-
+import React from 'react';
+import { AppLayout } from '@/components/layout/AppLayout';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  TrendingUp, 
+  Clock, 
+  CheckCircle2, 
+  AlertCircle,
+  ArrowRight
+} from 'lucide-react';
+import { MOCK_ORDERS } from '@shared/mock-data';
+import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 export function HomePage() {
-  const [coins, setCoins] = useState(0)
-  const [isRunning, setIsRunning] = useState(false)
-  const [startedAt, setStartedAt] = useState<number | null>(null)
-  const [elapsedMs, setElapsedMs] = useState(0)
-
-  useEffect(() => {
-    if (!isRunning || startedAt === null) return
-
-    const t = setInterval(() => {
-      setElapsedMs(Date.now() - startedAt)
-    }, 250)
-
-    return () => clearInterval(t)
-  }, [isRunning, startedAt])
-
-  const formatted = useMemo(() => formatDuration(elapsedMs), [elapsedMs])
-
-  const onPleaseWait = () => {
-    setCoins((c) => c + 1)
-
-    if (!isRunning) {
-      // Resume from the current elapsed time
-      setStartedAt(Date.now() - elapsedMs)
-      setIsRunning(true)
-      toast.success('Building your app…', {
-        description: "Hang tight — we're setting everything up.",
-      })
-      return
-    }
-
-    setIsRunning(false)
-    toast.info('Still working…', {
-      description: 'You can come back in a moment.',
-    })
-  }
-
-  const onReset = () => {
-    setCoins(0)
-    setIsRunning(false)
-    setStartedAt(null)
-    setElapsedMs(0)
-    toast('Reset complete')
-  }
-
-  const onAddCoin = () => {
-    setCoins((c) => c + 1)
-    toast('Coin added')
-  }
-
+  const pendingCount = MOCK_ORDERS.filter(o => o.status === 'Pending').length;
+  const inProgressCount = MOCK_ORDERS.filter(o => o.status === 'In Progress').length;
+  const todayRevenue = MOCK_ORDERS.reduce((acc, o) => acc + o.total, 0);
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4 overflow-hidden relative">
-      <ThemeToggle />
-      <div className="absolute inset-0 bg-gradient-rainbow opacity-10 dark:opacity-20 pointer-events-none" />
-
-      <div className="text-center space-y-8 relative z-10 animate-fade-in w-full">
-        <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-primary floating">
-            <Sparkles className="w-8 h-8 text-white rotating" />
+    <AppLayout>
+      <div className="space-y-8">
+        {/* Hero Section */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-10 text-white shadow-2xl">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Good morning, Master Tailor</h1>
+              <p className="mt-2 text-indigo-100 max-w-lg">
+                You have {pendingCount} new orders waiting and {inProgressCount} garments currently on the bench.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button asChild size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 font-semibold shadow-xl">
+                <Link to="/pos">New Order</Link>
+              </Button>
+            </div>
           </div>
+          {/* Subtle background decoration */}
+          <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute -bottom-20 left-20 h-64 w-64 rounded-full bg-indigo-400/20 blur-3xl" />
         </div>
-
-        <div className="space-y-3">
-          <h1 className="text-5xl md:text-7xl font-display font-bold text-balance leading-tight">
-            Creating your <span className="text-gradient">app</span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto text-pretty">
-            Your application would be ready soon.
-          </p>
+        {/* Stats Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="border-none shadow-soft">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wider">Today's Sales</CardTitle>
+              <TrendingUp className="h-4 w-4 text-emerald-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-slate-900">${todayRevenue.toLocaleString()}</div>
+              <p className="text-xs text-slate-500 mt-1">+12.5% from yesterday</p>
+            </CardContent>
+          </Card>
+          <Card className="border-none shadow-soft">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wider">Pending Orders</CardTitle>
+              <Clock className="h-4 w-4 text-amber-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-slate-900">{pendingCount}</div>
+              <p className="text-xs text-slate-500 mt-1">Require measurements</p>
+            </CardContent>
+          </Card>
+          <Card className="border-none shadow-soft">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wider">In Progress</CardTitle>
+              <Scissors className="h-4 w-4 text-indigo-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-slate-900">{inProgressCount}</div>
+              <p className="text-xs text-slate-500 mt-1">Under construction</p>
+            </CardContent>
+          </Card>
+          <Card className="border-none shadow-soft">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wider">Ready for Pickup</CardTitle>
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-slate-900">
+                {MOCK_ORDERS.filter(o => o.status === 'Ready').length}
+              </div>
+              <p className="text-xs text-slate-500 mt-1">Completed orders</p>
+            </CardContent>
+          </Card>
         </div>
-
-        {HAS_TEMPLATE_DEMO ? (
-          <div className="max-w-5xl mx-auto text-left">
-            <TemplateDemo />
-          </div>
-        ) : (
-          <>
-            <div className="flex justify-center gap-4">
-              <Button
-                size="lg"
-                onClick={onPleaseWait}
-                className="btn-gradient px-8 py-4 text-lg font-semibold hover:-translate-y-0.5 transition-all duration-200"
-                aria-live="polite"
-              >
-                Please Wait
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+        {/* Recent Urgent Orders */}
+        <Card className="border-none shadow-soft overflow-hidden">
+          <CardHeader className="border-b border-slate-100 bg-slate-50/50">
+            <div className="flex items-center justify-between">
               <div>
-                Time elapsed:{' '}
-                <span className="font-medium tabular-nums text-foreground">{formatted}</span>
+                <CardTitle>Urgent Orders</CardTitle>
+                <CardDescription>Orders approaching their due date</CardDescription>
               </div>
-              <div>
-                Coins:{' '}
-                <span className="font-medium tabular-nums text-foreground">{coins}</span>
-              </div>
-            </div>
-
-            <div className="flex justify-center gap-2">
-              <Button variant="outline" size="sm" onClick={onReset}>
-                Reset
-              </Button>
-              <Button variant="outline" size="sm" onClick={onAddCoin}>
-                Add Coin
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/orders" className="flex items-center gap-1">
+                  View All <ArrowRight className="h-4 w-4" />
+                </Link>
               </Button>
             </div>
-          </>
-        )}
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y divide-slate-100">
+              {MOCK_ORDERS.map((order) => (
+                <div key={order.id} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-600 font-bold">
+                      {order.customerName.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-slate-900">{order.customerName}</h4>
+                      <div className="flex items-center gap-2 text-sm text-slate-500">
+                        <span>{order.items[0]?.type}</span>
+                        <span>•</span>
+                        <span>Due {format(order.dueDate, 'MMM d, yyyy')}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Badge className={cn(
+                      "px-2.5 py-0.5 rounded-full text-xs font-semibold",
+                      order.status === 'Ready' && "bg-emerald-100 text-emerald-700",
+                      order.status === 'Pending' && "bg-amber-100 text-amber-700",
+                      order.status === 'In Progress' && "bg-indigo-100 text-indigo-700"
+                    )}>
+                      {order.status}
+                    </Badge>
+                    <div className="text-right">
+                      <div className="font-bold text-slate-900">${order.total}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      <footer className="absolute bottom-8 text-center text-muted-foreground/80">
-        <p>Powered by Cloudflare</p>
-      </footer>
-
-      <Toaster richColors closeButton />
-    </div>
-  )
+    </AppLayout>
+  );
 }
