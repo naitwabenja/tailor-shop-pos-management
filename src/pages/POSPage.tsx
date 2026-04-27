@@ -3,57 +3,33 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import {
   Search,
   Plus,
   UserPlus,
   Scissors,
-  Loader2
+  Loader2,
+  PackageOpen
 } from 'lucide-react';
 import { MOCK_GARMENT_TYPES } from '@shared/mock-data';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 import { usePOSStore } from '@/store/use-pos-store';
-import { useCustomers, useCreateCustomer } from '@/hooks/use-api';
+import { useCustomers } from '@/hooks/use-api';
 import { MeasurementForm } from '@/components/POS/MeasurementForm';
 import { OrderSummary } from '@/components/POS/OrderSummary';
+import { CustomerCreateDialog } from '@/components/customers/CustomerCreateDialog';
+import { OrderSuccessDialog } from '@/components/POS/OrderSuccessDialog';
+import { Order } from '@shared/types';
 export default function POSPage() {
-  const items = usePOSStore((s) => s.items);
-  const addItem = usePOSStore((s) => s.addItem);
   const selectedCustomerId = usePOSStore((s) => s.selectedCustomerId);
   const setCustomer = usePOSStore((s) => s.setCustomer);
+  const addItem = usePOSStore((s) => s.addItem);
   const [searchTerm, setSearchTerm] = useState('');
-  const [newCustName, setNewCustName] = useState('');
-  const [newCustPhone, setNewCustPhone] = useState('');
+  const [isCustomerDialogOpen, setIsCustomerDialogOpen] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const { data: customersData, isLoading: customersLoading } = useCustomers();
-  const createCustomer = useCreateCustomer();
-  const handleAddCustomer = async () => {
-    if (!newCustName || !newCustPhone) return;
-    try {
-      const customer = await createCustomer.mutateAsync({
-        name: newCustName,
-        phone: newCustPhone,
-        measurements: {}
-      });
-      setCustomer(customer.id, customer.measurements);
-      setNewCustName('');
-      setNewCustPhone('');
-      toast.success("Customer profile created");
-    } catch (e) {
-      toast.error("Failed to create customer");
-    }
-  };
-  const filteredCustomers = customersData?.items.filter(c => 
-    c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const filteredCustomers = customersData?.items.filter(c =>
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.phone.includes(searchTerm)
   ).slice(0, 4) || [];
   return (
@@ -67,33 +43,14 @@ export default function POSPage() {
                 <Search className="h-5 w-5 text-indigo-600" />
                 Select Client
               </h2>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2 rounded-xl">
-                    <UserPlus className="h-4 w-4" /> New Customer
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Quick Add Customer</DialogTitle>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input id="name" placeholder="John Doe" value={newCustName} onChange={(e) => setNewCustName(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" placeholder="555-0000" value={newCustPhone} onChange={(e) => setNewCustPhone(e.target.value)} />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button onClick={handleAddCustomer} disabled={createCustomer.isPending}>
-                      {createCustomer.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Profile"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2 rounded-xl"
+                onClick={() => setIsCustomerDialogOpen(true)}
+              >
+                <UserPlus className="h-4 w-4" /> New Customer
+              </Button>
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
@@ -106,7 +63,7 @@ export default function POSPage() {
             </div>
             {customersLoading ? (
               <div className="flex justify-center p-4"><Loader2 className="animate-spin text-indigo-600" /></div>
-            ) : (
+            ) : filteredCustomers.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {filteredCustomers.map(customer => (
                   <div
@@ -129,6 +86,8 @@ export default function POSPage() {
                   </div>
                 ))}
               </div>
+            ) : (
+              <div className="p-4 text-center text-slate-400 text-sm">No clients found. Use the "New Customer" button to add one.</div>
             )}
           </section>
           <section className="space-y-4">
@@ -170,9 +129,18 @@ export default function POSPage() {
         </div>
         {/* Right Side: Order Summary */}
         <div className="lg:col-span-4 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
-          <OrderSummary />
+          <OrderSummary onOrderComplete={(order) => setCompletedOrder(order)} />
         </div>
       </div>
+      <CustomerCreateDialog 
+        open={isCustomerDialogOpen} 
+        onOpenChange={setIsCustomerDialogOpen}
+        onSuccess={(customer) => setCustomer(customer.id, customer.measurements)}
+      />
+      <OrderSuccessDialog 
+        order={completedOrder} 
+        onClose={() => setCompletedOrder(null)} 
+      />
     </AppLayout>
   );
 }

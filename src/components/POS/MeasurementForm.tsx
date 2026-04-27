@@ -6,14 +6,14 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { usePOSStore } from '@/store/use-pos-store';
 const measurementSchema = z.object({
-  neck: z.coerce.number().optional(),
-  chest: z.coerce.number().optional(),
-  waist: z.coerce.number().optional(),
-  hips: z.coerce.number().optional(),
-  shoulder: z.coerce.number().optional(),
-  sleeve: z.coerce.number().optional(),
-  inseam: z.coerce.number().optional(),
-  length: z.coerce.number().optional(),
+  neck: z.union([z.coerce.number(), z.literal('')]).optional(),
+  chest: z.union([z.coerce.number(), z.literal('')]).optional(),
+  waist: z.union([z.coerce.number(), z.literal('')]).optional(),
+  hips: z.union([z.coerce.number(), z.literal('')]).optional(),
+  shoulder: z.union([z.coerce.number(), z.literal('')]).optional(),
+  sleeve: z.union([z.coerce.number(), z.literal('')]).optional(),
+  inseam: z.union([z.coerce.number(), z.literal('')]).optional(),
+  length: z.union([z.coerce.number(), z.literal('')]).optional(),
 });
 type MeasurementValues = z.infer<typeof measurementSchema>;
 export function MeasurementForm() {
@@ -25,7 +25,8 @@ export function MeasurementForm() {
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    updateDraftMeasurement(name, parseFloat(value) || 0);
+    const numValue = value === '' ? 0 : parseFloat(value);
+    updateDraftMeasurement(name, isNaN(numValue) ? 0 : numValue);
   };
   const fields = [
     { name: 'neck', label: 'Neck' },
@@ -47,7 +48,7 @@ export function MeasurementForm() {
           <Input
             id={field.name}
             type="number"
-            step="0.25"
+            step="0.1"
             {...register(field.name as keyof MeasurementValues)}
             onChange={handleChange}
             className="h-12 text-lg font-bold bg-white border-slate-200 focus:ring-indigo-500 rounded-xl"

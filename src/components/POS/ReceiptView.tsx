@@ -1,104 +1,81 @@
 import React from 'react';
-import { Order, OrderItem } from '@shared/types';
+import { Order, GarmentItem } from '@shared/types';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Printer, Scissors, Package } from 'lucide-react';
-import { formatPrice } from '@/lib/utils';
-import { useAppStore } from '@/store/use-app-store';
+import { Printer, Scissors } from 'lucide-react';
 interface ReceiptViewProps {
   order: Order;
 }
 export function ReceiptView({ order }: ReceiptViewProps) {
-  const currency = useAppStore((s) => s.currency);
   const handlePrint = () => {
     window.print();
   };
-  const subtotal = order.total / 1.05;
-  const tax = order.total - subtotal;
   return (
-    <div className="bg-brand-wheat p-10 max-w-md mx-auto shadow-2xl rounded-3xl border border-brand-tan/50 print:shadow-none print:border-none print:p-0 print:bg-white overflow-hidden relative">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(210,180,140,0.05)_0%,transparent_100%)] pointer-events-none" />
-      <div className="text-center space-y-3 mb-10 relative z-10">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-saddle text-brand-wheat mb-4 shadow-xl">
-          <Scissors className="h-8 w-8" />
+    <div className="bg-white p-8 max-w-md mx-auto shadow-sm border border-slate-100 print:shadow-none print:border-none print:p-0">
+      <div className="text-center space-y-2 mb-8">
+        <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white mb-2">
+          <Scissors className="h-6 w-6" />
         </div>
-        <h1 className="text-4xl font-serif font-bold tracking-tighter uppercase italic text-brand-saddle">LEAfrique</h1>
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-forest">Master Tailors & Artisans</p>
+        <h1 className="text-2xl font-bold tracking-tighter uppercase italic">Stitch</h1>
+        <p className="text-[10px] uppercase tracking-widest text-slate-500">Master Tailors & Clothiers</p>
       </div>
-      <div className="border-t border-b border-dashed border-brand-tan/80 py-6 mb-8 space-y-2 relative z-10">
-        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-brand-soil/60">
-          <span>Artisan Ref:</span>
-          <span className="font-mono text-brand-soil">#{order.id.slice(0, 8).toUpperCase()}</span>
+      <div className="border-t border-b border-dashed border-slate-200 py-4 mb-6 space-y-1">
+        <div className="flex justify-between text-xs">
+          <span className="text-slate-500">Order Ref:</span>
+          <span className="font-mono font-bold">#{order.id.slice(0, 8).toUpperCase()}</span>
         </div>
-        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-brand-soil/60">
-          <span>Registry Date:</span>
-          <span className="text-brand-soil">{format(order.createdAt, 'MMM dd, yyyy • HH:mm')}</span>
+        <div className="flex justify-between text-xs">
+          <span className="text-slate-500">Date:</span>
+          <span>{format(order.createdAt, 'MMM dd, yyyy HH:mm')}</span>
         </div>
-        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-brand-soil/60">
-          <span>Client:</span>
-          <span className="font-serif font-bold text-brand-saddle text-sm underline decoration-brand-tan">{order.customerName}</span>
+        <div className="flex justify-between text-xs">
+          <span className="text-slate-500">Customer:</span>
+          <span className="font-bold">{order.customerName}</span>
         </div>
       </div>
-      <div className="space-y-6 mb-10 relative z-10">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-forest/60">Registry Entries</p>
-        {order.items.map((item: OrderItem, idx: number) => (
-          <div key={idx} className="space-y-1.5 border-b border-brand-tan/10 pb-4 last:border-0">
-            <div className="flex justify-between font-serif font-bold text-lg text-brand-soil">
-              <span className="flex items-center gap-2">
-                {item.quantity} x {item.garmentName}
-              </span>
-              <span className="font-sans text-brand-saddle">{formatPrice(item.price * item.quantity, currency)}</span>
+      <div className="space-y-4 mb-8">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Garment Commission</p>
+        {order.items.map((item: GarmentItem, idx: number) => (
+          <div key={idx} className="space-y-1">
+            <div className="flex justify-between font-bold text-sm">
+              <span>{item.type}</span>
+              <span>${item.price.toFixed(2)}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-brand-saddle/5 text-brand-saddle flex items-center gap-1">
-                {item.itemType === 'retail' ? <Package className="h-2 w-2" /> : <Scissors className="h-2 w-2" />}
-                {item.itemType}
-              </span>
-              {item.fabric && (
-                <span className="text-[9px] text-brand-forest font-bold italic">Fabric: {item.fabric}</span>
-              )}
-            </div>
+            {item.fabric && (
+              <p className="text-xs text-slate-500 italic">Fabric: {item.fabric}</p>
+            )}
             {item.notes && (
-              <p className="text-[10px] text-brand-soil/70 leading-relaxed pl-2 border-l-2 border-brand-tan/30 mt-2">
-                {item.notes}
-              </p>
+              <p className="text-[10px] text-slate-400 leading-relaxed">Notes: {item.notes}</p>
             )}
           </div>
         ))}
       </div>
-      <div className="border-t-2 border-brand-tan/30 pt-6 space-y-3 relative z-10">
-        <div className="flex justify-between text-xs font-black text-brand-soil/50">
-          <span>Commission Subtotal</span>
-          <span>{formatPrice(subtotal, currency)}</span>
+      <div className="border-t border-slate-200 pt-4 space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="text-slate-500">Subtotal</span>
+          <span>${(order.total / 1.05).toFixed(2)}</span>
         </div>
-        <div className="flex justify-between text-xs font-black text-brand-soil/50">
-          <span>VAT (5%)</span>
-          <span>{formatPrice(tax, currency)}</span>
+        <div className="flex justify-between text-sm">
+          <span className="text-slate-500">Tax (5%)</span>
+          <span>${(order.total - (order.total / 1.05)).toFixed(2)}</span>
         </div>
-        <div className="flex justify-between text-2xl font-serif font-bold pt-4 border-t border-dashed border-brand-tan/80 text-brand-saddle">
+        <div className="flex justify-between text-lg font-bold pt-2 border-t border-slate-100">
           <span>Total</span>
-          <span className="font-sans">{formatPrice(order.total, currency)}</span>
+          <span>${order.total.toFixed(2)}</span>
         </div>
       </div>
-      <div className="mt-14 text-center space-y-6 relative z-10">
-        <div className="space-y-1">
-          <p className="text-[10px] font-black uppercase tracking-widest text-brand-soil/40 leading-relaxed">
-             Masterpiece Collection fitting by
-          </p>
-          <p className="text-lg font-serif font-bold text-brand-forest italic">{format(order.dueDate, 'MMMM dd, yyyy')}</p>
-        </div>
-        <Button
-          variant="outline"
-          onClick={handlePrint}
-          className="w-full print:hidden h-14 gap-3 rounded-2xl border-2 border-brand-saddle text-brand-saddle font-bold hover:bg-brand-saddle hover:text-brand-wheat transition-all"
+      <div className="mt-12 text-center space-y-4">
+        <p className="text-[10px] text-slate-400 leading-relaxed">
+          Thank you for choosing Stitch.<br />
+          Your bespoke garment will be ready by {format(order.dueDate, 'MMM dd')}.
+        </p>
+        <Button 
+          variant="outline" 
+          onClick={handlePrint} 
+          className="w-full print:hidden gap-2 rounded-xl border-slate-200"
         >
-          <Printer className="h-5 w-5" /> Finalize & Print
+          <Printer className="h-4 w-4" /> Print Receipt
         </Button>
-      </div>
-      <div className="mt-8 pt-8 border-t border-dashed border-brand-tan flex justify-center opacity-40">
-        <div className="h-1.5 w-1.5 rounded-full bg-brand-saddle mx-1" />
-        <div className="h-1.5 w-1.5 rounded-full bg-brand-saddle mx-1" />
-        <div className="h-1.5 w-1.5 rounded-full bg-brand-saddle mx-1" />
       </div>
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {

@@ -25,9 +25,9 @@ import { useCreateCustomer } from '@/hooks/use-api';
 import { toast } from 'sonner';
 import { Customer } from '@shared/types';
 const formSchema = z.object({
-  name: z.string().min(2, "Designation is too short"),
-  phone: z.string().min(5, "Contact identifier invalid"),
-  email: z.string().email("Invalid digital address").optional().or(z.literal("")),
+  name: z.string().min(2, "Name is too short"),
+  phone: z.string().min(5, "Invalid phone number"),
+  email: z.string().email("Invalid email").optional().or(z.literal("")),
 });
 interface CustomerCreateDialogProps {
   open: boolean;
@@ -50,87 +50,82 @@ export function CustomerCreateDialog({ open, onOpenChange, onSuccess }: Customer
         ...values,
         measurements: {},
       });
-      toast.success("Artisan profile registered successfully");
+      toast.success("Customer profile created");
       form.reset();
       onOpenChange(false);
       onSuccess?.(customer);
     } catch (e) {
-      toast.error("Failed to formalize registry entry");
+      toast.error("Failed to create customer");
     }
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[450px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
-        <div className="bg-brand-brown h-2 w-full" />
-        <div className="p-10 space-y-6">
-          <DialogHeader>
-            <DialogTitle className="text-3xl font-serif font-bold flex items-center gap-4 text-brand-brown italic">
-              <div className="h-12 w-12 rounded-2xl bg-brand-brown/10 text-brand-brown flex items-center justify-center">
-                <UserPlus className="h-6 w-6" />
-              </div>
-              Register Client
-            </DialogTitle>
-            <DialogDescription className="text-brand-brown/60 font-medium">
-              Create a formal artisan profile for tracking client commissions and metrics.
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-brand-brown/40 ml-1">Full Designation</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Master Artisan Client" {...field} className="rounded-2xl h-12 bg-white/50 border-brand-brown/10 shadow-sm focus-visible:ring-brand-brown" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+      <DialogContent className="sm:max-w-[425px] rounded-3xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+            <UserPlus className="h-6 w-6 text-indigo-600" />
+            New Client Profile
+          </DialogTitle>
+          <DialogDescription>
+            Enter the client details to start their bespoke journey.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Johnathan Doe" {...field} className="rounded-xl h-11" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="+1 (555) 000-0000" {...field} className="rounded-xl h-11" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="john@example.com" {...field} className="rounded-xl h-11" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter className="pt-4">
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-lg font-bold"
+                disabled={createCustomer.isPending}
+              >
+                {createCustomer.isPending ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  "Create Profile"
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-brand-brown/40 ml-1">Contact Identifier</FormLabel>
-                    <FormControl>
-                      <Input placeholder="+254 000 000 000" {...field} className="rounded-2xl h-12 bg-white/50 border-brand-brown/10 shadow-sm focus-visible:ring-brand-brown" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-brand-brown/40 ml-1">Digital Address (Optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="artisan.client@domain.com" {...field} className="rounded-2xl h-12 bg-white/50 border-brand-brown/10 shadow-sm focus-visible:ring-brand-brown" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter className="pt-6">
-                <Button
-                  type="submit"
-                  className="w-full h-16 bg-brand-brown hover:bg-brand-green text-white rounded-2xl text-lg font-bold shadow-xl shadow-brand-brown/20 transition-all active:scale-95"
-                  disabled={createCustomer.isPending}
-                >
-                  {createCustomer.isPending ? (
-                    <Loader2 className="h-6 w-6 animate-spin" />
-                  ) : (
-                    "Formalize Profile"
-                  )}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </div>
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

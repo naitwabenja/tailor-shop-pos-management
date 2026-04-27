@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,7 +22,7 @@ import {
   Filter,
   Users,
   Ruler,
-  Loader2
+  ShoppingBag
 } from 'lucide-react';
 import { format } from 'date-fns';
 import {
@@ -31,12 +31,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCustomers, useCreateCustomer } from '@/hooks/use-api';
-import { toast } from 'sonner';
+import { useCustomers, useOrders } from '@/hooks/use-api';
+import { CustomerCreateDialog } from '@/components/customers/CustomerCreateDialog';
 export default function CustomersPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const { data, isLoading } = useCustomers();
-  const createCustomer = useCreateCustomer();
+  const { data: ordersData } = useOrders();
+  const customerOrderCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    ordersData?.items.forEach(order => {
+      counts[order.customerId] = (counts[order.customerId] || 0) + 1;
+    });
+    return counts;
+  }, [ordersData]);
   const filteredCustomers = data?.items.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.phone.includes(searchTerm)
@@ -49,9 +57,9 @@ export default function CustomersPage() {
             <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Customer Directory</h1>
             <p className="text-slate-500">View and manage profiles for all tailorshop clients</p>
           </div>
-          <Button 
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-2 shadow-lg shadow-indigo-100 rounded-xl"
-            onClick={() => toast.info("Use the POS Terminal or a dedicated form (WIP) to add customers.")}
+          <Button
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-2 shadow-lg shadow-indigo-100 rounded-xl px-6 h-12"
+            onClick={() => setIsCreateDialogOpen(true)}
           >
             <UserPlus className="h-5 w-5" /> Add New Client
           </Button>
@@ -66,7 +74,7 @@ export default function CustomersPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-slate-200">
+          <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-slate-200 bg-white">
             <Filter className="h-5 w-5 text-slate-600" />
           </Button>
         </div>
@@ -83,7 +91,6 @@ export default function CustomersPage() {
                     </div>
                   </div>
                   <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
                 </CardContent>
               </Card>
             ))}
@@ -99,7 +106,12 @@ export default function CustomersPage() {
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold group-hover:text-indigo-600 transition-colors">{customer.name}</CardTitle>
-                      <Badge variant="secondary" className="mt-1 bg-slate-100 text-slate-600 font-medium border-none">Active Client</Badge>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="secondary" className="bg-slate-100 text-slate-600 font-medium border-none text-[10px] uppercase tracking-wider">Client</Badge>
+                        <span className="text-xs text-slate-400 flex items-center gap-1">
+                          <ShoppingBag className="h-3 w-3" /> {customerOrderCounts[customer.id] || 0} Orders
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <DropdownMenu>
@@ -133,7 +145,7 @@ export default function CustomersPage() {
                   <div className="pt-4 flex gap-2 border-t border-slate-100">
                     <Sheet>
                       <SheetTrigger asChild>
-                        <Button variant="outline" size="sm" className="flex-1 rounded-lg gap-2">
+                        <Button variant="outline" size="sm" className="flex-1 rounded-lg gap-2 border-slate-200">
                           <Ruler className="h-3.5 w-3.5" /> Measurements
                         </Button>
                       </SheetTrigger>
@@ -156,11 +168,11 @@ export default function CustomersPage() {
                               <p className="col-span-2 text-center text-slate-400 py-8 italic">No measurement data available</p>
                             )}
                           </div>
-                          <Button className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700">New Measurement Set</Button>
+                          <Button className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700">Update Measurements</Button>
                         </div>
                       </SheetContent>
                     </Sheet>
-                    <Button variant="outline" size="sm" className="flex-1 rounded-lg">Orders</Button>
+                    <Button variant="outline" size="sm" className="flex-1 rounded-lg border-slate-200">History</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -174,6 +186,10 @@ export default function CustomersPage() {
           </div>
         )}
       </div>
+      <CustomerCreateDialog 
+        open={isCreateDialogOpen} 
+        onOpenChange={setIsCreateDialogOpen} 
+      />
     </AppLayout>
   );
 }
