@@ -1,26 +1,23 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { usePOSStore } from '@/store/use-pos-store';
-const measurementSchema = z.object({
-  neck: z.union([z.coerce.number(), z.literal('')]).optional(),
-  chest: z.union([z.coerce.number(), z.literal('')]).optional(),
-  waist: z.union([z.coerce.number(), z.literal('')]).optional(),
-  hips: z.union([z.coerce.number(), z.literal('')]).optional(),
-  shoulder: z.union([z.coerce.number(), z.literal('')]).optional(),
-  sleeve: z.union([z.coerce.number(), z.literal('')]).optional(),
-  inseam: z.union([z.coerce.number(), z.literal('')]).optional(),
-  length: z.union([z.coerce.number(), z.literal('')]).optional(),
-});
-type MeasurementValues = z.infer<typeof measurementSchema>;
+
+type MeasurementValues = {
+  neck?: number | '';
+  chest?: number | '';
+  waist?: number | '';
+  hips?: number | '';
+  shoulder?: number | '';
+  sleeve?: number | '';
+  inseam?: number | '';
+  length?: number | '';
+};
 export function MeasurementForm() {
   const draftMeasurements = usePOSStore((s) => s.draftMeasurements);
   const updateDraftMeasurement = usePOSStore((s) => s.updateDraftMeasurement);
   const { register } = useForm<MeasurementValues>({
-    resolver: zodResolver(measurementSchema),
     defaultValues: (draftMeasurements || {}) as MeasurementValues,
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
