@@ -6,14 +6,18 @@ import { useCreateOrder } from '@/hooks/use-api';
 import { toast } from 'sonner';
 import { CartItem } from './CartItem';
 import { useCustomers } from '@/hooks/use-api';
-export function OrderSummary() {
+interface OrderSummaryProps {
+  onOrderComplete?: (order: any) => void;
+}
+
+export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
   const items = usePOSStore((s) => s.items);
   const selectedCustomerId = usePOSStore((s) => s.selectedCustomerId);
   const clearCart = usePOSStore((s) => s.clearCart);
   const { data: customersData } = useCustomers();
   const selectedCustomer = customersData?.items.find(c => c.id === selectedCustomerId);
   const createOrder = useCreateOrder();
-  const subtotal = items.reduce((acc, item) => acc + item.price, 0);
+  const subtotal = items.length > 0 ? items.reduce((acc, item) => acc + item.price, 0) : 0;
   const tax = subtotal * 0.05;
   const total = subtotal + tax;
   const handleProcessOrder = async () => {
@@ -22,7 +26,7 @@ export function OrderSummary() {
       return;
     }
     try {
-      await createOrder.mutateAsync({
+      const newOrder = await createOrder.mutateAsync({
         customerId: selectedCustomerId,
         customerName: selectedCustomer.name,
         items,
@@ -31,6 +35,9 @@ export function OrderSummary() {
         dueDate: Date.now() + 86400000 * 14, // 2 weeks default
       });
       toast.success('Order created successfully!');
+      if (onOrderComplete) {
+        onOrderComplete(newOrder);
+      }
       clearCart();
     } catch (error) {
       toast.error('Failed to create order');

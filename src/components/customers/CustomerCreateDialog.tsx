@@ -66,12 +66,16 @@ export function CustomerCreateDialog({ open, onOpenChange, onSuccess }: Customer
             <UserPlus className="h-6 w-6 text-indigo-600" />
             New Client Profile
           </DialogTitle>
-          <DialogDescription>
-            Enter the client details to start their bespoke journey.
+          <DialogDescription id="customer-create-description">
+            Complete the form below to register a new client. This will allow you to track their measurements and order history.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+          <form 
+            onSubmit={form.handleSubmit(onSubmit)} 
+            className="space-y-4 py-4"
+            aria-describedby="customer-create-description"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -112,8 +116,8 @@ export function CustomerCreateDialog({ open, onOpenChange, onSuccess }: Customer
               )}
             />
             <DialogFooter className="pt-4">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-lg font-bold"
                 disabled={createCustomer.isPending}
               >

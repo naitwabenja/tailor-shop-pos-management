@@ -1,13 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
-import type { Customer, Order, OrderStatus, ApiResponse } from '@shared/types';
+import type { Customer, Order, OrderStatus, Garment } from '@shared/types';
 export function useCustomers(cursor?: string, limit?: number) {
   return useQuery({
     queryKey: ['customers', cursor, limit],
-    queryFn: () => api<{ items: Customer[]; next: string | null }>(`/api/customers?${new URLSearchParams({ 
-      ...(cursor && { cursor }), 
-      ...(limit && { limit: limit.toString() }) 
+    queryFn: () => api<{ items: Customer[]; next: string | null }>(`/api/customers?${new URLSearchParams({
+      ...(cursor && { cursor }),
+      ...(limit && { limit: limit.toString() })
     })}`),
+  });
+}
+export function useGarments() {
+  return useQuery({
+    queryKey: ['garments'],
+    queryFn: () => api<Garment[]>('/api/garments'),
   });
 }
 export function useCreateCustomer() {
@@ -25,9 +31,9 @@ export function useCreateCustomer() {
 export function useOrders(cursor?: string, limit?: number) {
   return useQuery({
     queryKey: ['orders', cursor, limit],
-    queryFn: () => api<{ items: Order[]; next: string | null }>(`/api/orders?${new URLSearchParams({ 
-      ...(cursor && { cursor }), 
-      ...(limit && { limit: limit.toString() }) 
+    queryFn: () => api<{ items: Order[]; next: string | null }>(`/api/orders?${new URLSearchParams({
+      ...(cursor && { cursor }),
+      ...(limit && { limit: limit.toString() })
     })}`),
   });
 }
@@ -46,7 +52,7 @@ export function useCreateOrder() {
 export function useUpdateOrderStatus() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: OrderStatus }) => 
+    mutationFn: ({ id, status }: { id: string; status: OrderStatus }) =>
       api<Order>(`/api/orders/${id}/status`, {
         method: 'PUT',
         body: JSON.stringify({ status }),

@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Printer, RefreshCw } from 'lucide-react';
@@ -26,6 +27,12 @@ export function OrderSuccessDialog({ order, onClose }: OrderSuccessDialogProps) 
   return (
     <Dialog open={!!order} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-0 border-none shadow-2xl">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Order Successful</DialogTitle>
+          <DialogDescription>
+            The order has been processed and saved to the production queue.
+          </DialogDescription>
+        </DialogHeader>
         {!showReceipt ? (
           <div className="p-12 text-center space-y-8">
             <div className="flex justify-center">
@@ -45,14 +52,14 @@ export function OrderSuccessDialog({ order, onClose }: OrderSuccessDialogProps) 
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="flex-1 h-14 rounded-2xl border-2 border-slate-100 font-bold gap-2 text-slate-700"
                 onClick={() => setShowReceipt(true)}
               >
                 <Printer className="h-5 w-5" /> View Receipt
               </Button>
-              <Button 
+              <Button
                 className="flex-1 h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100 font-bold gap-2"
                 onClick={handleNewTransaction}
               >
