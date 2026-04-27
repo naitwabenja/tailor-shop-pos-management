@@ -4,14 +4,12 @@ import {
   Calculator,
   Users,
   Scissors,
-  Settings,
   Store
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
@@ -78,18 +76,6 @@ export function AppSidebar(): JSX.Element {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-slate-200 dark:border-slate-800 p-4">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild className="text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 rounded-xl">
-              <Link to="/" className="flex items-center gap-3">
-                <Settings className="h-5 w-5" />
-                <span className="font-medium">Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }
