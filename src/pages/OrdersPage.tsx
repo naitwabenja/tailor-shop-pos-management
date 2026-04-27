@@ -4,17 +4,26 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Search, Clock, Scissors, CheckCircle2, AlertTriangle } from 'lucide-react';
-import { MOCK_ORDERS } from '@shared/mock-data';
-import { format, formatDistanceToNow } from 'date-fns';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Search, Clock, Scissors, CheckCircle2, AlertTriangle, MoreVertical, Loader2 } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { OrderStatus } from '@shared/types';
+import { useOrders, useUpdateOrderStatus } from '@/hooks/use-api';
+import { Button } from '@/components/ui/button';
 export default function OrdersPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const filteredOrders = MOCK_ORDERS.filter(o => 
+  const { data, isLoading } = useOrders();
+  const updateStatus = useUpdateOrderStatus();
+  const filteredOrders = data?.items.filter(o =>
     o.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     o.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) || [];
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
       case 'Pending': return "bg-amber-100 text-amber-700 border-amber-200";
@@ -26,11 +35,18 @@ export default function OrdersPage() {
   };
   const OrderGrid = ({ status }: { status: OrderStatus | 'All' }) => {
     const orders = status === 'All' ? filteredOrders : filteredOrders.filter(o => o.status === status);
+    if (isLoading) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          {[1, 2, 3].map(i => <Card key={i} className="h-40 animate-pulse bg-slate-50" />)}
+        </div>
+      );
+    }
     if (orders.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-white rounded-3xl border-2 border-dashed border-slate-100 mt-6">
           <Clock className="h-12 w-12 opacity-20 mb-4" />
-          <p>No orders found in this category</p>
+          <p>No production orders found</p>
         </div>
       );
     }
@@ -46,15 +62,35 @@ export default function OrdersPage() {
                     <CardTitle className="text-lg font-bold group-hover:text-indigo-600 transition-colors">
                       {order.customerName}
                     </CardTitle>
-                    {isUrgent && order.status !== 'Ready' && (
+                    {isUrgent && order.status !== 'Ready' && order.status !== 'Delivered' && (
                       <AlertTriangle className="h-4 w-4 text-red-500 animate-pulse" />
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 font-medium">Order #{order.id.slice(0, 8).toUpperCase()}</p>
+                  <p className="text-xs text-slate-500 font-medium">Ref: #{order.id.slice(0, 8).toUpperCase()}</p>
                 </div>
-                <Badge variant="outline" className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider", getStatusColor(order.status))}>
-                  {order.status}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider", getStatusColor(order.status))}>
+                    {order.status}
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {(['Pending', 'In Progress', 'Ready', 'Delivered'] as OrderStatus[]).map(s => (
+                        <DropdownMenuItem 
+                          key={s} 
+                          onClick={() => updateStatus.mutate({ id: order.id, status: s })}
+                          disabled={updateStatus.isPending}
+                        >
+                          Mark as {s}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -71,10 +107,10 @@ export default function OrdersPage() {
                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs text-slate-500">
                     <Clock className="h-3.5 w-3.5" />
-                    <span>Due in {formatDistanceToNow(order.dueDate)}</span>
+                    <span>Due {formatDistanceToNow(order.dueDate)}</span>
                   </div>
                   <div className="text-sm font-bold text-indigo-600">
-                    ${order.total}
+                    Total: ${order.total.toFixed(2)}
                   </div>
                 </div>
               </CardContent>
@@ -89,13 +125,13 @@ export default function OrdersPage() {
       <div className="space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Order Tracking</h1>
-            <p className="text-slate-500">Monitor production workflow and delivery schedules</p>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Production Queue</h1>
+            <p className="text-slate-500">Track bespoke garments from bench to client delivery</p>
           </div>
           <div className="relative w-full md:w-72">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             <Input
-              placeholder="Search orders..."
+              placeholder="Search by client or ref..."
               className="pl-9 h-10 rounded-xl bg-white border-slate-200"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -108,13 +144,13 @@ export default function OrdersPage() {
               Pending
             </TabsTrigger>
             <TabsTrigger value="In Progress" className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm font-semibold">
-              In Progress
+              On Bench
             </TabsTrigger>
             <TabsTrigger value="Ready" className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm font-semibold">
               Ready
             </TabsTrigger>
             <TabsTrigger value="All" className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm font-semibold">
-              All Orders
+              Master List
             </TabsTrigger>
           </TabsList>
           <TabsContent value="Pending"><OrderGrid status="Pending" /></TabsContent>
