@@ -20,8 +20,8 @@ export function MeasurementForm() {
   const draftMeasurements = usePOSStore((s) => s.draftMeasurements);
   const updateDraftMeasurement = usePOSStore((s) => s.updateDraftMeasurement);
   const { register } = useForm<MeasurementValues>({
-    resolver: zodResolver(measurementSchema),
-    values: draftMeasurements as MeasurementValues,
+    resolver: zodResolver(measurementSchema) as any,
+    defaultValues: draftMeasurements as MeasurementValues,
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

@@ -20,6 +20,10 @@ import { OrderSummary } from '@/components/POS/OrderSummary';
 import { CustomerCreateDialog } from '@/components/customers/CustomerCreateDialog';
 import { OrderSuccessDialog } from '@/components/POS/OrderSuccessDialog';
 import { Order } from '@shared/types';
+interface POSPageProps {
+  onOrderComplete?: (order: Order) => void;
+}
+
 export default function POSPage() {
   const selectedCustomerId = usePOSStore((s) => s.selectedCustomerId);
   const setCustomer = usePOSStore((s) => s.setCustomer);
@@ -129,7 +133,7 @@ export default function POSPage() {
         </div>
         {/* Right Side: Order Summary */}
         <div className="lg:col-span-4 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
-          <OrderSummary onOrderComplete={(order) => setCompletedOrder(order)} />
+          <OrderSummary onOrderComplete={setCompletedOrder} />
         </div>
       </div>
       <CustomerCreateDialog 

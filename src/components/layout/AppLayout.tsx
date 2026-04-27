@@ -5,9 +5,9 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { useLocation, Outlet } from "react-router-dom";
 type AppLayoutProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   container?: boolean;
   className?: string;
   contentClassName?: string;
@@ -48,7 +48,7 @@ export function AppLayout({
               contentClassName
             )}
           >
-            {children}
+            {children || <Outlet />}
           </motion.main>
         </AnimatePresence>
         <Toaster richColors closeButton position="top-center" />

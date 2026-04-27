@@ -15,27 +15,42 @@ import { HomePage } from '@/pages/HomePage'
 import POSPage from '@/pages/POSPage'
 import CustomersPage from '@/pages/CustomersPage'
 import OrdersPage from '@/pages/OrdersPage'
+import { AppLayout } from '@/components/layout/AppLayout';
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <HomePage />,
+    element: <AppLayout />,
     errorElement: <RouteErrorBoundary />,
-  },
-  {
-    path: "/pos",
-    element: <POSPage />,
-    errorElement: <RouteErrorBoundary />,
-  },
-  {
-    path: "/customers",
-    element: <CustomersPage />,
-    errorElement: <RouteErrorBoundary />,
-  },
-  {
-    path: "/orders",
-    element: <OrdersPage />,
-    errorElement: <RouteErrorBoundary />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: "pos",
+        element: (
+          <>
+            <POSPage />
+          </>
+        ),
+      },
+      {
+        path: "customers",
+        element: (
+          <>
+            <CustomersPage />
+          </>
+        ),
+      },
+      {
+        path: "orders",
+        element: (
+          <>
+            <OrdersPage />
+          </>
+        ),
+      }
+    ]
   }
 ]);
 createRoot(document.getElementById('root')!).render(
