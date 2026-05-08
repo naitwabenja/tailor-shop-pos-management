@@ -41,83 +41,92 @@ export default function POSPage() {
     <AppLayout fullBleed contentClassName="flex flex-col h-[calc(100vh-theme(spacing.20))] overflow-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-12 flex-1 overflow-hidden h-full">
         {/* Left Side: Inputs and Selection */}
-        <div className="lg:col-span-8 flex flex-col overflow-y-auto p-8 space-y-10 bg-background/30 dark:bg-slate-950/50 custom-scrollbar">
-          <section className="space-y-6">
+        <div className="lg:col-span-8 flex flex-col flex-1 min-w-0 overflow-y-auto p-8 md:p-10 space-y-12 bg-background/50 custom-scrollbar">
+          <section className="space-y-8">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-serif font-bold flex items-center gap-3 text-brand-brown">
-                <Search className="h-6 w-6" />
+              <h2 className="text-3xl font-serif font-black flex items-center gap-4 text-black italic">
+                <div className="p-3 bg-black text-white rounded-2xl shadow-lg">
+                  <Search className="h-6 w-6" />
+                </div>
                 Select Client
               </h2>
               <Button
                 variant="outline"
-                className="gap-3 rounded-2xl border-brand-brown/20 text-brand-brown hover:bg-brand-brown/10 h-12 px-6 font-bold"
+                className="gap-3 rounded-2xl border-black/10 text-black bg-white hover:bg-black hover:text-white h-14 px-8 font-black shadow-sm"
                 onClick={() => setIsCustomerDialogOpen(true)}
               >
                 <UserPlus className="h-5 w-5" /> New Customer
               </Button>
             </div>
             <div className="relative">
-              <Search className="absolute left-4 top-4 h-5 w-5 text-brand-brown/40" />
+              <Search className="absolute left-5 top-5 h-6 w-6 text-black/20" />
               <Input
-                placeholder="Search clients by name or phone..."
-                className="pl-12 h-14 rounded-2xl bg-white/80 backdrop-blur-sm border-brand-brown/10 focus-visible:ring-brand-brown shadow-sm text-lg"
+                placeholder="Search clients by name or identification..."
+                className="pl-14 h-16 rounded-[1.5rem] bg-white border-black/5 focus-visible:ring-black shadow-xl shadow-black/5 text-xl font-bold placeholder:text-black/20"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             {customersLoading ? (
-              <div className="flex justify-center p-6"><Loader2 className="animate-spin text-brand-brown h-8 w-8" /></div>
+              <div className="flex justify-center p-8"><Loader2 className="animate-spin text-black h-10 w-10" /></div>
             ) : filteredCustomers.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {filteredCustomers.map(customer => (
                   <div
                     key={customer.id}
                     onClick={() => setCustomer(customer.id, customer.measurements)}
                     className={cn(
-                      "flex items-center gap-5 p-6 rounded-2xl cursor-pointer transition-all border-2",
+                      "flex items-center gap-6 p-8 rounded-3xl cursor-pointer transition-all border-2",
                       selectedCustomerId === customer.id
-                        ? "bg-brand-brown/10 border-brand-brown shadow-lg"
-                        : "bg-white/50 border-transparent hover:border-brand-brown/20 shadow-sm"
+                        ? "bg-black border-black text-white shadow-2xl scale-[1.02]"
+                        : "bg-white border-transparent hover:border-black/10 shadow-soft"
                     )}
                   >
-                    <div className="h-12 w-12 rounded-full bg-brand-tan/30 flex items-center justify-center font-bold text-brand-brown text-lg">
+                    <div className={cn(
+                      "h-14 w-14 shrink-0 rounded-2xl flex items-center justify-center font-black text-xl",
+                      selectedCustomerId === customer.id ? "bg-white text-black" : "bg-black text-white"
+                    )}>
                       {customer.name.split(' ').map(n => n[0]).join('')}
                     </div>
-                    <div>
-                      <div className="font-bold text-brand-brown text-lg">{customer.name}</div>
-                      <div className="text-sm text-brand-brown/60 font-medium">{customer.phone}</div>
+                    <div className="min-w-0">
+                      <div className="font-black text-xl truncate">{customer.name}</div>
+                      <div className={cn("text-sm font-black opacity-60", selectedCustomerId === customer.id ? "text-white" : "text-black")}>
+                        {customer.phone}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-10 text-center text-brand-brown/40 text-lg italic bg-white/30 rounded-2xl border border-dashed border-brand-brown/10">
-                No clients found in registry.
+              <div className="p-16 text-center text-black/30 text-xl font-serif italic bg-black/5 rounded-3xl border-2 border-dashed border-black/10">
+                Registry search returned no results.
               </div>
             )}
           </section>
-          <section className="space-y-6">
-            <h2 className="text-2xl font-serif font-bold flex items-center gap-3 text-brand-brown">
-              <Scissors className="h-6 w-6" />
+          <section className="space-y-8">
+            <h2 className="text-3xl font-serif font-black flex items-center gap-4 text-black italic">
+              <div className="p-3 bg-black text-white rounded-2xl shadow-lg">
+                <Scissors className="h-6 w-6" />
+              </div>
               Garment Library
             </h2>
             {garmentsLoading ? (
-              <div className="flex justify-center p-12"><Loader2 className="animate-spin text-brand-brown h-10 w-10" /></div>
+              <div className="flex justify-center p-16"><Loader2 className="animate-spin text-black h-12 w-12" /></div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 {garmentLibrary.map(type => (
                   <Card
                     key={type.id}
-                    className="cursor-pointer hover:shadow-xl transition-all border-none shadow-soft active:scale-95 duration-75 overflow-hidden group"
+                    className="cursor-pointer hover:shadow-2xl hover:scale-[1.03] transition-all border-none shadow-soft active:scale-95 duration-75 overflow-hidden group bg-white"
                     onClick={() => addItem({ type: type.name, price: type.basePrice })}
                   >
-                    <CardContent className="p-8 flex flex-col items-center text-center gap-4 group-hover:bg-brand-brown/5 transition-colors">
-                      <div className="p-5 rounded-[1.5rem] bg-brand-brown/10 text-brand-brown group-hover:bg-brand-brown group-hover:text-white transition-all shadow-sm">
+                    <CardContent className="p-10 flex flex-col items-center text-center gap-6 group-hover:bg-black/5 transition-colors">
+                      <div className="p-6 rounded-[2rem] bg-black/5 text-black group-hover:bg-black group-hover:text-white transition-all shadow-sm">
                         <Plus className="h-8 w-8" />
                       </div>
-                      <div className="space-y-1">
-                        <div className="font-bold text-brand-brown text-xl">{type.name}</div>
-                        <div className="text-base font-serif font-bold italic text-brand-brown/60">From {formatPrice(type.basePrice, currency)}</div>
+                      <div className="space-y-2">
+                        <div className="font-black text-black text-2xl tracking-tight">{type.name}</div>
+                        <div className="text-lg font-serif font-black italic text-black/40">From {formatPrice(type.basePrice, currency)}</div>
                       </div>
                     </CardContent>
                   </Card>
@@ -126,13 +135,13 @@ export default function POSPage() {
             )}
           </section>
           {selectedCustomerId && (
-            <section className="space-y-6 pb-12" key={selectedCustomerId}>
+            <section className="space-y-8 pb-16" key={selectedCustomerId}>
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-serif font-bold text-brand-brown">Artisan Metrics</h2>
-                <Button variant="link" className="text-brand-brown font-bold p-0 decoration-brand-brown/30 text-base">History</Button>
+                <h2 className="text-3xl font-serif font-black text-black italic">Artisan Metrics</h2>
+                <Button variant="link" className="text-black font-black p-0 text-lg decoration-black/20">Metrics History</Button>
               </div>
-              <Card className="border-none shadow-soft bg-white/40 backdrop-blur-sm rounded-[2rem]">
-                <CardContent className="p-8">
+              <Card className="border-none shadow-xl bg-white rounded-[2.5rem] overflow-hidden">
+                <CardContent className="p-10">
                   <MeasurementForm />
                 </CardContent>
               </Card>
@@ -140,7 +149,7 @@ export default function POSPage() {
           )}
         </div>
         {/* Right Side: Order Summary */}
-        <div className="lg:col-span-4 bg-white/90 backdrop-blur-md dark:bg-slate-900 border-l border-brand-brown/10 flex flex-col overflow-hidden shadow-2xl">
+        <div className="lg:col-span-4 bg-white border-l border-black/5 flex flex-col overflow-hidden shadow-2xl relative z-20">
           <OrderSummary onOrderComplete={setCompletedOrder} />
         </div>
       </div>

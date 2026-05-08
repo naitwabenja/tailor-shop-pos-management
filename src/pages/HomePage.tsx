@@ -25,91 +25,91 @@ export function HomePage() {
   const readyCount = orders.filter(o => o.status === 'Ready').length;
   const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
   return (
-    <div className="space-y-12 max-w-7xl mx-auto">
-      <div className="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-brand-brown to-brand-green px-12 py-20 text-white shadow-2xl">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-10">
-          <div className="space-y-6">
-            <h1 className="text-6xl font-serif font-bold tracking-tight">Workshop Desk</h1>
-            <p className="text-brand-beige/80 max-w-2xl text-2xl leading-relaxed">
-              Managing {pendingCount} commissions and {inProgressCount} active masterpieces today.
+    <div className="space-y-10 max-w-7xl mx-auto">
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-black px-10 py-16 text-white shadow-2xl">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <div className="space-y-4">
+            <h1 className="text-5xl font-serif font-black tracking-tight italic">Workshop Desk</h1>
+            <p className="text-white/60 max-w-2xl text-xl leading-relaxed font-medium">
+              Managing {pendingCount} commissions and {inProgressCount} active masterpieces.
             </p>
           </div>
-          <Button asChild size="lg" className="bg-brand-beige text-brand-brown hover:bg-white font-bold px-12 rounded-2xl shadow-2xl border-none h-16 text-xl">
+          <Button asChild size="lg" className="bg-white text-black hover:bg-white/90 font-black px-10 rounded-2xl shadow-xl h-14 text-lg shrink-0">
             <Link to="/dashboard/pos">New Commission</Link>
           </Button>
         </div>
         <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
       </div>
-      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: 'Valuation', value: formatPrice(totalRevenue, currency), icon: TrendingUp, color: 'text-brand-green', sub: 'Active work volume' },
-          { label: 'Pending', value: pendingCount, icon: Clock, color: 'text-brand-brown', sub: 'Awaiting first stitch' },
-          { label: 'On Bench', value: inProgressCount, icon: Scissors, color: 'text-brand-moss', sub: 'In production' },
-          { label: 'Ready', value: readyCount, icon: CheckCircle2, color: 'text-emerald-600', sub: 'Final fitting' },
+          { label: 'Valuation', value: formatPrice(totalRevenue, currency), icon: TrendingUp, color: 'text-emerald-500', sub: 'Volume' },
+          { label: 'Pending', value: pendingCount, icon: Clock, color: 'text-amber-500', sub: 'Awaiting' },
+          { label: 'On Bench', value: inProgressCount, icon: Scissors, color: 'text-blue-500', sub: 'Active' },
+          { label: 'Ready', value: readyCount, icon: CheckCircle2, color: 'text-green-500', sub: 'Complete' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-soft bg-card/50 backdrop-blur-sm h-64 flex flex-col justify-between p-2">
-            <CardHeader className="flex flex-row items-center justify-between pb-0">
-              <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-[0.3em]">{stat.label}</CardTitle>
-              <stat.icon className={cn("h-6 w-6", stat.color)} />
+          <Card key={i} className="border-none shadow-soft bg-white/80 backdrop-blur-sm h-52 md:h-60 flex flex-col justify-between overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between pb-0 pt-6 px-6">
+              <CardTitle className="text-[10px] font-black text-black/40 uppercase tracking-[0.3em]">{stat.label}</CardTitle>
+              <stat.icon className={cn("h-5 w-5", stat.color)} />
             </CardHeader>
-            <CardContent className="pb-8">
-              <div className="text-6xl font-serif font-bold text-foreground tracking-tighter">{stat.value}</div>
-              <p className="text-sm text-muted-foreground mt-4 font-medium italic opacity-60">{stat.sub}</p>
+            <CardContent className="pb-8 px-6">
+              <div className="text-4xl md:text-5xl font-serif font-black text-black tracking-tighter truncate">{stat.value}</div>
+              <p className="text-xs text-black/40 mt-3 font-black uppercase tracking-widest italic opacity-60">{stat.sub}</p>
             </CardContent>
           </Card>
         ))}
       </div>
-      <Card className="border-none shadow-soft overflow-hidden rounded-[2.5rem]">
-        <CardHeader className="border-b border-border/50 bg-card/30 px-10 py-8">
+      <Card className="border-none shadow-soft overflow-hidden rounded-[2rem] bg-white/60 backdrop-blur-sm">
+        <CardHeader className="border-b border-black/5 px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-3xl font-serif font-bold">Commission Registry</h2>
-              <p className="text-muted-foreground font-medium mt-1">Latest atelier entries</p>
+              <h2 className="text-2xl font-serif font-black text-black">Commission Registry</h2>
+              <p className="text-black/40 text-xs font-black uppercase tracking-widest mt-1">Latest atelier entries</p>
             </div>
-            <Button variant="ghost" size="sm" asChild className="font-bold text-brand-brown hover:text-brand-green hover:bg-brand-brown/5 rounded-xl h-12 px-6">
+            <Button variant="ghost" size="sm" asChild className="font-black text-black hover:bg-black/5 rounded-xl h-10 px-4">
               <Link to="/dashboard/orders" className="flex items-center gap-2">
-                Queue <ArrowRight className="h-5 w-5" />
+                Queue <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex justify-center py-24"><Loader2 className="animate-spin h-12 w-12 text-brand-brown" /></div>
+            <div className="flex justify-center py-20"><Loader2 className="animate-spin h-10 w-10 text-black" /></div>
           ) : orders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-32 text-muted-foreground space-y-8">
-              <Sparkles className="h-20 w-20 opacity-10" />
-              <p className="text-2xl font-serif italic">Workshop gallery empty.</p>
+            <div className="flex flex-col items-center justify-center py-24 text-black/20 space-y-4">
+              <Sparkles className="h-16 w-16 opacity-10" />
+              <p className="text-xl font-serif italic">Workshop gallery empty.</p>
             </div>
           ) : (
-            <div className="divide-y divide-border/30">
+            <div className="divide-y divide-black/5">
               {orders.slice(0, 5).map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-10 hover:bg-primary/5 transition-all group">
-                  <div className="flex items-center gap-8">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-brown text-white text-2xl font-serif font-bold shadow-md group-hover:scale-105 transition-transform">
+                <div key={order.id} className="flex items-center justify-between p-8 hover:bg-black/5 transition-all group">
+                  <div className="flex items-center gap-6">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black text-white text-xl font-serif font-black shadow-md group-hover:scale-105 transition-transform">
                       {order.customerName.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div>
-                      <h4 className="font-bold text-foreground text-2xl tracking-tight">{order.customerName}</h4>
-                      <div className="flex items-center gap-4 text-base text-muted-foreground mt-1">
-                        <span className="font-bold text-brand-green">{order.items[0]?.garmentName}</span>
-                        <span className="opacity-30">•</span>
+                      <h4 className="font-black text-black text-xl tracking-tight">{order.customerName}</h4>
+                      <div className="flex items-center gap-3 text-sm text-black/50 mt-1 font-bold">
+                        <span className="text-black">{order.items[0]?.garmentName}</span>
+                        <span className="opacity-20">•</span>
                         <span>Due {format(order.dueDate, 'MMM d, yyyy')}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-12">
+                  <div className="flex items-center gap-10">
                     <Badge className={cn(
-                      "px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest border-none shadow-sm",
-                      order.status === 'Ready' && "bg-brand-green text-white",
-                      order.status === 'Pending' && "bg-brand-tan text-brand-brown",
-                      order.status === 'In Progress' && "bg-brand-brown text-white",
-                      order.status === 'Delivered' && "bg-muted text-muted-foreground"
+                      "px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-none shadow-sm",
+                      order.status === 'Ready' && "bg-green-600 text-white",
+                      order.status === 'Pending' && "bg-amber-100 text-amber-900",
+                      order.status === 'In Progress' && "bg-black text-white",
+                      order.status === 'Delivered' && "bg-slate-200 text-slate-800"
                     )}>
                       {order.status}
                     </Badge>
-                    <div className="text-right min-w-[140px]">
-                      <div className="font-serif font-bold text-foreground text-3xl">{formatPrice(order.total, currency)}</div>
+                    <div className="text-right min-w-[120px]">
+                      <div className="font-serif font-black text-black text-2xl italic">{formatPrice(order.total, currency)}</div>
                     </div>
                   </div>
                 </div>

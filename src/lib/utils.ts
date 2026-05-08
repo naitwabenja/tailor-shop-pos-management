@@ -12,9 +12,13 @@ export function formatPrice(amount: number, currency: string = 'USD'): string {
     KES: 'KSh ',
   };
   const symbol = symbols[currency] || symbols.USD;
-  const formatted = Math.abs(amount).toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-  return `${amount < 0 ? '-' : ''}${symbol}${formatted}`;
+  try {
+    const formatted = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Math.abs(amount));
+    return `${amount < 0 ? '-' : ''}${symbol}${formatted}`;
+  } catch (error) {
+    return `${symbol}${Math.abs(amount).toFixed(2)}`;
+  }
 }
