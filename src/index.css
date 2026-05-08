@@ -4,32 +4,32 @@
 @layer base {
   :root {
     --background: 60 56% 91%; /* Wheat #F5F5DC */
-    --foreground: 20 14.3% 4.1%;
+    --foreground: 0 0% 0%; /* Pure black for maximum contrast */
     --card: 60 56% 95%; /* Parchment-style */
-    --card-foreground: 20 14.3% 4.1%;
+    --card-foreground: 0 0% 0%;
     --popover: 60 56% 95%;
-    --popover-foreground: 20 14.3% 4.1%;
+    --popover-foreground: 0 0% 0%;
     --primary: 25 76% 31%; /* Saddle Brown */
     --primary-foreground: 60 56% 98%;
     --secondary: 35 44% 68%; /* Tan */
-    --secondary-foreground: 20 14.3% 4.1%;
+    --secondary-foreground: 0 0% 0%;
     --muted: 34 20% 85%;
-    --muted-foreground: 25 10% 25%;
+    --muted-foreground: 25 10% 15%;
     --accent: 120 61% 34%; /* Forest Green */
     --accent-foreground: 60 56% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 60 9.1% 97.8%;
-    --border: 25 30% 70%; /* Leather-brown-ish */
-    --input: 25 30% 70%;
+    --border: 25 30% 60%; /* Sharper brown border */
+    --input: 25 30% 60%;
     --ring: 120 61% 34%;
     --radius: 1rem;
     --sidebar-background: 34 44% 75%; /* Tan-wood */
-    --sidebar-foreground: 25 76% 15%;
+    --sidebar-foreground: 25 76% 10%;
     --sidebar-primary: 25 76% 31%;
     --sidebar-primary-foreground: 60 56% 98%;
     --sidebar-accent: 60 56% 95%;
     --sidebar-accent-foreground: 25 76% 31%;
-    --sidebar-border: 25 30% 60%;
+    --sidebar-border: 25 30% 50%;
     --sidebar-ring: 120 61% 34%;
   }
   .dark {
@@ -73,22 +73,25 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-    opacity: 0.04;
+    opacity: 0.05;
     z-index: 9999;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-bold text-brand-saddle;
+    @apply font-serif font-black text-brand-saddle;
+  }
+  label, p, span {
+    @apply font-medium;
   }
 }
 @layer utilities {
   .wood-panel {
-    @apply bg-gradient-to-b from-brand-tan/80 to-brand-wood/20 shadow-wood border-r border-brand-saddle/20;
+    @apply bg-gradient-to-b from-brand-tan/90 to-brand-wood/30 shadow-wood border-r border-brand-saddle/30;
   }
   .parchment {
-    @apply bg-brand-wheat border-brand-tan shadow-[inset_0_0_40px_rgba(210,180,140,0.1)] border;
+    @apply bg-brand-wheat border-brand-tan shadow-[inset_0_0_50px_rgba(210,180,140,0.15)] border-2;
   }
   .leather-edge {
-    @apply border-2 border-brand-leather/30 shadow-sm;
+    @apply border-2 border-brand-leather/40 shadow-md;
   }
 }

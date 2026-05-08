@@ -62,11 +62,12 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     const now = Date.now();
     for (const row of rows) {
       try {
-        // Match customer by ID, Phone (exact), or Name (fuzzy)
-        const customer = customers.find(cust => 
-          cust.id === row.customerId || 
-          cust.phone === row.phone || 
-          cust.name.toLowerCase() === (row.customerName || row.name || "").toLowerCase()
+        const rowName = String(row.customerName || row.name || "").trim().toLowerCase();
+        const rowPhone = String(row.phone || "").trim();
+        const customer = customers.find(cust =>
+          cust.id === row.customerId ||
+          cust.phone.trim() === rowPhone ||
+          cust.name.trim().toLowerCase() === rowName
         );
         if (!customer) {
           results.failed++;
@@ -153,7 +154,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     const orderId = crypto.randomUUID();
     if (data.notes) {
       try {
-        const parsed = JSON.parse(data.notes);
+        const parsed = typeof data.notes === 'string' ? JSON.parse(data.notes) : data.notes;
         if (parsed.measurements && Object.keys(parsed.measurements).length > 0) {
           await MeasurementEntity.create(c.env, {
             id: crypto.randomUUID(),
@@ -164,7 +165,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
           });
         }
       } catch (e) {
-        console.error('[ORDER API] Failed to parse measurement notes:', e);
+        console.warn('[ORDER API] Could not extract measurements from notes string:', e);
       }
     }
     const orderItems = await Promise.all(data.items.map(async (item: any) => {
@@ -174,7 +175,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
         garmentId: item.garmentId || 'custom',
         garmentName: item.type || item.garmentName,
         quantity: 1,
-        price: item.price,
+        price: Number(item.price) || 0,
         fabric: item.fabric,
         notes: item.notes,
         createdAt: now,
@@ -188,7 +189,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       customerName: data.customerName,
       items: orderItems,
       status: 'Pending' as OrderStatus,
-      total: data.total,
+      total: Number(data.total) || 0,
       dueDate: data.dueDate || (now + 86400000 * 14),
       createdAt: now,
       updatedAt: now,
@@ -198,7 +199,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     await PaymentEntity.create(c.env, {
       id: crypto.randomUUID(),
       orderId,
-      amountPaid: data.total,
+      amountPaid: order.total,
       paymentMethod: (data.paymentMethod || 'Cash') as PaymentMethod,
       paymentDate: now,
       createdAt: now,

@@ -19,6 +19,7 @@ export function formatPrice(amount: number, currency: string = 'USD'): string {
     }).format(Math.abs(amount));
     return `${amount < 0 ? '-' : ''}${symbol}${formatted}`;
   } catch (error) {
+    console.error('[UTILS] Price formatting failed:', error);
     return `${symbol}${Math.abs(amount).toFixed(2)}`;
   }
 }
