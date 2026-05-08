@@ -2,8 +2,9 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { usePOSStore } from '@/store/use-pos-store';
+import { useShallow } from 'zustand/react/shallow';
 export function MeasurementForm() {
-  const draftMeasurements = usePOSStore((s) => s.draftMeasurements);
+  const draftMeasurements = usePOSStore(useShallow((s) => s.draftMeasurements));
   const updateDraftMeasurement = usePOSStore((s) => s.updateDraftMeasurement);
   const fields = [
     { name: 'neck', label: 'Neck' },

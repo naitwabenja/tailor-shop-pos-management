@@ -3,17 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useInventory, useUpdateInventoryItem, useCreateInventoryItem } from '@/hooks/use-api';
-import { 
-  Package, 
-  Search, 
-  Plus, 
-  AlertCircle, 
-  ArrowUpRight, 
+import { useInventory, useUpdateInventoryItem } from '@/hooks/use-api';
+import {
+  Package,
+  Search,
+  Plus,
+  AlertCircle,
   MoreVertical,
   Loader2,
   Box,
-  TrendingDown,
   Warehouse
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -22,7 +20,7 @@ export default function InventoryPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const { data: inventory, isLoading } = useInventory();
   const updateStock = useUpdateInventoryItem();
-  const filteredItems = inventory?.filter(i => 
+  const filteredItems = inventory?.filter(i =>
     i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     i.type.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
@@ -157,9 +155,9 @@ export default function InventoryPage() {
                           </td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 className="h-8 rounded-lg font-bold text-indigo-600 hover:bg-indigo-50"
                                 onClick={() => handleQuickRestock(item.id, item.quantity)}
                                 disabled={updateStock.isPending}
@@ -178,8 +176,8 @@ export default function InventoryPage() {
                 </table>
               </div>
             )}
-          </div>
-        </CardContent>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

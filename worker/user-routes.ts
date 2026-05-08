@@ -118,7 +118,9 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
             updatedAt: now
           });
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error('[ORDER API] Failed to parse measurement notes:', e);
+      }
     }
     const orderItems = await Promise.all(data.items.map(async (item: any) => {
       const oi = {

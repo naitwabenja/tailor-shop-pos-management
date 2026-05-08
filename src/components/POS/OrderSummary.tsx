@@ -3,6 +3,7 @@ import { ShoppingCart, CreditCard, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePOSStore } from '@/store/use-pos-store';
 import { useCreateOrder, useCustomers } from '@/hooks/use-api';
+import { useShallow } from 'zustand/react/shallow';
 import { toast } from 'sonner';
 import { CartItem } from './CartItem';
 import { Order } from '@shared/types';
@@ -10,9 +11,9 @@ interface OrderSummaryProps {
   onOrderComplete?: (order: Order) => void;
 }
 export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
-  const items = usePOSStore((s) => s.items);
+  const items = usePOSStore(useShallow((s) => s.items));
   const selectedCustomerId = usePOSStore((s) => s.selectedCustomerId);
-  const draftMeasurements = usePOSStore((s) => s.draftMeasurements);
+  const draftMeasurements = usePOSStore(useShallow((s) => s.draftMeasurements));
   const clearCart = usePOSStore((s) => s.clearCart);
   const { data: customersData } = useCustomers();
   const selectedCustomer = customersData?.items.find(c => c.id === selectedCustomerId);
@@ -27,8 +28,6 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
       return;
     }
     try {
-      // Map local POS items to backend OrderItem structure
-      // The API handler in worker/user-routes.ts maps 'type' to 'garmentName'
       const mappedItems = items.map(item => ({
         type: item.type,
         price: item.price,
@@ -38,12 +37,10 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
       const newOrder = await createOrder.mutateAsync({
         customerId: selectedCustomerId,
         customerName: selectedCustomer.name,
-        // The mutationFn in use-api expects Partial<Order>, but the API handler maps items
         items: mappedItems as any,
         total,
         status: 'Pending',
         dueDate: Date.now() + 86400000 * 14,
-        // Send measurements in notes JSON for the backend to process
         notes: JSON.stringify({ measurements: draftMeasurements })
       });
       toast.success('Order created successfully!');
