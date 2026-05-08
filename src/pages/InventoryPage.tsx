@@ -206,7 +206,7 @@ export default function InventoryPage() {
                                 <DropdownMenuContent align="end" className="w-48">
                                   <DropdownMenuItem
                                     onClick={() => {
-                                      setEditItem(item);
+                                      setEditItem({ ...item });
                                       setIsEditOpen(true);
                                     }}
                                   >
@@ -239,7 +239,7 @@ export default function InventoryPage() {
         </Card>
       </div>
       <InventoryCreateDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
-      <InventoryEditDialog open={isEditOpen} onOpenChange={setIsEditOpen} item={editItem!} />
+      {editItem && <InventoryEditDialog open={isEditOpen} onOpenChange={(open) => { setIsEditOpen(open); if (!open) setEditItem(null); }} item={editItem} />}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
