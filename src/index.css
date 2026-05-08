@@ -3,71 +3,92 @@
 @tailwind utilities;
 @layer base {
   :root {
-    /* High-Contrast Earthy Artistic Theme */
-    --background: 60 56% 91%; /* warm-beige */
-    --foreground: 0 0% 0%; /* Absolute Black for legibility */
-    --primary: 25 76% 31%; /* saddle-brown */
+    --background: 60 56% 91%; /* Wheat #F5F5DC */
+    --foreground: 20 14.3% 4.1%;
+    --card: 60 56% 95%; /* Parchment-style */
+    --card-foreground: 20 14.3% 4.1%;
+    --popover: 60 56% 95%;
+    --popover-foreground: 20 14.3% 4.1%;
+    --primary: 25 76% 31%; /* Saddle Brown */
     --primary-foreground: 60 56% 98%;
-    --muted: 34 20% 85%; /* lighter tan */
-    --muted-foreground: 0 0% 10%; /* Very dark charcoal */
-    --border: 30 20% 75%;
-    --ring: 120 61% 34%; /* forest-green */
-    --card: 60 40% 95%;
-    --card-foreground: 0 0% 0%;
-    --popover: 60 40% 95%;
-    --popover-foreground: 0 0% 0%;
-    --secondary: 120 30% 90%;
-    --secondary-foreground: 0 0% 0%;
-    --accent: 120 61% 34%; /* forest-green */
+    --secondary: 35 44% 68%; /* Tan */
+    --secondary-foreground: 20 14.3% 4.1%;
+    --muted: 34 20% 85%;
+    --muted-foreground: 25 10% 25%;
+    --accent: 120 61% 34%; /* Forest Green */
     --accent-foreground: 60 56% 98%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --input: 30 20% 75%;
-    --radius: 0.75rem;
-    /* Sidebar Specifics */
-    --sidebar-background: 60 56% 94%;
-    --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 0 0% 0%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 25 30% 70%; /* Leather-brown-ish */
+    --input: 25 30% 70%;
+    --ring: 120 61% 34%;
+    --radius: 1rem;
+    --sidebar-background: 34 44% 75%; /* Tan-wood */
+    --sidebar-foreground: 25 76% 15%;
+    --sidebar-primary: 25 76% 31%;
     --sidebar-primary-foreground: 60 56% 98%;
-    --sidebar-accent: 0 0% 100%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 30 20% 80%;
-    --sidebar-ring: 0 0% 0%;
+    --sidebar-accent: 60 56% 95%;
+    --sidebar-accent-foreground: 25 76% 31%;
+    --sidebar-border: 25 30% 60%;
+    --sidebar-ring: 120 61% 34%;
   }
   .dark {
-    --background: 30 51% 5%; /* deeper earth */
+    --background: 25 30% 5%;
     --foreground: 60 56% 95%;
-    --primary: 25 76% 45%;
-    --primary-foreground: 0 0% 0%;
-    --muted: 30 30% 15%;
-    --muted-foreground: 60 56% 80%;
-    --border: 30 30% 20%;
-    --ring: 120 61% 44%;
-    --card: 30 51% 8%;
+    --card: 25 30% 8%;
     --card-foreground: 60 56% 95%;
-    --popover: 30 51% 8%;
+    --popover: 25 30% 8%;
     --popover-foreground: 60 56% 95%;
+    --primary: 25 76% 45%;
+    --primary-foreground: 25 30% 5%;
     --secondary: 120 30% 15%;
-    --secondary-foreground: 120 61% 95%;
+    --secondary-foreground: 60 56% 95%;
+    --muted: 25 30% 15%;
+    --muted-foreground: 60 56% 70%;
     --accent: 120 61% 40%;
-    --accent-foreground: 0 0% 100%;
-    --sidebar-background: 30 51% 4%;
-    --sidebar-foreground: 60 56% 95%;
-    --sidebar-border: 30 51% 10%;
+    --accent-foreground: 60 56% 95%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 60 56% 95%;
+    --border: 25 30% 20%;
+    --input: 25 30% 20%;
+    --ring: 120 61% 40%;
   }
+}
+@layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
-    background-image: radial-gradient(circle at 2px 2px, rgba(0, 0, 0, 0.03) 1px, transparent 0);
-    background-size: 40px 40px;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-feature-settings: "rlig" 1, "calt" 1;
+    position: relative;
     -webkit-font-smoothing: antialiased;
   }
+  /* Tactile Grain Texture Overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.04;
+    z-index: 9999;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-bold text-brand-saddle;
+  }
 }
-@layer components {
-  .btn-earthy {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-bold transition-all duration-200 rounded-xl bg-primary text-primary-foreground hover:bg-accent hover:scale-105 active:scale-95 shadow-soft;
+@layer utilities {
+  .wood-panel {
+    @apply bg-gradient-to-b from-brand-tan/80 to-brand-wood/20 shadow-wood border-r border-brand-saddle/20;
+  }
+  .parchment {
+    @apply bg-brand-wheat border-brand-tan shadow-[inset_0_0_40px_rgba(210,180,140,0.1)] border;
+  }
+  .leather-edge {
+    @apply border-2 border-brand-leather/30 shadow-sm;
   }
 }

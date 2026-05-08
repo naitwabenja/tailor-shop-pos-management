@@ -14,9 +14,8 @@ export default {
   				'sans-serif'
   			],
 			display: [
-				'Inter',
-				'system-ui',
-				'sans-serif'
+				'Georgia',
+				'serif'
 			],
 			serif: [
 				'Georgia',
@@ -82,11 +81,14 @@ export default {
   				ring: 'hsl(var(--sidebar-ring))'
   			},
         brand: {
-          brown: '#8B4513',
-          green: '#228B22',
-          beige: '#F5F5DC',
-          tan: '#D2B48C',
+          saddle: '#8B4513',
+          wood: '#D2691E',
+          soil: '#654321',
+          forest: '#228B22',
           moss: '#4A5D23',
+          wheat: '#F5F5DC',
+          tan: '#D2B48C',
+          leather: '#5C3317',
           indigo: '#4f46e5',
           slate: '#0f172a',
           light: '#f8fafc'
@@ -95,7 +97,8 @@ export default {
   		boxShadow: {
   			soft: '0 2px 15px -3px rgba(139, 69, 19, 0.07), 0 10px 20px -2px rgba(139, 69, 19, 0.04)',
   			glow: '0 0 20px -5px rgba(34, 139, 34, 0.4)',
-  			glass: '0 8px 32px 0 rgba(31, 38, 135, 0.07)'
+  			glass: '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+        wood: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06), 0 2px 4px 0 rgba(101, 67, 33, 0.1)'
   		},
   		keyframes: {
   			'fade-in': {

@@ -25,12 +25,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "POS Terminal", href: "/dashboard/pos", icon: Calculator },
-  { name: "Customers", href: "/dashboard/customers", icon: Users },
-  { name: "Order Tracking", href: "/dashboard/orders", icon: Scissors },
-  { name: "Measurements", href: "/dashboard/measurements", icon: Ruler },
-  { name: "Inventory", href: "/dashboard/inventory", icon: Package },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, color: "text-brand-forest" },
+  { name: "POS Terminal", href: "/dashboard/pos", icon: Calculator, color: "text-brand-saddle" },
+  { name: "Customers", href: "/dashboard/customers", icon: Users, color: "text-brand-moss" },
+  { name: "Order Tracking", href: "/dashboard/orders", icon: Scissors, color: "text-brand-wood" },
+  { name: "Measurements", href: "/dashboard/measurements", icon: Ruler, color: "text-brand-soil" },
+  { name: "Inventory", href: "/dashboard/inventory", icon: Package, color: "text-brand-forest" },
 ];
 export function AppSidebar(): JSX.Element {
   const location = useLocation();
@@ -42,21 +42,21 @@ export function AppSidebar(): JSX.Element {
     navigate("/");
   };
   return (
-    <Sidebar collapsible="none" className="border-r border-sidebar-border bg-sidebar-background min-w-[280px] w-[280px] h-screen shrink-0">
-      <SidebarHeader className="border-b border-sidebar-border px-8 py-10">
+    <Sidebar collapsible="none" className="wood-panel min-w-[280px] w-[280px] h-screen shrink-0 overflow-hidden">
+      <SidebarHeader className="border-b border-brand-saddle/10 px-8 py-10 bg-brand-tan/10">
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-black text-white shadow-xl">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-soil text-brand-wheat shadow-2xl">
             <Store className="h-7 w-7" />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-2xl font-serif font-black tracking-tighter text-black leading-tight truncate">LEAfrique</span>
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black/60">Atelier Suite v2.0</span>
+            <span className="text-2xl font-serif font-black tracking-tighter text-brand-soil leading-tight truncate">LEAfrique</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-saddle/60">Atelier Suite v2.0</span>
           </div>
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-4 py-8">
+      <SidebarContent className="px-4 py-8 custom-scrollbar">
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-[11px] font-black uppercase tracking-[0.3em] text-black/40 mb-4">
+          <SidebarGroupLabel className="px-4 text-[11px] font-black uppercase tracking-[0.3em] text-brand-soil/40 mb-4">
             Workshop Navigator
           </SidebarGroupLabel>
           <SidebarMenu className="space-y-2">
@@ -68,16 +68,16 @@ export function AppSidebar(): JSX.Element {
                     asChild
                     isActive={isActive}
                     className={cn(
-                      "group relative flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-200 h-14",
+                      "group relative flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-300 h-14",
                       isActive
-                        ? "bg-white text-black shadow-lg ring-1 ring-black/5"
-                        : "text-black/70 hover:bg-white/60 hover:text-black"
+                        ? "bg-brand-soil text-brand-wheat shadow-xl ring-1 ring-brand-saddle/20"
+                        : "text-brand-soil/70 hover:bg-brand-wheat/80 hover:text-brand-soil"
                     )}
                   >
                     <Link to={item.href}>
                       <item.icon className={cn(
                         "h-6 w-6 shrink-0 transition-colors",
-                        isActive ? "text-black" : "text-black/30 group-hover:text-black"
+                        isActive ? "text-brand-wheat" : cn("opacity-50 group-hover:opacity-100", item.color)
                       )} />
                       <span className="font-bold tracking-tight text-lg">{item.name}</span>
                     </Link>
@@ -88,20 +88,20 @@ export function AppSidebar(): JSX.Element {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-sidebar-border p-6 bg-black/5">
+      <SidebarFooter className="border-t border-brand-saddle/10 p-6 bg-brand-soil/5">
         <div className="flex items-center gap-4 mb-6 px-2">
-          <div className="h-11 w-11 shrink-0 rounded-2xl bg-black/10 flex items-center justify-center font-black text-black text-lg border border-black/5 shadow-sm uppercase">
+          <div className="h-11 w-11 shrink-0 rounded-2xl bg-brand-soil/10 flex items-center justify-center font-black text-brand-soil text-lg border border-brand-soil/10 shadow-sm uppercase">
             {userName?.[0]}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-black text-black truncate">{userName}</span>
-            <span className="text-[9px] text-black/50 uppercase font-black tracking-[0.2em]">Master Artisan</span>
+            <span className="text-sm font-black text-brand-soil truncate">{userName}</span>
+            <span className="text-[9px] text-brand-saddle/50 uppercase font-black tracking-[0.2em]">Master Artisan</span>
           </div>
         </div>
         <Button
           variant="ghost"
           onClick={handleLogout}
-          className="w-full justify-start gap-4 rounded-2xl text-black/60 hover:bg-black hover:text-white transition-all h-14 px-5"
+          className="w-full justify-start gap-4 rounded-2xl text-brand-soil/60 hover:bg-brand-soil hover:text-white transition-all h-14 px-5"
         >
           <LogOut className="h-6 w-6" />
           <span className="font-bold text-lg">Close Session</span>
