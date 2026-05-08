@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import type { Env } from './core-utils';
-import { CustomerEntity, OrderEntity, MeasurementEntity, GarmentEntity, OrderItemEntity, PaymentEntity } from "./entities";
+import { CustomerEntity, OrderEntity, MeasurementEntity, GarmentEntity, OrderItemEntity, PaymentEntity, InventoryItemEntity } from "./entities";
 import { ok, bad, notFound } from './core-utils';
-import type { OrderStatus, PaymentMethod } from "@shared/types";
+import type { OrderStatus, PaymentMethod, InventoryItem } from "@shared/types";
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
   // CUSTOMERS
   app.get('/api/customers', async (c) => {
@@ -41,6 +41,53 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     }
     return ok(c, { ...created, measurements: data.measurements || {} });
   });
+  // MEASUREMENTS
+  app.get('/api/measurements', async (c) => {
+    const { items } = await MeasurementEntity.list(c.env);
+    const { items: customers } = await CustomerEntity.list(c.env);
+    const mapped = items
+      .filter(m => !m.deletedAt)
+      .map(m => {
+        const cust = customers.find(cu => cu.id === m.customerId);
+        return { ...m, customerName: cust?.name || 'Unknown Client' };
+      })
+      .sort((a, b) => b.createdAt - a.createdAt);
+    return ok(c, mapped);
+  });
+  // INVENTORY
+  app.get('/api/inventory', async (c) => {
+    await InventoryItemEntity.ensureSeed(c.env);
+    const { items } = await InventoryItemEntity.list(c.env);
+    return ok(c, items.filter(i => !i.deletedAt));
+  });
+  app.post('/api/inventory', async (c) => {
+    const data = await c.req.json();
+    const now = Date.now();
+    const item = {
+      ...data,
+      id: crypto.randomUUID(),
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null
+    } as InventoryItem;
+    const created = await InventoryItemEntity.create(c.env, item);
+    return ok(c, created);
+  });
+  app.put('/api/inventory/:id', async (c) => {
+    const id = c.req.param('id');
+    const data = await c.req.json();
+    const entity = new InventoryItemEntity(c.env, id);
+    if (!await entity.exists()) return notFound(c);
+    const updated = await entity.mutate(s => ({ ...s, ...data, updatedAt: Date.now() }));
+    return ok(c, updated);
+  });
+  app.delete('/api/inventory/:id', async (c) => {
+    const id = c.req.param('id');
+    const entity = new InventoryItemEntity(c.env, id);
+    if (!await entity.exists()) return notFound(c);
+    await entity.mutate(s => ({ ...s, deletedAt: Date.now() }));
+    return ok(c, { id, deleted: true });
+  });
   // GARMENTS
   app.get('/api/garments', async (c) => {
     await GarmentEntity.ensureSeed(c.env);
@@ -59,7 +106,6 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     if (!data.customerId || !data.items?.length) return bad(c, 'customerId and items required');
     const now = Date.now();
     const orderId = crypto.randomUUID();
-    // Persist measurements if passed in notes JSON
     if (data.notes) {
       try {
         const parsed = JSON.parse(data.notes);
@@ -72,9 +118,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
             updatedAt: now
           });
         }
-      } catch (e) {
-        // Carry on if notes weren't JSON
-      }
+      } catch (e) {}
     }
     const orderItems = await Promise.all(data.items.map(async (item: any) => {
       const oi = {

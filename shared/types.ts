@@ -11,6 +11,7 @@ export interface BaseEntity {
 }
 export type OrderStatus = 'Pending' | 'In Progress' | 'Ready' | 'Delivered' | 'Cancelled';
 export type PaymentMethod = 'Cash' | 'Mobile Money' | 'Card';
+export type InventoryType = 'Fabric' | 'Garment' | 'Supply';
 export interface Measurements extends Record<string, number | undefined> {
   neck?: number;
   chest?: number;
@@ -23,6 +24,7 @@ export interface Measurements extends Record<string, number | undefined> {
 }
 export interface MeasurementRecord extends BaseEntity {
   customerId: string;
+  customerName?: string;
   values: Measurements;
   notes?: string;
 }
@@ -30,16 +32,26 @@ export interface Customer extends BaseEntity {
   name: string;
   email: string;
   phone: string;
-  measurements: Measurements; // Joined from latest MeasurementRecord for UI compatibility
+  measurements: Measurements;
   lastVisitAt?: number;
+}
+export interface InventoryItem extends BaseEntity {
+  name: string;
+  type: InventoryType;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  lowStockThreshold: number;
+  notes?: string;
 }
 export interface Garment extends BaseEntity {
   name: string;
   basePrice: number;
+  inventoryItemId?: string;
 }
 export interface GarmentItem {
   id: string;
-  type: string; 
+  type: string;
   fabric?: string;
   notes?: string;
   price: number;

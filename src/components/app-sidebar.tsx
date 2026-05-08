@@ -4,7 +4,9 @@ import {
   Calculator,
   Users,
   Scissors,
-  Store
+  Store,
+  Ruler,
+  Package
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -23,6 +25,8 @@ const navigation = [
   { name: "POS Terminal", href: "/pos", icon: Calculator },
   { name: "Customers", href: "/customers", icon: Users },
   { name: "Order Tracking", href: "/orders", icon: Scissors },
+  { name: "Measurements", href: "/measurements", icon: Ruler },
+  { name: "Inventory", href: "/inventory", icon: Package },
 ];
 export function AppSidebar(): JSX.Element {
   const location = useLocation();

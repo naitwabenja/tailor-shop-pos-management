@@ -5,13 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Link } from 'react-router-dom';
 import {
   Search,
   UserPlus,
@@ -22,7 +16,8 @@ import {
   Filter,
   Users,
   Ruler,
-  ShoppingBag
+  ShoppingBag,
+  ChevronRight
 } from 'lucide-react';
 import { format } from 'date-fns';
 import {
@@ -50,8 +45,8 @@ export default function CustomersPage() {
     c.phone.includes(searchTerm)
   ) || [];
   return (
-    <AppLayout>
-      <div className="space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="py-8 md:py-10 lg:py-12 space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Customer Directory</h1>
@@ -139,39 +134,15 @@ export default function CustomersPage() {
                     </div>
                     <div className="flex items-center gap-3 text-sm text-slate-600">
                       <Calendar className="h-4 w-4 text-slate-400" />
-                      Last seen {customer.lastVisitAt ? format(customer.lastVisitAt, 'MMM d, yyyy') : 'Never'}
+                      Joined {customer.createdAt ? format(customer.createdAt, 'MMM yyyy') : 'Recently'}
                     </div>
                   </div>
                   <div className="pt-4 flex gap-2 border-t border-slate-100">
-                    <Sheet>
-                      <SheetTrigger asChild>
-                        <Button variant="outline" size="sm" className="flex-1 rounded-lg gap-2 border-slate-200">
-                          <Ruler className="h-3.5 w-3.5" /> Measurements
-                        </Button>
-                      </SheetTrigger>
-                      <SheetContent className="sm:max-w-md">
-                        <SheetHeader className="mb-6">
-                          <SheetTitle className="text-2xl flex items-center gap-3">
-                            <Ruler className="h-6 w-6 text-indigo-600" />
-                            {customer.name}'s Records
-                          </SheetTitle>
-                        </SheetHeader>
-                        <div className="space-y-6">
-                          <div className="grid grid-cols-2 gap-4">
-                            {Object.entries(customer.measurements || {}).map(([key, val]) => (
-                              <div key={key} className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                                <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">{key}</p>
-                                <p className="text-2xl font-bold text-slate-900">{val}<span className="text-sm ml-1 text-slate-400 font-normal">in</span></p>
-                              </div>
-                            ))}
-                            {Object.keys(customer.measurements || {}).length === 0 && (
-                              <p className="col-span-2 text-center text-slate-400 py-8 italic">No measurement data available</p>
-                            )}
-                          </div>
-                          <Button className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700">Update Measurements</Button>
-                        </div>
-                      </SheetContent>
-                    </Sheet>
+                    <Button asChild variant="outline" size="sm" className="flex-1 rounded-lg gap-2 border-slate-200">
+                      <Link to="/measurements">
+                        <Ruler className="h-3.5 w-3.5" /> Data Archive
+                      </Link>
+                    </Button>
                     <Button variant="outline" size="sm" className="flex-1 rounded-lg border-slate-200">History</Button>
                   </div>
                 </CardContent>
@@ -186,10 +157,10 @@ export default function CustomersPage() {
           </div>
         )}
       </div>
-      <CustomerCreateDialog 
-        open={isCreateDialogOpen} 
-        onOpenChange={setIsCreateDialogOpen} 
+      <CustomerCreateDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
       />
-    </AppLayout>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 import { IndexedEntity } from "./core-utils";
-import type { Customer, Order, MeasurementRecord, Garment, OrderItem, Payment } from "@shared/types";
-import { MOCK_CUSTOMERS, MOCK_ORDERS, MOCK_GARMENTS } from "@shared/mock-data";
+import type { Customer, Order, MeasurementRecord, Garment, OrderItem, Payment, InventoryItem } from "@shared/types";
+import { MOCK_CUSTOMERS, MOCK_ORDERS, MOCK_GARMENTS, MOCK_INVENTORY } from "@shared/mock-data";
 export class CustomerEntity extends IndexedEntity<Customer> {
   static readonly entityName = "customer";
   static readonly indexName = "customers";
@@ -35,6 +35,22 @@ export class MeasurementEntity extends IndexedEntity<MeasurementRecord> {
       .sort((a, b) => b.createdAt - a.createdAt);
     return filtered[0] || null;
   }
+}
+export class InventoryItemEntity extends IndexedEntity<InventoryItem> {
+  static readonly entityName = "inventory_item";
+  static readonly indexName = "inventory_items";
+  static readonly initialState: InventoryItem = {
+    id: "",
+    name: "",
+    type: 'Supply',
+    quantity: 0,
+    unit: "pcs",
+    unitPrice: 0,
+    lowStockThreshold: 5,
+    createdAt: 0,
+    updatedAt: 0
+  };
+  static seedData = MOCK_INVENTORY;
 }
 export class GarmentEntity extends IndexedEntity<Garment> {
   static readonly entityName = "garment";

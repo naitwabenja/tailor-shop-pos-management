@@ -1,4 +1,4 @@
-import type { Customer, Order, User, Garment } from './types';
+import type { Customer, Order, User, Garment, InventoryItem } from './types';
 export const MOCK_USERS: User[] = [
   { id: 'u1', name: 'Master Tailor', createdAt: Date.now(), updatedAt: Date.now() }
 ];
@@ -8,6 +8,52 @@ export const MOCK_GARMENTS: Garment[] = [
   { id: 'gt3', name: 'Custom Trousers', basePrice: 200, createdAt: Date.now(), updatedAt: Date.now() },
   { id: 'gt4', name: 'Waistcoat', basePrice: 150, createdAt: Date.now(), updatedAt: Date.now() },
   { id: 'gt5', name: 'Dinner Jacket', basePrice: 600, createdAt: Date.now(), updatedAt: Date.now() },
+];
+export const MOCK_INVENTORY: InventoryItem[] = [
+  {
+    id: 'inv1',
+    name: 'Italian Wool (Navy)',
+    type: 'Fabric',
+    quantity: 45,
+    unit: 'meters',
+    unitPrice: 35.00,
+    lowStockThreshold: 10,
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  },
+  {
+    id: 'inv2',
+    name: 'Silk Lining (Black)',
+    type: 'Fabric',
+    quantity: 8,
+    unit: 'meters',
+    unitPrice: 12.50,
+    lowStockThreshold: 15, // Low stock state
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  },
+  {
+    id: 'inv3',
+    name: 'Horn Buttons (Set of 10)',
+    type: 'Supply',
+    quantity: 2,
+    unit: 'packs',
+    unitPrice: 18.00,
+    lowStockThreshold: 5, // Critical state
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  },
+  {
+    id: 'inv4',
+    name: 'Industrial Cotton Thread',
+    type: 'Supply',
+    quantity: 100,
+    unit: 'spools',
+    unitPrice: 2.20,
+    lowStockThreshold: 20,
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  }
 ];
 export const MOCK_CUSTOMERS: Customer[] = [
   {
@@ -37,13 +83,13 @@ export const MOCK_ORDERS: Order[] = [
     customerId: 'c1',
     customerName: 'James Harrison',
     items: [
-      { 
-        id: 'oi1', 
-        orderId: 'o1', 
-        garmentId: 'gt1', 
-        garmentName: 'Two-Piece Suit', 
-        quantity: 1, 
-        price: 850, 
+      {
+        id: 'oi1',
+        orderId: 'o1',
+        garmentId: 'gt1',
+        garmentName: 'Two-Piece Suit',
+        quantity: 1,
+        price: 850,
         fabric: 'Italian Wool',
         createdAt: Date.now(),
         updatedAt: Date.now()
@@ -56,5 +102,4 @@ export const MOCK_ORDERS: Order[] = [
     updatedAt: Date.now() - 86400000 * 3,
   }
 ];
-// Re-export for POS legacy compat
 export const MOCK_GARMENT_TYPES = MOCK_GARMENTS.map(g => ({ id: g.id, name: g.name, basePrice: g.basePrice }));

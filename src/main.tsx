@@ -15,6 +15,8 @@ import { HomePage } from '@/pages/HomePage'
 import POSPage from '@/pages/POSPage'
 import CustomersPage from '@/pages/CustomersPage'
 import OrdersPage from '@/pages/OrdersPage'
+import MeasurementsPage from '@/pages/MeasurementsPage'
+import InventoryPage from '@/pages/InventoryPage'
 import { AppLayout } from '@/components/layout/AppLayout';
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
@@ -28,27 +30,23 @@ const router = createBrowserRouter([
       },
       {
         path: "pos",
-        element: (
-          <>
-            <POSPage />
-          </>
-        ),
+        element: <POSPage />,
       },
       {
         path: "customers",
-        element: (
-          <>
-            <CustomersPage />
-          </>
-        ),
+        element: <CustomersPage />,
       },
       {
         path: "orders",
-        element: (
-          <>
-            <OrdersPage />
-          </>
-        ),
+        element: <OrdersPage />,
+      },
+      {
+        path: "measurements",
+        element: <MeasurementsPage />,
+      },
+      {
+        path: "inventory",
+        element: <InventoryPage />,
       }
     ]
   }
