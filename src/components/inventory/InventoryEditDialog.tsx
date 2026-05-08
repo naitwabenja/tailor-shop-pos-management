@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -61,21 +61,10 @@ export function InventoryEditDialog({ open, onOpenChange, item }: InventoryEditD
       notes: item.notes || "",
     },
   });
-  useEffect(() => {
-    form.reset({
-      name: item.name,
-      type: item.type,
-      quantity: item.quantity,
-      unit: item.unit,
-      unitPrice: item.unitPrice,
-      lowStockThreshold: item.lowStockThreshold,
-      notes: item.notes || "",
-    });
-  }, [item, form]); // Included form in dependency array to resolve lint warning
   const onSubmit = async (values: InventoryFormValues) => {
     try {
       await updateItem.mutateAsync({ id: item.id, ...values });
-      toast.success('Atelier stock updated');
+      toast.success('Inventory item updated successfully');
       form.reset();
       onOpenChange(false);
     } catch (e) {
@@ -84,28 +73,26 @@ export function InventoryEditDialog({ open, onOpenChange, item }: InventoryEditD
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] rounded-[2rem] border-none shadow-2xl">
+      <DialogContent className="sm:max-w-[500px] rounded-3xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-serif font-bold flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-brand-brown/10 text-brand-brown flex items-center justify-center">
-              <Edit className="h-5 w-5" />
-            </div>
-            Update Stock Item
+          <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+            <Edit className="h-6 w-6 text-indigo-600" />
+            Edit Atelier Stock
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground font-medium">
-            Refine the details for this workshop material in the master inventory.
+          <DialogDescription>
+            Update the details for this inventory item in the master stock list.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 py-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">Item Designation</FormLabel>
+                  <FormLabel>Item Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Italian Wool (Navy)" {...field} className="rounded-xl h-12 bg-background/50 border-border/50" />
+                    <Input placeholder="e.g. Italian Wool (Navy)" {...field} className="rounded-xl" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,14 +104,14 @@ export function InventoryEditDialog({ open, onOpenChange, item }: InventoryEditD
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">Registry Category</FormLabel>
+                    <FormLabel>Category</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="rounded-xl h-12 bg-background/50 border-border/50">
+                        <SelectTrigger className="rounded-xl">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="rounded-xl border-border/50">
+                      <SelectContent>
                         <SelectItem value="Fabric">Fabric</SelectItem>
                         <SelectItem value="Garment">Garment</SelectItem>
                         <SelectItem value="Supply">Supply</SelectItem>
@@ -139,9 +126,9 @@ export function InventoryEditDialog({ open, onOpenChange, item }: InventoryEditD
                 name="unit"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">Measure Unit</FormLabel>
+                    <FormLabel>Unit</FormLabel>
                     <FormControl>
-                      <Input placeholder="meters, pcs, packs" {...field} className="rounded-xl h-12 bg-background/50 border-border/50" />
+                      <Input placeholder="meters, pcs, packs" {...field} className="rounded-xl" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,13 +141,13 @@ export function InventoryEditDialog({ open, onOpenChange, item }: InventoryEditD
                 name="quantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">Stock Level</FormLabel>
+                    <FormLabel>Current Stock</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         {...field}
                         onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
-                        className="rounded-xl h-12 bg-background/50 border-border/50 font-mono font-bold"
+                        className="rounded-xl"
                       />
                     </FormControl>
                     <FormMessage />
@@ -172,14 +159,14 @@ export function InventoryEditDialog({ open, onOpenChange, item }: InventoryEditD
                 name="unitPrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">Acquisition Cost</FormLabel>
+                    <FormLabel>Unit Cost</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.01"
                         {...field}
                         onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
-                        className="rounded-xl h-12 bg-background/50 border-border/50 font-mono font-bold"
+                        className="rounded-xl"
                       />
                     </FormControl>
                     <FormMessage />
@@ -192,13 +179,13 @@ export function InventoryEditDialog({ open, onOpenChange, item }: InventoryEditD
               name="lowStockThreshold"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">Alert Threshold</FormLabel>
+                  <FormLabel>Low Stock Warning Threshold</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       {...field}
                       onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
-                      className="rounded-xl h-12 bg-background/50 border-border/50 font-mono font-bold"
+                      className="rounded-xl"
                     />
                   </FormControl>
                   <FormMessage />
@@ -210,24 +197,24 @@ export function InventoryEditDialog({ open, onOpenChange, item }: InventoryEditD
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">Artisan Notes</FormLabel>
+                  <FormLabel>Supplier/Design Notes</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="e.g. Sourced from preferred supplier..." {...field} className="rounded-xl resize-none h-24 bg-background/50 border-border/50" />
+                    <Textarea placeholder="e.g. Sourced from Lagos Market..." {...field} className="rounded-xl resize-none h-20" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <DialogFooter className="pt-6">
+            <DialogFooter className="pt-4">
               <Button
                 type="submit"
-                className="w-full h-14 bg-brand-brown hover:bg-brand-green rounded-2xl text-lg font-bold shadow-xl shadow-brand-brown/10 transition-all"
+                className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-lg font-bold"
                 disabled={updateItem.isPending}
               >
                 {updateItem.isPending ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  "Update Workshop Registry"
+                  "Update Stock Item"
                 )}
               </Button>
             </DialogFooter>
