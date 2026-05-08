@@ -1,19 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useMeasurementHistory } from '@/hooks/use-api';
+import { useMeasurementHistory, useImportMeasurements } from '@/hooks/use-api';
 import { format } from 'date-fns';
-import { Search, History, ChevronRight, Loader2, FileSpreadsheet } from 'lucide-react';
+import { Search, History, Loader2, FileSpreadsheet, Upload, Download } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 export default function MeasurementsPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: history, isLoading } = useMeasurementHistory();
+  const importMutation = useImportMeasurements();
   const filteredHistory = history?.filter(h =>
     h.customerName?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
+  const handleDownloadTemplate = () => {
+    const headers = ['Client Name', 'Phone', 'Neck', 'Chest', 'Waist', 'Hips', 'Shoulder', 'Sleeve', 'Inseam', 'Length', 'Date', 'Notes'];
+    const csvContent = headers.join(',');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `leafrique-import-template.csv`);
+    link.click();
+    toast.success('Import template downloaded');
+  };
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const text = e.target?.result as string;
+      const [headerLine, ...lines] = text.split('\n').filter(l => l.trim() !== '');
+      const headers = headerLine.split(',').map(h => h.trim());
+      const jsonData = lines.map(line => {
+        const values = line.split(',').map(v => v.trim());
+        const obj: any = {};
+        headers.forEach((header, index) => {
+          // Map display headers to internal keys
+          const keyMap: Record<string, string> = {
+            'Client Name': 'customerName',
+            'Phone': 'phone',
+            'Neck': 'neck',
+            'Chest': 'chest',
+            'Waist': 'waist',
+            'Hips': 'hips',
+            'Shoulder': 'shoulder',
+            'Sleeve': 'sleeve',
+            'Inseam': 'inseam',
+            'Length': 'length',
+            'Date': 'date',
+            'Notes': 'notes'
+          };
+          obj[keyMap[header] || header] = values[index];
+        });
+        return obj;
+      });
+      try {
+        const result = await importMutation.mutateAsync(jsonData);
+        toast.success(`Import complete: ${result.success} records added, ${result.failed} failed.`);
+        if (result.errors.length > 0) {
+          console.error('Import Errors:', result.errors);
+        }
+      } catch (err) {
+        toast.error('Failed to process CSV file');
+      }
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+    reader.readAsText(file);
+  };
   const handleExportCSV = () => {
     if (!history || history.length === 0) {
       toast.error('No measurement records available to export');
@@ -33,19 +90,13 @@ export default function MeasurementsPage() {
       format(record.createdAt, 'yyyy-MM-dd HH:mm'),
       (record.notes || '').replace(/,/g, ';')
     ]);
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
     link.setAttribute('download', `leafrique-measurements-${format(new Date(), 'yyyy-MM-dd')}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
     toast.success('Atelier data archive exported successfully');
   };
   return (
@@ -56,8 +107,8 @@ export default function MeasurementsPage() {
             <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Measurement Archives</h1>
             <p className="text-slate-500">LEAfrique's historical record of all client fittings</p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="relative w-full md:w-80">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative w-full md:w-64">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Search by client name..."
@@ -66,12 +117,25 @@ export default function MeasurementsPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button 
-              variant="outline" 
+            <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".csv" className="hidden" />
+            <Button
+              variant="outline"
+              className="rounded-xl font-bold gap-2 h-10 border-slate-200 text-slate-600 hover:bg-slate-50"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importMutation.isPending}
+            >
+              {importMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              Import CSV
+            </Button>
+            <Button
+              variant="outline"
               className="rounded-xl font-bold gap-2 h-10 border-indigo-200 text-indigo-600 hover:bg-indigo-50"
               onClick={handleExportCSV}
             >
-              <FileSpreadsheet className="h-4 w-4" /> Export CSV
+              <Download className="h-4 w-4" /> Export
+            </Button>
+            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-slate-400 hover:text-indigo-600" onClick={handleDownloadTemplate}>
+              <Download className="h-4 w-4" />
             </Button>
           </div>
         </div>

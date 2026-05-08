@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { persist } from 'zustand/middleware';
-export type CurrencyCode = 'USD' | 'EUR' | 'NGN' | 'GBP';
+export type CurrencyCode = 'USD' | 'EUR' | 'NGN' | 'GBP' | 'KES';
 interface User {
   id: string;
   email: string;

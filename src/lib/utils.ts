@@ -9,6 +9,7 @@ export function formatPrice(amount: number, currency: string = 'USD'): string {
     EUR: '€',
     NGN: '₦',
     GBP: '£',
+    KES: 'KSh',
   };
   const symbol = symbols[currency] || '$';
   const formatted = Math.abs(amount).toLocaleString(undefined, {

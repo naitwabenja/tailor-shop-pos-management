@@ -34,10 +34,10 @@ import { toast } from 'sonner';
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
   type: z.enum(['Fabric', 'Garment', 'Supply']),
-  quantity: z.coerce.number().min(0),
+  quantity: z.number().min(0),
   unit: z.string().min(1, "Unit is required"),
-  unitPrice: z.coerce.number().min(0),
-  lowStockThreshold: z.coerce.number().min(0),
+  unitPrice: z.number().min(0),
+  lowStockThreshold: z.number().min(0),
   notes: z.string().optional(),
 });
 type InventoryFormValues = z.infer<typeof formSchema>;
@@ -141,7 +141,12 @@ export function InventoryCreateDialog({ open, onOpenChange }: InventoryCreateDia
                   <FormItem>
                     <FormLabel>Opening Stock</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} className="rounded-xl" />
+                      <Input 
+                        type="number" 
+                        {...field} 
+                        onChange={e => field.onChange(parseFloat(e.target.value) || 0)} 
+                        className="rounded-xl" 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +159,13 @@ export function InventoryCreateDialog({ open, onOpenChange }: InventoryCreateDia
                   <FormItem>
                     <FormLabel>Unit Cost</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" {...field} className="rounded-xl" />
+                      <Input 
+                        type="number" 
+                        step="0.01" 
+                        {...field} 
+                        onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
+                        className="rounded-xl" 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -168,7 +179,12 @@ export function InventoryCreateDialog({ open, onOpenChange }: InventoryCreateDia
                 <FormItem>
                   <FormLabel>Low Stock Warning Threshold</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} className="rounded-xl" />
+                    <Input 
+                      type="number" 
+                      {...field} 
+                      onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
+                      className="rounded-xl" 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

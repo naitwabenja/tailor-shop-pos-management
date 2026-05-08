@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import type { Env } from './core-utils';
 import { CustomerEntity, OrderEntity, MeasurementEntity, GarmentEntity, OrderItemEntity, PaymentEntity, InventoryItemEntity } from "./entities";
 import { ok, bad, notFound } from './core-utils';
-import type { OrderStatus, PaymentMethod, InventoryItem } from "@shared/types";
+import type { OrderStatus, PaymentMethod, InventoryItem, Measurements } from "@shared/types";
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
   // CUSTOMERS
   app.get('/api/customers', async (c) => {
@@ -53,6 +53,51 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       })
       .sort((a, b) => b.createdAt - a.createdAt);
     return ok(c, mapped);
+  });
+  app.post('/api/measurements/import', async (c) => {
+    const rows = await c.req.json() as any[];
+    if (!Array.isArray(rows)) return bad(c, 'Expected array of measurement rows');
+    const { items: customers } = await CustomerEntity.list(c.env);
+    const results = { success: 0, failed: 0, errors: [] as string[] };
+    const now = Date.now();
+    for (const row of rows) {
+      try {
+        // Match customer by ID, Phone (exact), or Name (fuzzy)
+        const customer = customers.find(cust => 
+          cust.id === row.customerId || 
+          cust.phone === row.phone || 
+          cust.name.toLowerCase() === (row.customerName || row.name || "").toLowerCase()
+        );
+        if (!customer) {
+          results.failed++;
+          results.errors.push(`Customer not found for row: ${row.customerName || row.name || 'Unknown'}`);
+          continue;
+        }
+        const measurements: Measurements = {
+          neck: parseFloat(row.neck) || undefined,
+          chest: parseFloat(row.chest) || undefined,
+          waist: parseFloat(row.waist) || undefined,
+          hips: parseFloat(row.hips) || undefined,
+          shoulder: parseFloat(row.shoulder) || undefined,
+          sleeve: parseFloat(row.sleeve) || undefined,
+          inseam: parseFloat(row.inseam) || undefined,
+          length: parseFloat(row.length) || undefined,
+        };
+        await MeasurementEntity.create(c.env, {
+          id: crypto.randomUUID(),
+          customerId: customer.id,
+          values: measurements,
+          notes: row.notes || "Imported via CSV",
+          createdAt: row.date ? new Date(row.date).getTime() : now,
+          updatedAt: now
+        });
+        results.success++;
+      } catch (err) {
+        results.failed++;
+        results.errors.push(`Error processing row: ${err instanceof Error ? err.message : String(err)}`);
+      }
+    }
+    return ok(c, results);
   });
   // INVENTORY
   app.get('/api/inventory', async (c) => {

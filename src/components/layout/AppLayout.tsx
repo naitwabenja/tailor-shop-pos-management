@@ -53,7 +53,7 @@ export function AppLayout({
           </div>
           <div className="flex items-center gap-3">
             <Select value={currency} onValueChange={(v) => setCurrency(v as CurrencyCode)}>
-              <SelectTrigger className="w-[80px] h-9 rounded-lg border-slate-200">
+              <SelectTrigger className="w-[85px] h-9 rounded-lg border-slate-200">
                 <SelectValue placeholder="USD" />
               </SelectTrigger>
               <SelectContent>
@@ -61,6 +61,7 @@ export function AppLayout({
                 <SelectItem value="EUR">EUR (€)</SelectItem>
                 <SelectItem value="NGN">NGN (₦)</SelectItem>
                 <SelectItem value="GBP">GBP (£)</SelectItem>
+                <SelectItem value="KES">KES (KSh)</SelectItem>
               </SelectContent>
             </Select>
             <ThemeToggle className="static" />

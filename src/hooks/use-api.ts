@@ -40,6 +40,19 @@ export function useCreateCustomer() {
     },
   });
 }
+export function useImportMeasurements() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any[]) => api<{ success: number; failed: number; errors: string[] }>('/api/measurements/import', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['measurements'] });
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+    },
+  });
+}
 export function useCreateInventoryItem() {
   const queryClient = useQueryClient();
   return useMutation({
