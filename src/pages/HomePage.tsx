@@ -13,10 +13,12 @@ import {
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import { useOrders } from '@/hooks/use-api';
+import { useAppStore } from '@/store/use-app-store';
 export function HomePage() {
   const { data: ordersData, isLoading } = useOrders();
+  const currency = useAppStore((s) => s.currency);
   const orders = ordersData?.items || [];
   const pendingCount = orders.filter(o => o.status === 'Pending').length;
   const inProgressCount = orders.filter(o => o.status === 'In Progress').length;
@@ -27,14 +29,14 @@ export function HomePage() {
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-12 text-white shadow-2xl">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Atelier Dashboard</h1>
+            <h1 className="text-4xl font-bold tracking-tight">LEAfrique Dashboard</h1>
             <p className="mt-3 text-indigo-100 max-w-lg text-lg">
-              Manage your craftsmanship. You have {pendingCount} new assignments and {inProgressCount} garments being tailored.
+              Manage your craftsmanship at LEAfrique. You have {pendingCount} new assignments and {inProgressCount} garments being tailored.
             </p>
           </div>
           <div className="flex gap-4">
             <Button asChild size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 font-bold px-8 rounded-2xl shadow-xl border-none">
-              <Link to="/pos">New Commission</Link>
+              <Link to="/dashboard/pos">New Commission</Link>
             </Button>
           </div>
         </div>
@@ -48,7 +50,7 @@ export function HomePage() {
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-extrabold text-slate-900">${totalRevenue.toLocaleString()}</div>
+            <div className="text-3xl font-extrabold text-slate-900">{formatPrice(totalRevenue, currency)}</div>
             <p className="text-xs text-slate-500 mt-1">Across all active orders</p>
           </CardContent>
         </Card>
@@ -69,7 +71,7 @@ export function HomePage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-extrabold text-slate-900">{inProgressCount}</div>
-            <p className="text-xs text-slate-500 mt-1">Under craftsman's needle</p>
+            <p className="text-xs text-slate-500 mt-1">Under LEAfrique craftsmanship</p>
           </CardContent>
         </Card>
         <Card className="border-none shadow-soft">
@@ -88,10 +90,10 @@ export function HomePage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-xl font-bold">Recent Commissions</CardTitle>
-              <CardDescription>Latest orders entered into the system</CardDescription>
+              <CardDescription>Latest orders entered into LEAfrique system</CardDescription>
             </div>
             <Button variant="ghost" size="sm" asChild className="font-bold text-indigo-600 hover:text-indigo-700">
-              <Link to="/orders" className="flex items-center gap-1">
+              <Link to="/dashboard/orders" className="flex items-center gap-1">
                 Queue Manager <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -103,7 +105,7 @@ export function HomePage() {
           ) : orders.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-slate-400 space-y-4">
               <Sparkles className="h-12 w-12 opacity-20" />
-              <p className="text-lg">No recent activity found. Start a new commission!</p>
+              <p className="text-lg">No recent activity found. Start a new LEAfrique commission!</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
@@ -132,8 +134,8 @@ export function HomePage() {
                     )}>
                       {order.status}
                     </Badge>
-                    <div className="text-right min-w-[80px]">
-                      <div className="font-extrabold text-slate-900 text-lg">${order.total.toFixed(0)}</div>
+                    <div className="text-right min-w-[100px]">
+                      <div className="font-extrabold text-slate-900 text-lg">{formatPrice(order.total, currency)}</div>
                     </div>
                   </div>
                 </div>

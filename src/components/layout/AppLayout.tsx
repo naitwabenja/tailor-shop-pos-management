@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLocation, Outlet } from "react-router-dom";
+import { useLocation, Outlet, useNavigate } from "react-router-dom";
+import { useAppStore } from "@/store/use-app-store";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CurrencyCode } from "@/store/use-app-store";
 type AppLayoutProps = {
   children?: React.ReactNode;
   container?: boolean;
@@ -21,6 +30,16 @@ export function AppLayout({
   fullBleed = false
 }: AppLayoutProps): JSX.Element {
   const location = useLocation();
+  const navigate = useNavigate();
+  const isAuthenticated = useAppStore((s) => s.isAuthenticated);
+  const currency = useAppStore((s) => s.currency);
+  const setCurrency = useAppStore((s) => s.setCurrency);
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+  if (!isAuthenticated) return null;
   return (
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />
@@ -29,10 +48,23 @@ export function AppLayout({
           <div className="flex flex-1 items-center gap-4">
             <SidebarTrigger className="lg:hidden" />
             <div className="hidden lg:block">
-               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Atelier Operations System</p>
+               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">LEAfrique Tailors</p>
             </div>
           </div>
-          <ThemeToggle className="static" />
+          <div className="flex items-center gap-3">
+            <Select value={currency} onValueChange={(v) => setCurrency(v as CurrencyCode)}>
+              <SelectTrigger className="w-[80px] h-9 rounded-lg border-slate-200">
+                <SelectValue placeholder="USD" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="USD">USD ($)</SelectItem>
+                <SelectItem value="EUR">EUR (€)</SelectItem>
+                <SelectItem value="NGN">NGN (₦)</SelectItem>
+                <SelectItem value="GBP">GBP (£)</SelectItem>
+              </SelectContent>
+            </Select>
+            <ThemeToggle className="static" />
+          </div>
         </header>
         <AnimatePresence mode="wait">
           <motion.main

@@ -3,20 +3,25 @@ import { Order, OrderItem } from '@shared/types';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Printer, Scissors } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
+import { useAppStore } from '@/store/use-app-store';
 interface ReceiptViewProps {
   order: Order;
 }
 export function ReceiptView({ order }: ReceiptViewProps) {
+  const currency = useAppStore((s) => s.currency);
   const handlePrint = () => {
     window.print();
   };
+  const subtotal = order.total / 1.05;
+  const tax = order.total - subtotal;
   return (
     <div className="bg-white p-8 max-w-md mx-auto shadow-sm border border-slate-100 print:shadow-none print:border-none print:p-0">
       <div className="text-center space-y-2 mb-8">
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white mb-2">
           <Scissors className="h-6 w-6" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tighter uppercase italic">Stitch</h1>
+        <h1 className="text-2xl font-bold tracking-tighter uppercase italic">LEAfrique</h1>
         <p className="text-[10px] uppercase tracking-widest text-slate-500">Master Tailors & Clothiers</p>
       </div>
       <div className="border-t border-b border-dashed border-slate-200 py-4 mb-6 space-y-1">
@@ -39,7 +44,7 @@ export function ReceiptView({ order }: ReceiptViewProps) {
           <div key={idx} className="space-y-1">
             <div className="flex justify-between font-bold text-sm">
               <span>{item.garmentName}</span>
-              <span>${item.price.toFixed(2)}</span>
+              <span>{formatPrice(item.price, currency)}</span>
             </div>
             {item.fabric && (
               <p className="text-xs text-slate-500 italic">Fabric: {item.fabric}</p>
@@ -53,20 +58,20 @@ export function ReceiptView({ order }: ReceiptViewProps) {
       <div className="border-t border-slate-200 pt-4 space-y-2">
         <div className="flex justify-between text-sm">
           <span className="text-slate-500">Subtotal</span>
-          <span>${(order.total / 1.05).toFixed(2)}</span>
+          <span>{formatPrice(subtotal, currency)}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-slate-500">Tax (5%)</span>
-          <span>${(order.total - (order.total / 1.05)).toFixed(2)}</span>
+          <span>{formatPrice(tax, currency)}</span>
         </div>
         <div className="flex justify-between text-lg font-bold pt-2 border-t border-slate-100">
           <span>Total</span>
-          <span>${order.total.toFixed(2)}</span>
+          <span>{formatPrice(order.total, currency)}</span>
         </div>
       </div>
       <div className="mt-12 text-center space-y-4">
         <p className="text-[10px] text-slate-400 leading-relaxed">
-          Thank you for choosing Stitch.<br />
+          Thank you for choosing LEAfrique.<br />
           Your bespoke garment will be ready by {format(order.dueDate, 'MMM dd')}.
         </p>
         <Button

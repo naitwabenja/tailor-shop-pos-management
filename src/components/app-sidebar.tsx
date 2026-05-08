@@ -6,9 +6,10 @@ import {
   Scissors,
   Store,
   Ruler,
-  Package
+  Package,
+  LogOut
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -18,18 +19,27 @@ import {
   SidebarMenuButton,
   SidebarGroup,
   SidebarGroupLabel,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/store/use-app-store";
 const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "POS Terminal", href: "/pos", icon: Calculator },
-  { name: "Customers", href: "/customers", icon: Users },
-  { name: "Order Tracking", href: "/orders", icon: Scissors },
-  { name: "Measurements", href: "/measurements", icon: Ruler },
-  { name: "Inventory", href: "/inventory", icon: Package },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "POS Terminal", href: "/dashboard/pos", icon: Calculator },
+  { name: "Customers", href: "/dashboard/customers", icon: Users },
+  { name: "Order Tracking", href: "/dashboard/orders", icon: Scissors },
+  { name: "Measurements", href: "/dashboard/measurements", icon: Ruler },
+  { name: "Inventory", href: "/dashboard/inventory", icon: Package },
 ];
 export function AppSidebar(): JSX.Element {
   const location = useLocation();
+  const navigate = useNavigate();
+  const logout = useAppStore((s) => s.logout);
+  const user = useAppStore((s) => s.user);
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
   return (
     <Sidebar className="border-r border-slate-200 dark:border-slate-800">
       <SidebarHeader className="border-b border-slate-200 dark:border-slate-800 px-6 py-4">
@@ -38,8 +48,8 @@ export function AppSidebar(): JSX.Element {
             <Store className="h-6 w-6" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-tight">Stitch</span>
-            <span className="text-xs font-medium text-slate-500">Master Tailors</span>
+            <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-tight">LEAfrique</span>
+            <span className="text-xs font-medium text-slate-500">Tailors & Clothiers</span>
           </div>
         </div>
       </SidebarHeader>
@@ -80,6 +90,25 @@ export function AppSidebar(): JSX.Element {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="border-t border-slate-100 p-4">
+        <div className="flex items-center gap-3 mb-4 px-2">
+          <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600">
+            {user?.name?.[0]}
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs font-bold text-slate-900">{user?.name}</span>
+            <span className="text-[10px] text-slate-400 uppercase tracking-tighter">Atelier Lead</span>
+          </div>
+        </div>
+        <Button 
+          variant="ghost" 
+          onClick={handleLogout}
+          className="w-full justify-start gap-3 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors h-11"
+        >
+          <LogOut className="h-5 w-5" />
+          <span className="font-bold">Exit Session</span>
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

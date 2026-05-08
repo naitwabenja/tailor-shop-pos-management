@@ -2,9 +2,11 @@ import React from 'react';
 import { ShoppingCart, CreditCard, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePOSStore } from '@/store/use-pos-store';
+import { useAppStore } from '@/store/use-app-store';
 import { useCreateOrder, useCustomers } from '@/hooks/use-api';
 import { useShallow } from 'zustand/react/shallow';
 import { toast } from 'sonner';
+import { formatPrice } from '@/lib/utils';
 import { CartItem } from './CartItem';
 import { Order } from '@shared/types';
 interface OrderSummaryProps {
@@ -15,6 +17,7 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
   const selectedCustomerId = usePOSStore((s) => s.selectedCustomerId);
   const draftMeasurements = usePOSStore(useShallow((s) => s.draftMeasurements));
   const clearCart = usePOSStore((s) => s.clearCart);
+  const currency = useAppStore((s) => s.currency);
   const { data: customersData } = useCustomers();
   const selectedCustomer = customersData?.items.find(c => c.id === selectedCustomerId);
   const createOrder = useCreateOrder();
@@ -43,7 +46,7 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
         dueDate: Date.now() + 86400000 * 14,
         notes: JSON.stringify({ measurements: draftMeasurements })
       });
-      toast.success('Order created successfully!');
+      toast.success('LEAfrique order created successfully!');
       if (onOrderComplete) {
         onOrderComplete(newOrder);
       }
@@ -58,7 +61,7 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
       <div className="p-6 flex-1 flex flex-col overflow-hidden">
         <div className="flex items-center gap-2 mb-6">
           <ShoppingCart className="h-6 w-6 text-indigo-600" />
-          <h2 className="text-2xl font-bold">Order Summary</h2>
+          <h2 className="text-2xl font-bold text-slate-900">Checkout</h2>
         </div>
         <div className="flex-1 space-y-4 overflow-y-auto pr-2">
           {items.length === 0 ? (
@@ -81,15 +84,15 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
           )}
           <div className="flex items-center justify-between text-slate-600 text-sm font-medium">
             <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>{formatPrice(subtotal, currency)}</span>
           </div>
           <div className="flex items-center justify-between text-slate-600 text-sm font-medium">
             <span>Tax (5%)</span>
-            <span>${tax.toFixed(2)}</span>
+            <span>{formatPrice(tax, currency)}</span>
           </div>
           <div className="flex items-center justify-between text-2xl font-bold text-slate-900 pt-2">
             <span>Total</span>
-            <span>${total.toFixed(2)}</span>
+            <span>{formatPrice(total, currency)}</span>
           </div>
         </div>
       </div>

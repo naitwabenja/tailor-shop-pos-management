@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { persist } from 'zustand/middleware';
-export type CurrencyCode = 'USD' | 'EUR' | 'NGN' | 'GBP' | 'KES';
+export type CurrencyCode = 'USD' | 'EUR' | 'NGN' | 'GBP';
 interface User {
   id: string;
   email: string;
@@ -24,17 +24,15 @@ export const useAppStore = create<AppState & AppActions>()(
       isAuthenticated: false,
       currency: 'USD',
       login: (email) =>
-        set((state: AppState) => {
+        set((state) => {
           state.user = { id: '1', email, name: 'Lead Tailor' };
           state.isAuthenticated = true;
         }),
-      logout: () => {
-        localStorage.removeItem('leafrique-app-storage');
+      logout: () =>
         set((state) => {
           state.user = null;
           state.isAuthenticated = false;
-        });
-      },
+        }),
       setCurrency: (currency) =>
         set((state) => {
           state.currency = currency;

@@ -4,6 +4,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useInventory, useUpdateInventoryItem } from '@/hooks/use-api';
+import { useAppStore } from '@/store/use-app-store';
+import { formatPrice } from '@/lib/utils';
+import { InventoryCreateDialog } from '@/components/inventory/InventoryCreateDialog';
 import {
   Package,
   Search,
@@ -18,6 +21,8 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 export default function InventoryPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const currency = useAppStore((s) => s.currency);
   const { data: inventory, isLoading } = useInventory();
   const updateStock = useUpdateInventoryItem();
   const filteredItems = inventory?.filter(i =>
@@ -29,7 +34,7 @@ export default function InventoryPage() {
   const handleQuickRestock = async (id: string, current: number) => {
     try {
       await updateStock.mutateAsync({ id, quantity: current + 10 });
-      toast.success('Inventory updated (+10)');
+      toast.success(`Inventory updated: ${formatPrice(10, currency)} worth added to stock`);
     } catch (e) {
       toast.error('Failed to update stock');
     }
@@ -39,8 +44,8 @@ export default function InventoryPage() {
       <div className="py-8 md:py-10 lg:py-12 space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Inventory Management</h1>
-            <p className="text-slate-500">Track fabrics, notions, and workshop supplies</p>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Atelier Inventory</h1>
+            <p className="text-slate-500">Track fabrics, notions, and workshop supplies for LEAfrique</p>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative w-full md:w-64">
@@ -52,7 +57,10 @@ export default function InventoryPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button className="bg-indigo-600 hover:bg-indigo-700 h-10 rounded-xl gap-2 font-bold shadow-lg shadow-indigo-100">
+            <Button 
+              className="bg-indigo-600 hover:bg-indigo-700 h-10 rounded-xl gap-2 font-bold shadow-lg shadow-indigo-100"
+              onClick={() => setIsCreateOpen(true)}
+            >
               <Plus className="h-4 w-4" /> Add Item
             </Button>
           </div>
@@ -95,7 +103,7 @@ export default function InventoryPage() {
         <Card className="border-none shadow-soft overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b border-slate-100">
             <CardTitle className="text-lg font-bold">Master Stock List</CardTitle>
-            <CardDescription>Real-time availability across all workshops</CardDescription>
+            <CardDescription>Real-time availability across LEAfrique workshops</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {isLoading ? (
@@ -151,7 +159,7 @@ export default function InventoryPage() {
                             {item.quantity} <span className="text-[10px] font-normal text-slate-400 ml-1">{item.unit}</span>
                           </td>
                           <td className="px-4 py-4 text-right font-mono text-slate-500">
-                            ${item.unitPrice.toFixed(2)}
+                            {formatPrice(item.unitPrice, currency)}
                           </td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
@@ -179,6 +187,7 @@ export default function InventoryPage() {
           </CardContent>
         </Card>
       </div>
+      <InventoryCreateDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
     </div>
   );
 }

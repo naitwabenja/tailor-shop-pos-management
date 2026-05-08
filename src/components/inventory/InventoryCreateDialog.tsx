@@ -34,10 +34,10 @@ import { toast } from 'sonner';
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
   type: z.enum(['Fabric', 'Garment', 'Supply']),
-  quantity: z.number().min(0),
+  quantity: z.coerce.number().min(0),
   unit: z.string().min(1, "Unit is required"),
-  unitPrice: z.number().min(0),
-  lowStockThreshold: z.number().min(0),
+  unitPrice: z.coerce.number().min(0),
+  lowStockThreshold: z.coerce.number().min(0),
   notes: z.string().optional(),
 });
 type InventoryFormValues = z.infer<typeof formSchema>;
@@ -62,149 +62,146 @@ export function InventoryCreateDialog({ open, onOpenChange }: InventoryCreateDia
   const onSubmit = async (values: InventoryFormValues) => {
     try {
       await createItem.mutateAsync(values);
-      toast.success("Stock item secured in workshop");
+      toast.success("Stock item added to atelier");
       form.reset();
       onOpenChange(false);
     } catch (e) {
-      toast.error("Failed to register inventory item");
+      toast.error("Failed to add inventory item");
     }
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] border-none shadow-2xl overflow-hidden p-0">
-        <div className="bg-brand-brown h-2 w-full" />
-        <div className="p-10 space-y-6">
-          <DialogHeader>
-            <DialogTitle className="text-3xl font-serif font-bold flex items-center gap-4 text-brand-brown italic">
-              <div className="h-12 w-12 rounded-2xl bg-brand-brown/10 text-brand-brown flex items-center justify-center shadow-sm">
-                <PackagePlus className="h-6 w-6" />
-              </div>
-              Stock Registry
-            </DialogTitle>
-            <DialogDescription className="text-brand-brown/60 font-medium">
-              Register new atelier supplies or fabrics into the workshop database.
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+      <DialogContent className="sm:max-w-[500px] rounded-3xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+            <PackagePlus className="h-6 w-6 text-indigo-600" />
+            Add Atelier Stock
+          </DialogTitle>
+          <DialogDescription>
+            Register new fabrics or supplies in the master inventory list.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Item Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Italian Wool (Navy)" {...field} className="rounded-xl" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="name"
+                name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-brand-brown/40 ml-1">Item Designation</FormLabel>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="rounded-xl">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Fabric">Fabric</SelectItem>
+                        <SelectItem value="Garment">Garment</SelectItem>
+                        <SelectItem value="Supply">Supply</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="unit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Unit</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Italian Wool (Navy)" {...field} className="rounded-2xl h-12 bg-white/50 border-brand-brown/10 focus-visible:ring-brand-brown shadow-sm" />
+                      <Input placeholder="meters, pcs, packs" {...field} className="rounded-xl" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-widest text-brand-brown/40 ml-1">Category</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="rounded-2xl h-12 bg-white/50 border-brand-brown/10 shadow-sm">
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="rounded-2xl border-brand-brown/10">
-                          <SelectItem value="Fabric" className="font-bold">Fabric</SelectItem>
-                          <SelectItem value="Garment" className="font-bold">Garment</SelectItem>
-                          <SelectItem value="Supply" className="font-bold">Supply</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="unit"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-widest text-brand-brown/40 ml-1">Registry Unit</FormLabel>
-                      <FormControl>
-                        <Input placeholder="meters, pcs, packs" {...field} className="rounded-2xl h-12 bg-white/50 border-brand-brown/10 shadow-sm" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="quantity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-widest text-brand-brown/40 ml-1">Opening Volume</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
-                          className="rounded-2xl h-12 bg-white/50 border-brand-brown/10 shadow-sm font-mono font-bold"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="unitPrice"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-widest text-brand-brown/40 ml-1">Acquisition Cost</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          {...field}
-                          onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
-                          className="rounded-2xl h-12 bg-white/50 border-brand-brown/10 shadow-sm font-mono font-bold"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="notes"
+                name="quantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-brand-brown/40 ml-1">Supplier / Artisan Notes</FormLabel>
+                    <FormLabel>Opening Stock</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Details on sourcing or special characteristics..." {...field} className="rounded-2xl resize-none h-24 bg-white/50 border-brand-brown/10 shadow-sm" />
+                      <Input type="number" {...field} className="rounded-xl" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <DialogFooter className="pt-6">
-                <Button
-                  type="submit"
-                  className="w-full h-16 bg-brand-brown hover:bg-brand-green rounded-2xl text-lg font-bold text-white shadow-xl shadow-brand-brown/20 transition-all active:scale-95"
-                  disabled={createItem.isPending}
-                >
-                  {createItem.isPending ? (
-                    <Loader2 className="h-6 w-6 animate-spin" />
-                  ) : (
-                    "Formalize Registry Entry"
-                  )}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </div>
+              <FormField
+                control={form.control}
+                name="unitPrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Unit Cost</FormLabel>
+                    <FormControl>
+                      <Input type="number" step="0.01" {...field} className="rounded-xl" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="lowStockThreshold"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Low Stock Warning Threshold</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} className="rounded-xl" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Supplier/Design Notes</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="e.g. Sourced from Lagos Market..." {...field} className="rounded-xl resize-none h-20" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter className="pt-4">
+              <Button
+                type="submit"
+                className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-lg font-bold"
+                disabled={createItem.isPending}
+              >
+                {createItem.isPending ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  "Log to Inventory"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
