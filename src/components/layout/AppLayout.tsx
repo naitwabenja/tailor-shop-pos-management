@@ -18,18 +18,23 @@ export function AppLayout({
   container = true,
   className,
   contentClassName,
-  fullBleed = false
+  fullBleed: manualFullBleed,
+  children
 }: {
   container?: boolean;
   className?: string;
   contentClassName?: string;
   fullBleed?: boolean;
+  children?: React.ReactNode;
 }): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
   const isAuthenticated = useAppStore((s) => s.isAuthenticated);
   const currency = useAppStore((s) => s.currency);
   const setCurrency = useAppStore((s) => s.setCurrency);
+  // Auto-detect POS route for layout optimization
+  const isPOS = location.pathname.includes("/pos");
+  const fullBleed = manualFullBleed || isPOS;
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/");
@@ -77,11 +82,11 @@ export function AppLayout({
             className={cn(
               "flex-1 overflow-y-auto min-w-0",
               !fullBleed && container && "max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-10 md:py-12 lg:py-16 w-full",
-              fullBleed && "p-0",
+              fullBleed && "p-0 h-[calc(100vh-theme(spacing.20))]",
               contentClassName
             )}
           >
-            <Outlet />
+            {children || <Outlet />}
           </motion.main>
         </AnimatePresence>
         <Toaster richColors closeButton position="top-right" expand={false} />

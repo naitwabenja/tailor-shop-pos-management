@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -149,70 +148,68 @@ export default function OrdersPage() {
     );
   };
   return (
-    <AppLayout>
-      <div className="space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-serif font-bold text-brand-brown tracking-tight">Production Queue</h1>
-            <p className="text-brand-brown/50 font-medium">Tracking artisan creations from measurement to masterwork</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant={filterUrgent ? "destructive" : "outline"}
-              size="sm"
-              className="rounded-xl gap-2 font-bold h-10 px-4 border-brand-brown/10"
-              onClick={() => setFilterUrgent(!filterUrgent)}
-            >
-              <AlertTriangle className="h-4 w-4" /> Urgent
-            </Button>
-            <div className="relative w-full md:w-64">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-brand-brown/30" />
-              <Input
-                placeholder="Find artisan work..."
-                className="pl-9 h-10 rounded-xl bg-white/50 border-brand-brown/10 focus-visible:ring-brand-brown"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-serif font-bold text-brand-brown tracking-tight">Production Queue</h1>
+          <p className="text-brand-brown/50 font-medium">Tracking artisan creations from measurement to masterwork</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={filterUrgent ? "destructive" : "outline"}
+            size="sm"
+            className="rounded-xl gap-2 font-bold h-10 px-4 border-brand-brown/10"
+            onClick={() => setFilterUrgent(!filterUrgent)}
+          >
+            <AlertTriangle className="h-4 w-4" /> Urgent
+          </Button>
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-brand-brown/30" />
+            <Input
+              placeholder="Find artisan work..."
+              className="pl-9 h-10 rounded-xl bg-white/50 border-brand-brown/10 focus-visible:ring-brand-brown"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
-        <Tabs defaultValue="Pending" className="w-full">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <TabsList className="bg-brand-brown/5 p-1 rounded-2xl h-14 w-full max-w-2xl border border-brand-brown/10">
-              <TabsTrigger value="Pending" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
-                Pending
-              </TabsTrigger>
-              <TabsTrigger value="In Progress" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
-                On Bench
-              </TabsTrigger>
-              <TabsTrigger value="Ready" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
-                Masterpiece
-              </TabsTrigger>
-              <TabsTrigger value="All" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
-                Archives
-              </TabsTrigger>
-            </TabsList>
-            <div className="flex items-center gap-1 bg-white/50 p-1 rounded-xl border border-brand-brown/10 backdrop-blur-sm">
-               <Button
-                 variant={sortBy === 'due' ? 'secondary' : 'ghost'}
-                 size="sm"
-                 className="rounded-lg h-8 text-[10px] uppercase tracking-widest font-bold"
-                 onClick={() => setSortBy('due')}
-               >Due</Button>
-               <Button
-                 variant={sortBy === 'created' ? 'secondary' : 'ghost'}
-                 size="sm"
-                 className="rounded-lg h-8 text-[10px] uppercase tracking-widest font-bold"
-                 onClick={() => setSortBy('created')}
-               >New</Button>
-            </div>
-          </div>
-          <TabsContent value="Pending"><OrderGrid status="Pending" /></TabsContent>
-          <TabsContent value="In Progress"><OrderGrid status="In Progress" /></TabsContent>
-          <TabsContent value="Ready"><OrderGrid status="Ready" /></TabsContent>
-          <TabsContent value="All"><OrderGrid status="All" /></TabsContent>
-        </Tabs>
       </div>
-    </AppLayout>
+      <Tabs defaultValue="Pending" className="w-full">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <TabsList className="bg-brand-brown/5 p-1 rounded-2xl h-14 w-full max-w-2xl border border-brand-brown/10">
+            <TabsTrigger value="Pending" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
+              Pending
+            </TabsTrigger>
+            <TabsTrigger value="In Progress" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
+              On Bench
+            </TabsTrigger>
+            <TabsTrigger value="Ready" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
+              Masterpiece
+            </TabsTrigger>
+            <TabsTrigger value="All" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
+              Archives
+            </TabsTrigger>
+          </TabsList>
+          <div className="flex items-center gap-1 bg-white/50 p-1 rounded-xl border border-brand-brown/10 backdrop-blur-sm">
+             <Button
+               variant={sortBy === 'due' ? 'secondary' : 'ghost'}
+               size="sm"
+               className="rounded-lg h-8 text-[10px] uppercase tracking-widest font-bold"
+               onClick={() => setSortBy('due')}
+             >Due</Button>
+             <Button
+               variant={sortBy === 'created' ? 'secondary' : 'ghost'}
+               size="sm"
+               className="rounded-lg h-8 text-[10px] uppercase tracking-widest font-bold"
+               onClick={() => setSortBy('created')}
+             >New</Button>
+          </div>
+        </div>
+        <TabsContent value="Pending"><OrderGrid status="Pending" /></TabsContent>
+        <TabsContent value="In Progress"><OrderGrid status="In Progress" /></TabsContent>
+        <TabsContent value="Ready"><OrderGrid status="Ready" /></TabsContent>
+        <TabsContent value="All"><OrderGrid status="All" /></TabsContent>
+      </Tabs>
+    </div>
   );
 }
