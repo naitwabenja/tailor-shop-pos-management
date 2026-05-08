@@ -43,40 +43,44 @@ export function AppLayout({
   return (
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />
-      <SidebarInset className={cn("bg-slate-50 dark:bg-background", className)}>
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-xl sm:px-6">
+      <SidebarInset className={cn("bg-background", className)}>
+        <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-border/40 bg-background/60 px-6 backdrop-blur-2xl sm:px-10">
           <div className="flex flex-1 items-center gap-4">
-            <SidebarTrigger className="lg:hidden" />
+            <SidebarTrigger className="lg:hidden h-10 w-10 rounded-xl hover:bg-brand-brown/10 text-brand-brown" />
             <div className="hidden lg:block">
-               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">LEAfrique Tailors</p>
+               <div className="flex flex-col">
+                 <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-brown/50">LEAfrique Artisans</p>
+                 <p className="text-xs font-serif font-bold italic text-brand-green/80">Atelier Suite v2.0</p>
+               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Select value={currency} onValueChange={(v) => setCurrency(v as CurrencyCode)}>
-              <SelectTrigger className="w-[85px] h-9 rounded-lg border-slate-200">
+              <SelectTrigger className="w-[100px] h-10 rounded-xl border-border/50 bg-background/50 font-bold text-xs shadow-sm">
                 <SelectValue placeholder="USD" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USD">USD ($)</SelectItem>
-                <SelectItem value="EUR">EUR (€)</SelectItem>
-                <SelectItem value="NGN">NGN (₦)</SelectItem>
-                <SelectItem value="GBP">GBP (£)</SelectItem>
-                <SelectItem value="KES">KES (KSh)</SelectItem>
+              <SelectContent className="rounded-xl border-border/50 shadow-2xl">
+                <SelectItem value="USD" className="text-xs font-bold">USD ($)</SelectItem>
+                <SelectItem value="EUR" className="text-xs font-bold">EUR (€)</SelectItem>
+                <SelectItem value="NGN" className="text-xs font-bold">NGN (₦)</SelectItem>
+                <SelectItem value="GBP" className="text-xs font-bold">GBP (£)</SelectItem>
+                <SelectItem value="KES" className="text-xs font-bold">KES (KSh)</SelectItem>
               </SelectContent>
             </Select>
-            <ThemeToggle className="static" />
+            <div className="h-8 w-px bg-border/40 mx-1" />
+            <ThemeToggle className="static h-10 w-10 rounded-xl bg-background/50 border border-border/50 hover:bg-brand-brown/5 text-brand-brown" />
           </div>
         </header>
         <AnimatePresence mode="wait">
           <motion.main
             key={location.pathname}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
               "flex-1",
-              !fullBleed && container && "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 lg:py-12 w-full",
+              !fullBleed && container && "max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-10 md:py-12 lg:py-16 w-full",
               fullBleed && "p-0",
               contentClassName
             )}
@@ -84,7 +88,7 @@ export function AppLayout({
             {children || <Outlet />}
           </motion.main>
         </AnimatePresence>
-        <Toaster richColors closeButton position="top-center" />
+        <Toaster richColors closeButton position="top-right" expand={false} />
       </SidebarInset>
     </SidebarProvider>
   );

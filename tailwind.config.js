@@ -18,6 +18,11 @@ export default {
 				'system-ui',
 				'sans-serif'
 			],
+			serif: [
+				'Georgia',
+				'Palatino',
+				'serif'
+			],
   			mono: [
   				'JetBrains Mono',
   				'Fira Code',
@@ -77,14 +82,19 @@ export default {
   				ring: 'hsl(var(--sidebar-ring))'
   			},
         brand: {
+          brown: '#8B4513',
+          green: '#228B22',
+          beige: '#F5F5DC',
+          tan: '#D2B48C',
+          moss: '#4A5D23',
           indigo: '#4f46e5',
           slate: '#0f172a',
           light: '#f8fafc'
         }
   		},
   		boxShadow: {
-  			soft: '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-  			glow: '0 0 20px -5px rgba(79, 70, 229, 0.4)',
+  			soft: '0 2px 15px -3px rgba(139, 69, 19, 0.07), 0 10px 20px -2px rgba(139, 69, 19, 0.04)',
+  			glow: '0 0 20px -5px rgba(34, 139, 34, 0.4)',
   			glass: '0 8px 32px 0 rgba(31, 38, 135, 0.07)'
   		},
   		keyframes: {

@@ -25,75 +25,52 @@ export function HomePage() {
   const readyCount = orders.filter(o => o.status === 'Ready').length;
   const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-12 text-white shadow-2xl">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight">LEAfrique Dashboard</h1>
-            <p className="mt-3 text-indigo-100 max-w-lg text-lg">
-              Manage your craftsmanship at LEAfrique. You have {pendingCount} new assignments and {inProgressCount} garments being tailored.
+    <div className="space-y-10 max-w-7xl mx-auto">
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-brand-brown to-brand-green px-10 py-16 text-white shadow-2xl">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <div className="space-y-4">
+            <h1 className="text-5xl font-serif font-bold tracking-tight">Atelier Overview</h1>
+            <p className="text-brand-beige/80 max-w-xl text-xl leading-relaxed">
+              Your craftsmanship gallery. Currently managing {pendingCount} new bespoke commissions and {inProgressCount} garments under tailoring.
             </p>
           </div>
           <div className="flex gap-4">
-            <Button asChild size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 font-bold px-8 rounded-2xl shadow-xl border-none">
+            <Button asChild size="lg" className="bg-brand-beige text-brand-brown hover:bg-white font-bold px-10 rounded-2xl shadow-2xl border-none h-14 text-lg">
               <Link to="/dashboard/pos">New Commission</Link>
             </Button>
           </div>
         </div>
-        <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -bottom-20 left-20 h-64 w-64 rounded-full bg-indigo-400/20 blur-3xl" />
+        <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-white/5 blur-3xl" />
+        <div className="absolute -bottom-40 left-40 h-80 w-80 rounded-full bg-brand-green/20 blur-3xl" />
       </div>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-none shadow-soft">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-bold text-slate-400 uppercase tracking-widest">Total Value</CardTitle>
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-extrabold text-slate-900">{formatPrice(totalRevenue, currency)}</div>
-            <p className="text-xs text-slate-500 mt-1">Across all active orders</p>
-          </CardContent>
-        </Card>
-        <Card className="border-none shadow-soft">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-bold text-slate-400 uppercase tracking-widest">Pending</CardTitle>
-            <Clock className="h-4 w-4 text-amber-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-extrabold text-slate-900">{pendingCount}</div>
-            <p className="text-xs text-slate-500 mt-1">Awaiting construction</p>
-          </CardContent>
-        </Card>
-        <Card className="border-none shadow-soft">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-bold text-slate-400 uppercase tracking-widest">On Bench</CardTitle>
-            <Scissors className="h-4 w-4 text-indigo-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-extrabold text-slate-900">{inProgressCount}</div>
-            <p className="text-xs text-slate-500 mt-1">Under LEAfrique craftsmanship</p>
-          </CardContent>
-        </Card>
-        <Card className="border-none shadow-soft">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-bold text-slate-400 uppercase tracking-widest">Completed</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-extrabold text-slate-900">{readyCount}</div>
-            <p className="text-xs text-slate-500 mt-1">Ready for fitting</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'Total Value', value: formatPrice(totalRevenue, currency), icon: TrendingUp, color: 'text-brand-green', sub: 'Active revenue pool' },
+          { label: 'Pending', value: pendingCount, icon: Clock, color: 'text-brand-brown', sub: 'Awaiting first stitch' },
+          { label: 'On Bench', value: inProgressCount, icon: Scissors, color: 'text-brand-moss', sub: 'In artistic production' },
+          { label: 'Ready', value: readyCount, icon: CheckCircle2, color: 'text-emerald-600', sub: 'Awaiting client fitting' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none shadow-soft bg-card/50 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{stat.label}</CardTitle>
+              <stat.icon className={cn("h-5 w-5", stat.color)} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-serif font-bold text-foreground">{stat.value}</div>
+              <p className="text-xs text-muted-foreground mt-2 font-medium italic opacity-70">{stat.sub}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-      <Card className="border-none shadow-soft overflow-hidden">
-        <CardHeader className="border-b border-slate-100 bg-slate-50/50">
+      <Card className="border-none shadow-soft overflow-hidden rounded-3xl">
+        <CardHeader className="border-b border-border/50 bg-card/30 px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-bold">Recent Commissions</CardTitle>
-              <CardDescription>Latest orders entered into LEAfrique system</CardDescription>
+              <CardTitle className="text-2xl font-serif font-bold">Recent Commissions</CardTitle>
+              <CardDescription className="text-muted-foreground font-medium">The latest artisan entries into the LEAfrique registry</CardDescription>
             </div>
-            <Button variant="ghost" size="sm" asChild className="font-bold text-indigo-600 hover:text-indigo-700">
-              <Link to="/dashboard/orders" className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" asChild className="font-bold text-brand-brown hover:text-brand-green hover:bg-brand-brown/5 rounded-xl">
+              <Link to="/dashboard/orders" className="flex items-center gap-2">
                 Queue Manager <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -101,41 +78,41 @@ export function HomePage() {
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex justify-center py-12"><Loader2 className="animate-spin h-8 w-8 text-indigo-600" /></div>
+            <div className="flex justify-center py-20"><Loader2 className="animate-spin h-10 w-10 text-brand-brown" /></div>
           ) : orders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-slate-400 space-y-4">
-              <Sparkles className="h-12 w-12 opacity-20" />
-              <p className="text-lg">No recent activity found. Start a new LEAfrique commission!</p>
+            <div className="flex flex-col items-center justify-center py-24 text-muted-foreground space-y-6">
+              <Sparkles className="h-16 w-16 opacity-10" />
+              <p className="text-xl font-serif italic">Your workshop gallery is empty. Begin a new masterpiece.</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-border/30">
               {orders.slice(0, 5).map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-5 hover:bg-slate-50 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 font-extrabold">
+                <div key={order.id} className="flex items-center justify-between p-7 hover:bg-primary/5 transition-all group">
+                  <div className="flex items-center gap-5">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-brown text-white text-xl font-serif font-bold shadow-md group-hover:scale-110 transition-transform">
                       {order.customerName.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900 text-lg">{order.customerName}</h4>
-                      <div className="flex items-center gap-2 text-sm text-slate-500">
-                        <span className="font-medium text-indigo-500">{order.items[0]?.garmentName}</span>
-                        <span>•</span>
-                        <span>Due {format(order.dueDate, 'MMM d')}</span>
+                      <h4 className="font-bold text-foreground text-xl tracking-tight">{order.customerName}</h4>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                        <span className="font-bold text-brand-green">{order.items[0]?.garmentName}</span>
+                        <span className="opacity-30">•</span>
+                        <span>Due {format(order.dueDate, 'MMM d, yyyy')}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-8">
                     <Badge className={cn(
-                      "px-3 py-1 rounded-full text-xs font-bold border-none",
-                      order.status === 'Ready' && "bg-emerald-100 text-emerald-700",
-                      order.status === 'Pending' && "bg-amber-100 text-amber-700",
-                      order.status === 'In Progress' && "bg-indigo-100 text-indigo-700",
-                      order.status === 'Delivered' && "bg-slate-100 text-slate-700"
+                      "px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border-none shadow-sm",
+                      order.status === 'Ready' && "bg-brand-green text-white",
+                      order.status === 'Pending' && "bg-brand-tan text-brand-brown",
+                      order.status === 'In Progress' && "bg-brand-brown text-white",
+                      order.status === 'Delivered' && "bg-muted text-muted-foreground"
                     )}>
                       {order.status}
                     </Badge>
-                    <div className="text-right min-w-[100px]">
-                      <div className="font-extrabold text-slate-900 text-lg">{formatPrice(order.total, currency)}</div>
+                    <div className="text-right min-w-[120px]">
+                      <div className="font-serif font-bold text-foreground text-2xl">{formatPrice(order.total, currency)}</div>
                     </div>
                   </div>
                 </div>
