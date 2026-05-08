@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Search, Clock, Scissors, CheckCircle2, AlertTriangle, MoreVertical, Sparkles } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import type { OrderStatus } from '@shared/types';
 import { useOrders, useUpdateOrderStatus } from '@/hooks/use-api';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAppStore } from '@/store/use-app-store';
 export default function OrdersPage() {
+  const currency = useAppStore(s => s.currency);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'due' | 'created'>('due');
   const [filterUrgent, setFilterUrgent] = useState(false);
@@ -124,7 +126,7 @@ export default function OrdersPage() {
                             <Scissors className="h-3.5 w-3.5 text-slate-400" />
                             {item.garmentName}
                           </span>
-                          <span className="font-semibold text-slate-900">${item.price}</span>
+                          <span className="font-semibold text-slate-900">{formatPrice(item.price, currency)}</span>
                         </div>
                       ))}
                     </div>
@@ -134,7 +136,7 @@ export default function OrdersPage() {
                         <span>Due {formatDistanceToNow(order.dueDate)}</span>
                       </div>
                       <div className="text-sm font-bold text-indigo-600">
-                        ${order.total.toFixed(0)}
+                        {formatPrice(order.total, currency)}
                       </div>
                     </div>
                   </CardContent>

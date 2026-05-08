@@ -11,7 +11,7 @@ export function formatPrice(amount: number, currency: string = 'USD'): string {
     GBP: '£',
     KES: 'KSh',
   };
-  const symbol = symbols[currency] || '$';
+  const symbol = symbols[currency] || symbols.USD;
   const formatted = Math.abs(amount).toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

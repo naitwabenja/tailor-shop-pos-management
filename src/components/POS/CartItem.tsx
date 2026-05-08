@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { usePOSStore } from '@/store/use-pos-store';
+import { useAppStore } from '@/store/use-app-store';
+import { formatPrice } from '@/lib/utils';
 import type { GarmentItem } from '@shared/types';
 interface CartItemProps {
   item: GarmentItem;
@@ -11,6 +13,7 @@ interface CartItemProps {
 export function CartItem({ item }: CartItemProps) {
   const removeItem = usePOSStore((s) => s.removeItem);
   const updateItem = usePOSStore((s) => s.updateItem);
+  const currency = useAppStore(s => s.currency);
   return (
     <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 group hover:bg-slate-100 transition-all border border-transparent hover:border-indigo-100">
       <div className="flex-1">
@@ -30,7 +33,7 @@ export function CartItem({ item }: CartItemProps) {
           )}
         </div>
         <div className="text-sm text-indigo-600 font-bold flex items-center gap-2">
-          ${item.price}
+          {formatPrice(item.price, currency)}
           <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest bg-white px-1.5 py-0.5 rounded-md border border-slate-200">
             Base
           </span>

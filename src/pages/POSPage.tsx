@@ -11,13 +11,14 @@ import {
   Loader2,
 } from 'lucide-react';
 import { MOCK_GARMENT_TYPES } from '@shared/mock-data';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import { usePOSStore } from '@/store/use-pos-store';
 import { useCustomers, useGarments } from '@/hooks/use-api';
 import { MeasurementForm } from '@/components/POS/MeasurementForm';
 import { OrderSummary } from '@/components/POS/OrderSummary';
 import { CustomerCreateDialog } from '@/components/customers/CustomerCreateDialog';
 import { OrderSuccessDialog } from '@/components/POS/OrderSuccessDialog';
+import { useAppStore } from '@/store/use-app-store';
 import { Order } from '@shared/types';
 export default function POSPage() {
   const selectedCustomerId = usePOSStore((s) => s.selectedCustomerId);
@@ -27,6 +28,7 @@ export default function POSPage() {
   const [isCustomerDialogOpen, setIsCustomerDialogOpen] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const { data: customersData, isLoading: customersLoading } = useCustomers();
+  const currency = useAppStore(s => s.currency);
   const { data: garmentsData, isLoading: garmentsLoading } = useGarments();
   const filteredCustomers = customersData?.items.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -114,7 +116,7 @@ export default function POSPage() {
                         <Plus className="h-6 w-6" />
                       </div>
                       <div className="font-bold text-slate-900">{type.name}</div>
-                      <div className="text-sm font-medium text-slate-500">From ${type.basePrice}</div>
+                      <div className="text-sm font-medium text-slate-500">From {formatPrice(type.basePrice, currency)}</div>
                     </CardContent>
                   </Card>
                 ))}
