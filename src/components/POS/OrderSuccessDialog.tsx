@@ -26,52 +26,52 @@ export function OrderSuccessDialog({ order, onClose }: OrderSuccessDialogProps) 
   };
   return (
     <Dialog open={!!order} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-0 border-none shadow-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] p-0 border-none shadow-2xl bg-white">
         <DialogHeader className="sr-only">
-          <DialogTitle>Order Successful</DialogTitle>
+          <DialogTitle>Commission Secured</DialogTitle>
           <DialogDescription>
-            The order has been processed and saved to the production queue.
+            The bespoke order has been successfully logged into the atelier's master registry.
           </DialogDescription>
         </DialogHeader>
         {!showReceipt ? (
-          <div className="p-12 text-center space-y-8">
+          <div className="p-16 text-center space-y-10">
             <div className="flex justify-center">
               <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: "spring", damping: 12, stiffness: 200 }}
-                className="h-24 w-24 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600"
+                initial={{ scale: 0, opacity: 0, rotate: -45 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                transition={{ type: "spring", damping: 15, stiffness: 200 }}
+                className="h-32 w-32 rounded-[2rem] bg-brand-green text-white flex items-center justify-center shadow-2xl shadow-brand-green/30"
               >
-                <CheckCircle2 className="h-12 w-12" />
+                <CheckCircle2 className="h-16 w-16" />
               </motion.div>
             </div>
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Commission Secured</h2>
-              <p className="text-slate-500 max-w-sm mx-auto text-lg leading-relaxed">
-                The order for <span className="text-indigo-600 font-bold">{order.customerName}</span> has been successfully logged.
+            <div className="space-y-4">
+              <h2 className="text-4xl font-serif font-bold text-brand-brown tracking-tight italic">Commission Secured</h2>
+              <p className="text-brand-brown/60 max-w-sm mx-auto text-lg font-medium leading-relaxed">
+                The masterpiece for <span className="text-brand-brown font-extrabold underline decoration-brand-brown/20">{order.customerName}</span> has been formally registered.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-6">
               <Button
                 variant="outline"
-                className="flex-1 h-14 rounded-2xl border-2 border-slate-100 font-bold gap-2 text-slate-700"
+                className="flex-1 h-16 rounded-2xl border-2 border-brand-brown/10 font-bold gap-3 text-brand-brown text-lg hover:bg-brand-brown/5"
                 onClick={() => setShowReceipt(true)}
               >
-                <Printer className="h-5 w-5" /> View Receipt
+                <Printer className="h-6 w-6" /> View Registry Entry
               </Button>
               <Button
-                className="flex-1 h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100 font-bold gap-2"
+                className="flex-1 h-16 rounded-2xl bg-brand-brown hover:bg-brand-green shadow-xl shadow-brand-brown/20 font-bold gap-3 text-lg transition-all active:scale-95"
                 onClick={handleNewTransaction}
               >
-                <RefreshCw className="h-5 w-5" /> New Transaction
+                <RefreshCw className="h-6 w-6" /> New Transaction
               </Button>
             </div>
           </div>
         ) : (
-          <div className="p-6 bg-slate-50">
-            <div className="flex items-center justify-between mb-4 px-2">
-              <h3 className="font-bold text-slate-400 uppercase tracking-widest text-xs">Order Receipt</h3>
-              <Button variant="ghost" size="sm" onClick={() => setShowReceipt(false)} className="text-slate-500">Back</Button>
+          <div className="p-10 bg-brand-brown/5">
+            <div className="flex items-center justify-between mb-8 px-4">
+              <h3 className="font-bold text-brand-brown/40 uppercase tracking-[0.4em] text-[10px]">Artisan Receipt Registry</h3>
+              <Button variant="ghost" size="sm" onClick={() => setShowReceipt(false)} className="text-brand-brown font-bold hover:bg-brand-brown/10">Return to Status</Button>
             </div>
             <div className="print-area">
               <ReceiptView order={order} />

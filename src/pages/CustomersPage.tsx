@@ -16,8 +16,7 @@ import {
   Filter,
   Users,
   Ruler,
-  ShoppingBag,
-  ChevronRight
+  ShoppingBag
 } from 'lucide-react';
 import { format } from 'date-fns';
 import {
@@ -49,39 +48,39 @@ export default function CustomersPage() {
       <div className="py-8 md:py-10 lg:py-12 space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Customer Directory</h1>
-            <p className="text-slate-500">View and manage profiles for all tailorshop clients</p>
+            <h1 className="text-3xl font-serif font-bold text-brand-brown tracking-tight italic">Artisan Registry</h1>
+            <p className="text-brand-brown/60 font-medium">Managing relationships and metrics for LEAfrique's esteemed clients</p>
           </div>
           <Button
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-2 shadow-lg shadow-indigo-100 rounded-xl px-6 h-12"
+            className="bg-brand-brown hover:bg-brand-green text-white font-bold gap-2 shadow-xl shadow-brand-brown/20 rounded-2xl px-8 h-14 text-lg transition-all active:scale-95"
             onClick={() => setIsCreateDialogOpen(true)}
           >
-            <UserPlus className="h-5 w-5" /> Add New Client
+            <UserPlus className="h-6 w-6" /> Register Client
           </Button>
         </div>
         <div className="flex gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+            <Search className="absolute left-4 top-3.5 h-5 w-5 text-brand-brown/30" />
             <Input
-              placeholder="Search by name, email or phone number..."
-              className="pl-10 h-12 rounded-xl bg-white shadow-sm border-slate-200"
+              placeholder="Search by name, phone or identification..."
+              className="pl-12 h-14 rounded-2xl bg-white/60 backdrop-blur-sm border-brand-brown/10 focus-visible:ring-brand-brown shadow-soft"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-slate-200 bg-white">
-            <Filter className="h-5 w-5 text-slate-600" />
+          <Button variant="outline" size="icon" className="h-14 w-14 rounded-2xl border-brand-brown/10 bg-white/60 hover:bg-brand-brown/5">
+            <Filter className="h-6 w-6 text-brand-brown/60" />
           </Button>
         </div>
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="border-none shadow-soft h-48">
-                <CardContent className="p-6 space-y-4">
+              <Card key={i} className="border-none shadow-soft h-56 bg-white/40">
+                <CardContent className="p-8 space-y-6">
                   <div className="flex items-center gap-4">
-                    <Skeleton className="h-14 w-14 rounded-2xl" />
-                    <div className="space-y-2">
-                      <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-16 w-16 rounded-2xl" />
+                    <div className="space-y-3">
+                      <Skeleton className="h-6 w-32" />
                       <Skeleton className="h-4 w-20" />
                     </div>
                   </div>
@@ -91,59 +90,59 @@ export default function CustomersPage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCustomers.map((customer) => (
-              <Card key={customer.id} className="border-none shadow-soft hover:shadow-md transition-shadow overflow-hidden group">
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 text-xl font-bold group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+              <Card key={customer.id} className="border-none shadow-soft hover:shadow-xl transition-all overflow-hidden group bg-white/60 backdrop-blur-sm">
+                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-6 p-8">
+                  <div className="flex items-center gap-5">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-tan/30 text-brand-brown text-2xl font-serif font-bold group-hover:bg-brand-brown group-hover:text-white transition-all">
                       {customer.name.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div>
-                      <CardTitle className="text-xl font-bold group-hover:text-indigo-600 transition-colors">{customer.name}</CardTitle>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="secondary" className="bg-slate-100 text-slate-600 font-medium border-none text-[10px] uppercase tracking-wider">Client</Badge>
-                        <span className="text-xs text-slate-400 flex items-center gap-1">
-                          <ShoppingBag className="h-3 w-3" /> {customerOrderCounts[customer.id] || 0} Orders
+                      <CardTitle className="text-xl font-bold text-brand-brown group-hover:underline decoration-brand-brown/20 transition-all">{customer.name}</CardTitle>
+                      <div className="flex items-center gap-3 mt-1.5">
+                        <Badge variant="secondary" className="bg-brand-tan/10 text-brand-brown/60 font-bold border-none text-[9px] uppercase tracking-widest">Client</Badge>
+                        <span className="text-xs text-brand-brown/40 font-bold flex items-center gap-1">
+                          <ShoppingBag className="h-3 w-3" /> {customerOrderCounts[customer.id] || 0} Commissions
                         </span>
                       </div>
                     </div>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-slate-400 hover:bg-slate-100 rounded-full">
+                      <Button variant="ghost" size="icon" className="text-brand-brown/30 hover:bg-brand-brown/5 rounded-full">
                         <MoreVertical className="h-5 w-5" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl">
-                      <DropdownMenuItem>Edit Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Order History</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">Archive Client</DropdownMenuItem>
+                    <DropdownMenuContent align="end" className="w-56 rounded-2xl border-brand-brown/10">
+                      <DropdownMenuItem className="font-bold text-brand-brown">Edit Profile</DropdownMenuItem>
+                      <DropdownMenuItem className="font-bold text-brand-brown">View Commissions</DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-600 font-bold">Archive Profile</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </CardHeader>
-                <CardContent className="space-y-4 pt-0">
-                  <div className="grid gap-2">
-                    <div className="flex items-center gap-3 text-sm text-slate-600">
-                      <Phone className="h-4 w-4 text-slate-400" />
+                <CardContent className="space-y-5 px-8 pb-8 pt-0">
+                  <div className="grid gap-3">
+                    <div className="flex items-center gap-3 text-sm font-medium text-brand-brown/70">
+                      <Phone className="h-4 w-4 text-brand-brown/20" />
                       {customer.phone}
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-slate-600">
-                      <Mail className="h-4 w-4 text-slate-400" />
-                      {customer.email || "No email provided"}
+                    <div className="flex items-center gap-3 text-sm font-medium text-brand-brown/70">
+                      <Mail className="h-4 w-4 text-brand-brown/20" />
+                      {customer.email || "No digital address"}
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-slate-600">
-                      <Calendar className="h-4 w-4 text-slate-400" />
-                      Joined {customer.createdAt ? format(customer.createdAt, 'MMM yyyy') : 'Recently'}
+                    <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-brand-brown/30">
+                      <Calendar className="h-3.5 w-3.5" />
+                      Registry Date: {customer.createdAt ? format(customer.createdAt, 'MMM yyyy') : 'Recent'}
                     </div>
                   </div>
-                  <div className="pt-4 flex gap-2 border-t border-slate-100">
-                    <Button asChild variant="outline" size="sm" className="flex-1 rounded-lg gap-2 border-slate-200">
-                      <Link to="/measurements">
-                        <Ruler className="h-3.5 w-3.5" /> Data Archive
+                  <div className="pt-6 flex gap-3 border-t border-brand-brown/5">
+                    <Button asChild variant="outline" size="sm" className="flex-1 rounded-xl gap-2 border-brand-brown/10 text-brand-brown font-bold hover:bg-brand-brown/5">
+                      <Link to="/dashboard/measurements">
+                        <Ruler className="h-4 w-4" /> Metrics
                       </Link>
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1 rounded-lg border-slate-200">History</Button>
+                    <Button variant="outline" size="sm" className="flex-1 rounded-xl border-brand-brown/10 text-brand-brown font-bold hover:bg-brand-brown/5">History</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -151,9 +150,9 @@ export default function CustomersPage() {
           </div>
         )}
         {!isLoading && filteredCustomers.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400 space-y-4">
-            <Users className="h-16 w-16 opacity-20" />
-            <p className="text-xl">No clients found matching your search</p>
+          <div className="flex flex-col items-center justify-center py-24 text-brand-brown/20 space-y-6">
+            <Users className="h-24 w-24 opacity-10" />
+            <p className="text-2xl font-serif italic text-brand-brown/40">No artisan profiles found in the current registry</p>
           </div>
         )}
       </div>

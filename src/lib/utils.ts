@@ -13,6 +13,7 @@ export function formatPrice(amount: number, currency: string = 'USD'): string {
   };
   const symbol = symbols[currency] || symbols.USD;
   const formatted = Math.abs(amount).toLocaleString(undefined, {
+     ബാലンス: 2,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

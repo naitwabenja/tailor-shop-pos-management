@@ -37,9 +37,9 @@ export default function OrdersPage() {
   }, [data, searchTerm, filterUrgent, sortBy]);
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
-      case 'Pending': return "bg-amber-100 text-amber-700 border-amber-200";
-      case 'In Progress': return "bg-indigo-100 text-indigo-700 border-indigo-200";
-      case 'Ready': return "bg-emerald-100 text-emerald-700 border-emerald-200";
+      case 'Pending': return "bg-brand-tan/20 text-brand-brown border-brand-tan/40";
+      case 'In Progress': return "bg-brand-brown text-white border-none";
+      case 'Ready': return "bg-brand-green/10 text-brand-green border-brand-green/20";
       case 'Delivered': return "bg-slate-100 text-slate-700 border-slate-200";
       default: return "bg-slate-100 text-slate-700";
     }
@@ -49,7 +49,7 @@ export default function OrdersPage() {
     if (isLoading) {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-          {[1, 2, 3].map(i => <Card key={i} className="h-48 animate-pulse bg-slate-50 rounded-2xl" />)}
+          {[1, 2, 3].map(i => <Card key={i} className="h-48 animate-pulse bg-brand-brown/5 rounded-2xl" />)}
         </div>
       );
     }
@@ -58,11 +58,11 @@ export default function OrdersPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center justify-center py-24 text-muted-foreground bg-white rounded-3xl border-2 border-dashed border-slate-100 mt-6"
+          className="flex flex-col items-center justify-center py-24 text-muted-foreground bg-white/50 backdrop-blur-sm rounded-3xl border-2 border-dashed border-brand-brown/10 mt-6"
         >
-          <Sparkles className="h-16 w-16 opacity-10 mb-4 text-indigo-600" />
-          <h3 className="text-xl font-bold text-slate-900 mb-1">Queue Clear</h3>
-          <p className="text-slate-500">No active production commissions found for this category.</p>
+          <Sparkles className="h-16 w-16 opacity-10 mb-4 text-brand-brown" />
+          <h3 className="text-xl font-serif font-bold text-brand-brown mb-1">Queue Empty</h3>
+          <p className="text-brand-brown/50 font-medium italic">No active production commissions found.</p>
         </motion.div>
       );
     }
@@ -80,18 +80,18 @@ export default function OrdersPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
               >
-                <Card className="border-none shadow-soft hover:shadow-md transition-all overflow-hidden group h-full flex flex-col">
+                <Card className="border-none shadow-soft hover:shadow-md transition-all overflow-hidden group h-full flex flex-col bg-white/60 backdrop-blur-sm">
                   <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-lg font-bold group-hover:text-indigo-600 transition-colors">
+                        <CardTitle className="text-lg font-bold group-hover:text-brand-brown transition-colors">
                           {order.customerName}
                         </CardTitle>
                         {isUrgent && order.status !== 'Ready' && order.status !== 'Delivered' && (
                           <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" title="Urgent" />
                         )}
                       </div>
-                      <p className="text-xs text-slate-400 font-medium">Ref: #{order.id.slice(0, 8).toUpperCase()}</p>
+                      <p className="text-[10px] text-brand-brown/40 font-bold uppercase tracking-widest">Atelier ID: {order.id.slice(0, 8).toUpperCase()}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className={cn("px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider", getStatusColor(order.status))}>
@@ -99,19 +99,19 @@ export default function OrdersPage() {
                       </Badge>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-brand-brown/5">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="rounded-xl">
+                        <DropdownMenuContent align="end" className="rounded-xl border-brand-brown/10">
                           {(['Pending', 'In Progress', 'Ready', 'Delivered'] as OrderStatus[]).map(s => (
                             <DropdownMenuItem
                               key={s}
                               onClick={() => updateStatus.mutate({ id: order.id, status: s })}
                               disabled={updateStatus.isPending}
-                              className={cn(order.status === s && "bg-indigo-50 text-indigo-600 font-bold")}
+                              className={cn(order.status === s && "bg-brand-brown/5 text-brand-brown font-bold")}
                             >
-                              Mark as {s}
+                              Move to {s}
                             </DropdownMenuItem>
                           ))}
                         </DropdownMenuContent>
@@ -121,21 +121,21 @@ export default function OrdersPage() {
                   <CardContent className="space-y-4 flex-1">
                     <div className="space-y-2">
                       {order.items.map((item, idx) => (
-                        <div key={idx} className="flex items-center justify-between text-sm p-2 rounded-lg bg-slate-50">
-                          <span className="text-slate-600 flex items-center gap-2">
-                            <Scissors className="h-3.5 w-3.5 text-slate-400" />
+                        <div key={idx} className="flex items-center justify-between text-sm p-3 rounded-xl bg-brand-brown/5">
+                          <span className="text-brand-brown flex items-center gap-2 font-medium">
+                            <Scissors className="h-3.5 w-3.5 opacity-40" />
                             {item.garmentName}
                           </span>
-                          <span className="font-semibold text-slate-900">{formatPrice(item.price, currency)}</span>
+                          <span className="font-bold text-brand-brown">{formatPrice(item.price, currency)}</span>
                         </div>
                       ))}
                     </div>
-                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between mt-auto">
-                      <div className={cn("flex items-center gap-2 text-xs font-medium", isUrgent ? "text-red-500" : "text-slate-400")}>
+                    <div className="pt-4 border-t border-brand-brown/10 flex items-center justify-between mt-auto">
+                      <div className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-tight", isUrgent ? "text-red-500" : "text-brand-brown/40")}>
                         <Clock className="h-3.5 w-3.5" />
                         <span>Due {formatDistanceToNow(order.dueDate)}</span>
                       </div>
-                      <div className="text-sm font-bold text-indigo-600">
+                      <div className="text-lg font-serif font-bold text-brand-brown italic">
                         {formatPrice(order.total, currency)}
                       </div>
                     </div>
@@ -153,23 +153,23 @@ export default function OrdersPage() {
       <div className="space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Production Queue</h1>
-            <p className="text-slate-500">Track bespoke garments from bench to client delivery</p>
+            <h1 className="text-3xl font-serif font-bold text-brand-brown tracking-tight">Production Queue</h1>
+            <p className="text-brand-brown/50 font-medium">Tracking artisan creations from measurement to masterwork</p>
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant={filterUrgent ? "destructive" : "outline"}
               size="sm"
-              className="rounded-xl gap-2 font-bold h-10 px-4"
+              className="rounded-xl gap-2 font-bold h-10 px-4 border-brand-brown/10"
               onClick={() => setFilterUrgent(!filterUrgent)}
             >
               <AlertTriangle className="h-4 w-4" /> Urgent
             </Button>
             <div className="relative w-full md:w-64">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-brand-brown/30" />
               <Input
-                placeholder="Find commission..."
-                className="pl-9 h-10 rounded-xl bg-white border-slate-200"
+                placeholder="Find artisan work..."
+                className="pl-9 h-10 rounded-xl bg-white/50 border-brand-brown/10 focus-visible:ring-brand-brown"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -178,33 +178,33 @@ export default function OrdersPage() {
         </div>
         <Tabs defaultValue="Pending" className="w-full">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <TabsList className="bg-slate-100 p-1 rounded-xl h-12 w-full max-w-2xl border border-slate-200/50">
-              <TabsTrigger value="Pending" className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm font-semibold">
+            <TabsList className="bg-brand-brown/5 p-1 rounded-2xl h-14 w-full max-w-2xl border border-brand-brown/10">
+              <TabsTrigger value="Pending" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
                 Pending
               </TabsTrigger>
-              <TabsTrigger value="In Progress" className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm font-semibold">
+              <TabsTrigger value="In Progress" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
                 On Bench
               </TabsTrigger>
-              <TabsTrigger value="Ready" className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm font-semibold">
-                Ready
+              <TabsTrigger value="Ready" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
+                Masterpiece
               </TabsTrigger>
-              <TabsTrigger value="All" className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm font-semibold">
-                Master List
+              <TabsTrigger value="All" className="flex-1 rounded-xl data-[state=active]:bg-brand-brown data-[state=active]:text-white data-[state=active]:shadow-lg font-bold">
+                Archives
               </TabsTrigger>
             </TabsList>
-            <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200">
+            <div className="flex items-center gap-1 bg-white/50 p-1 rounded-xl border border-brand-brown/10 backdrop-blur-sm">
                <Button
                  variant={sortBy === 'due' ? 'secondary' : 'ghost'}
                  size="sm"
-                 className="rounded-lg h-8 text-[10px] uppercase tracking-wider font-bold"
+                 className="rounded-lg h-8 text-[10px] uppercase tracking-widest font-bold"
                  onClick={() => setSortBy('due')}
                >Due</Button>
                <Button
                  variant={sortBy === 'created' ? 'secondary' : 'ghost'}
                  size="sm"
-                 className="rounded-lg h-8 text-[10px] uppercase tracking-wider font-bold"
+                 className="rounded-lg h-8 text-[10px] uppercase tracking-widest font-bold"
                  onClick={() => setSortBy('created')}
-               >Recent</Button>
+               >New</Button>
             </div>
           </div>
           <TabsContent value="Pending"><OrderGrid status="Pending" /></TabsContent>
