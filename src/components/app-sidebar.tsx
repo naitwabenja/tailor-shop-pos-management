@@ -21,6 +21,7 @@ import {
   SidebarGroupLabel,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
 const navigation = [
@@ -100,8 +101,8 @@ export function AppSidebar(): JSX.Element {
             <span className="text-[10px] text-slate-400 uppercase tracking-tighter">Atelier Lead</span>
           </div>
         </div>
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={handleLogout}
           className="w-full justify-start gap-3 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors h-11"
         >

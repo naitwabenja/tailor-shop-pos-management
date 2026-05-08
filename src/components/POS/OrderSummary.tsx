@@ -14,12 +14,15 @@ interface OrderSummaryProps {
 }
 export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
   const items = usePOSStore(useShallow((s) => s.items));
-  const selectedCustomerId = usePOSStore((s) => s.selectedCustomerId);
+  const selectedCustomerId = usePOSStore(s => s.selectedCustomerId);
   const draftMeasurements = usePOSStore(useShallow((s) => s.draftMeasurements));
-  const clearCart = usePOSStore((s) => s.clearCart);
-  const currency = useAppStore((s) => s.currency);
+  const clearCart = usePOSStore(s => s.clearCart);
+  const currency = useAppStore(s => s.currency);
   const { data: customersData } = useCustomers();
-  const selectedCustomer = customersData?.items.find(c => c.id === selectedCustomerId);
+  const selectedCustomer = React.useMemo(() => 
+    customersData?.items.find(c => c.id === selectedCustomerId),
+    [customersData, selectedCustomerId]
+  );
   const createOrder = useCreateOrder();
   const subtotal = items.reduce((acc, item) => acc + item.price, 0);
   const taxRate = 0.05;
@@ -32,10 +35,12 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
     }
     try {
       const mappedItems = items.map(item => ({
-        type: item.type,
+        garmentId: 'custom',
+        garmentName: item.type,
+        quantity: 1,
         price: item.price,
-        notes: item.notes,
         fabric: item.fabric,
+        notes: item.notes,
       }));
       const newOrder = await createOrder.mutateAsync({
         customerId: selectedCustomerId,
