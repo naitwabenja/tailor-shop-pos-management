@@ -9,11 +9,10 @@ export function formatPrice(amount: number, currency: string = 'USD'): string {
     EUR: '€',
     NGN: '₦',
     GBP: '£',
-    KES: 'KSh',
+    KES: 'KSh ',
   };
   const symbol = symbols[currency] || symbols.USD;
   const formatted = Math.abs(amount).toLocaleString(undefined, {
-     ബാലンス: 2,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

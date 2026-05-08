@@ -43,10 +43,10 @@ export function AppLayout({
   return (
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />
-      <SidebarInset className={cn("bg-background", className)}>
-        <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-border/40 bg-background/60 px-6 backdrop-blur-2xl sm:px-10">
+      <SidebarInset className={cn("bg-background min-w-0 flex flex-col", className)}>
+        <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-border/40 bg-background/60 px-6 backdrop-blur-2xl sm:px-10 w-full shrink-0">
           <div className="flex flex-1 items-center gap-4">
-            <SidebarTrigger className="lg:hidden h-10 w-10 rounded-xl hover:bg-brand-brown/10 text-brand-brown" />
+            <SidebarTrigger className="lg:hidden h-12 w-12 rounded-xl hover:bg-brand-brown/10 text-brand-brown" />
             <div className="hidden lg:block">
                <div className="flex flex-col">
                  <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-brown/50">LEAfrique Artisans</p>
@@ -54,21 +54,21 @@ export function AppLayout({
                </div>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <Select value={currency} onValueChange={(v) => setCurrency(v as CurrencyCode)}>
-              <SelectTrigger className="w-[100px] h-10 rounded-xl border-border/50 bg-background/50 font-bold text-xs shadow-sm">
+              <SelectTrigger className="w-[120px] h-11 rounded-xl border-border/50 bg-background/50 font-bold text-sm shadow-sm">
                 <SelectValue placeholder="USD" />
               </SelectTrigger>
               <SelectContent className="rounded-xl border-border/50 shadow-2xl">
-                <SelectItem value="USD" className="text-xs font-bold">USD ($)</SelectItem>
-                <SelectItem value="EUR" className="text-xs font-bold">EUR (€)</SelectItem>
-                <SelectItem value="NGN" className="text-xs font-bold">NGN (₦)</SelectItem>
-                <SelectItem value="GBP" className="text-xs font-bold">GBP (£)</SelectItem>
-                <SelectItem value="KES" className="text-xs font-bold">KES (KSh)</SelectItem>
+                <SelectItem value="USD" className="text-sm font-bold">USD ($)</SelectItem>
+                <SelectItem value="EUR" className="text-sm font-bold">EUR (€)</SelectItem>
+                <SelectItem value="NGN" className="text-sm font-bold">NGN (₦)</SelectItem>
+                <SelectItem value="GBP" className="text-sm font-bold">GBP (£)</SelectItem>
+                <SelectItem value="KES" className="text-sm font-bold">KES (KSh)</SelectItem>
               </SelectContent>
             </Select>
-            <div className="h-8 w-px bg-border/40 mx-1" />
-            <ThemeToggle className="static h-10 w-10 rounded-xl bg-background/50 border border-border/50 hover:bg-brand-brown/5 text-brand-brown" />
+            <div className="h-10 w-px bg-border/40 mx-1" />
+            <ThemeToggle className="static h-12 w-12 rounded-xl bg-background/50 border border-border/50 hover:bg-brand-brown/5 text-brand-brown" />
           </div>
         </header>
         <AnimatePresence mode="wait">
@@ -79,7 +79,7 @@ export function AppLayout({
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
-              "flex-1",
+              "flex-1 overflow-y-auto",
               !fullBleed && container && "max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-10 md:py-12 lg:py-16 w-full",
               fullBleed && "p-0",
               contentClassName
