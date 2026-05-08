@@ -42,31 +42,31 @@ export default function POSPage() {
       <div className="lg:col-span-8 flex flex-col flex-1 min-w-0 overflow-y-auto p-8 md:p-10 space-y-12 bg-background/50 custom-scrollbar">
         <section className="space-y-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-serif font-black flex items-center gap-4 text-black italic">
-              <div className="p-3 bg-black text-white rounded-2xl shadow-lg">
+            <h2 className="text-3xl font-serif font-black flex items-center gap-4 text-foreground italic">
+              <div className="p-3 bg-primary text-primary-foreground rounded-2xl shadow-lg">
                 <Search className="h-6 w-6" />
               </div>
               Select Client
             </h2>
             <Button
               variant="outline"
-              className="gap-3 rounded-2xl border-black/10 text-black bg-white hover:bg-black hover:text-white h-14 px-8 font-black shadow-sm"
+              className="gap-3 rounded-2xl border-border text-foreground bg-card hover:bg-primary hover:text-primary-foreground h-14 px-8 font-black shadow-sm"
               onClick={() => setIsCustomerDialogOpen(true)}
             >
               <UserPlus className="h-5 w-5" /> New Customer
             </Button>
           </div>
           <div className="relative">
-            <Search className="absolute left-5 top-5 h-6 w-6 text-black/20" />
+            <Search className="absolute left-5 top-5 h-6 w-6 text-foreground/20" />
             <Input
               placeholder="Search clients by name or identification..."
-              className="pl-14 h-16 rounded-[1.5rem] bg-white border-black/5 focus-visible:ring-black shadow-xl shadow-black/5 text-xl font-bold placeholder:text-black/20"
+              className="pl-14 h-16 rounded-[1.5rem] bg-card border-border focus-visible:ring-primary shadow-xl shadow-foreground/5 text-xl font-bold placeholder:text-foreground/20 text-foreground"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           {customersLoading ? (
-            <div className="flex justify-center p-8"><Loader2 className="animate-spin text-black h-10 w-10" /></div>
+            <div className="flex justify-center p-8"><Loader2 className="animate-spin text-foreground h-10 w-10" /></div>
           ) : filteredCustomers.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {filteredCustomers.map(customer => (
@@ -76,19 +76,19 @@ export default function POSPage() {
                   className={cn(
                     "flex items-center gap-6 p-8 rounded-3xl cursor-pointer transition-all border-2",
                     selectedCustomerId === customer.id
-                      ? "bg-black border-black text-white shadow-2xl scale-[1.02]"
-                      : "bg-white border-transparent hover:border-black/10 shadow-soft"
+                      ? "bg-primary border-primary text-primary-foreground shadow-2xl scale-[1.02]"
+                      : "bg-card border-transparent hover:border-border shadow-soft text-foreground"
                   )}
                 >
                   <div className={cn(
                     "h-14 w-14 shrink-0 rounded-2xl flex items-center justify-center font-black text-xl",
-                    selectedCustomerId === customer.id ? "bg-white text-black" : "bg-black text-white"
+                    selectedCustomerId === customer.id ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"
                   )}>
                     {customer.name.split(' ').map(n => n[0]).join('')}
                   </div>
                   <div className="min-w-0">
                     <div className="font-black text-xl truncate">{customer.name}</div>
-                    <div className={cn("text-sm font-black opacity-60", selectedCustomerId === customer.id ? "text-white" : "text-black")}>
+                    <div className={cn("text-sm font-black opacity-60", selectedCustomerId === customer.id ? "text-primary-foreground" : "text-foreground")}>
                       {customer.phone}
                     </div>
                   </div>
@@ -96,35 +96,35 @@ export default function POSPage() {
               ))}
             </div>
           ) : (
-            <div className="p-16 text-center text-black/30 text-xl font-serif italic bg-black/5 rounded-3xl border-2 border-dashed border-black/10">
+            <div className="p-16 text-center text-foreground/30 text-xl font-serif italic bg-foreground/5 rounded-3xl border-2 border-dashed border-border">
               Registry search returned no results.
             </div>
           )}
         </section>
         <section className="space-y-8">
-          <h2 className="text-3xl font-serif font-black flex items-center gap-4 text-black italic">
-            <div className="p-3 bg-black text-white rounded-2xl shadow-lg">
+          <h2 className="text-3xl font-serif font-black flex items-center gap-4 text-foreground italic">
+            <div className="p-3 bg-primary text-primary-foreground rounded-2xl shadow-lg">
               <Scissors className="h-6 w-6" />
             </div>
             Garment Library
           </h2>
           {garmentsLoading ? (
-            <div className="flex justify-center p-16"><Loader2 className="animate-spin text-black h-12 w-12" /></div>
+            <div className="flex justify-center p-16"><Loader2 className="animate-spin text-foreground h-12 w-12" /></div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               {garmentLibrary.map(type => (
                 <Card
                   key={type.id}
-                  className="cursor-pointer hover:shadow-2xl hover:scale-[1.03] transition-all border-none shadow-soft active:scale-95 duration-75 overflow-hidden group bg-white"
+                  className="cursor-pointer hover:shadow-2xl hover:scale-[1.03] transition-all border-none shadow-soft active:scale-95 duration-75 overflow-hidden group bg-card"
                   onClick={() => addItem({ type: type.name, price: type.basePrice })}
                 >
-                  <CardContent className="p-10 flex flex-col items-center text-center gap-6 group-hover:bg-black/5 transition-colors">
-                    <div className="p-6 rounded-[2rem] bg-black/5 text-black group-hover:bg-black group-hover:text-white transition-all shadow-sm">
+                  <CardContent className="p-10 flex flex-col items-center text-center gap-6 group-hover:bg-foreground/5 transition-colors">
+                    <div className="p-6 rounded-[2rem] bg-foreground/5 text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all shadow-sm">
                       <Plus className="h-8 w-8" />
                     </div>
                     <div className="space-y-2">
-                      <div className="font-black text-black text-2xl tracking-tight">{type.name}</div>
-                      <div className="text-lg font-serif font-black italic text-black/40">From {formatPrice(type.basePrice, currency)}</div>
+                      <div className="font-black text-foreground text-2xl tracking-tight">{type.name}</div>
+                      <div className="text-lg font-serif font-black italic text-foreground/40">From {formatPrice(type.basePrice, currency)}</div>
                     </div>
                   </CardContent>
                 </Card>
@@ -135,10 +135,10 @@ export default function POSPage() {
         {selectedCustomerId && (
           <section className="space-y-8 pb-16" key={selectedCustomerId}>
             <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-serif font-black text-black italic">Artisan Metrics</h2>
-              <Button variant="link" className="text-black font-black p-0 text-lg decoration-black/20">Metrics History</Button>
+              <h2 className="text-3xl font-serif font-black text-foreground italic">Artisan Metrics</h2>
+              <Button variant="link" className="text-foreground font-black p-0 text-lg decoration-foreground/20">Metrics History</Button>
             </div>
-            <Card className="border-none shadow-xl bg-white rounded-[2.5rem] overflow-hidden">
+            <Card className="border-none shadow-xl bg-card rounded-[2.5rem] overflow-hidden">
               <CardContent className="p-10">
                 <MeasurementForm />
               </CardContent>
@@ -147,7 +147,7 @@ export default function POSPage() {
         )}
       </div>
       {/* Right Side: Order Summary */}
-      <div className="lg:col-span-4 bg-white border-l border-black/5 flex flex-col overflow-hidden shadow-2xl relative z-20">
+      <div className="lg:col-span-4 bg-card border-l border-border flex flex-col overflow-hidden shadow-2xl relative z-20">
         <OrderSummary onOrderComplete={setCompletedOrder} />
       </div>
       <CustomerCreateDialog
