@@ -14,7 +14,7 @@
     --secondary: 34 20% 85%;
     --secondary-foreground: 0 0% 0%;
     --muted: 34 20% 88%;
-    --muted-foreground: 0 0% 0%; /* Muted text is still black for legibility */
+    --muted-foreground: 0 0% 0% / 0.7; /* Forced high-contrast muted text */
     --accent: 0 0% 0%;
     --accent-foreground: 60 56% 98%;
     --destructive: 0 84.2% 60.2%;
@@ -72,7 +72,6 @@
   p, span, label {
     @apply font-bold; /* Increased weight for legibility */
   }
-  /* Force 7:1 contrast accessibility for muted text in the workshop */
   .text-muted-foreground {
     color: rgba(0, 0, 0, 0.7) !important;
   }

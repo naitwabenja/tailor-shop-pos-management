@@ -25,7 +25,7 @@ export function AppLayout({
   className?: string;
   contentClassName?: string;
   fullBleed?: boolean;
-  children?: React.Node;
+  children?: React.ReactNode;
 }): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,7 +46,6 @@ export function AppLayout({
       <SidebarInset className={cn("bg-background min-w-0 flex flex-col relative", className)}>
         <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-black/10 bg-brand-wheat px-6 backdrop-blur-2xl sm:px-10 w-full shrink-0">
           <div className="flex flex-1 items-center gap-4">
-            {/* SidebarTrigger removed for persistent navigation flow */}
             <div className="flex flex-col">
               <p className="text-[10px] font-black uppercase tracking-[0.4em] text-black/40">LEAfrique Artisans</p>
               <p className="text-sm font-serif font-black italic text-black">Atelier Suite v2.0</p>
