@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useInventory, useUpdateInventoryItem } from '@/hooks/use-api';
+import { useInventory, useUpdateInventoryItem, useDeleteInventoryItem } from '@/hooks/use-api';
 import { useAppStore } from '@/store/use-app-store';
 import { formatPrice } from '@/lib/utils';
 import { InventoryCreateDialog } from '@/components/inventory/InventoryCreateDialog';
@@ -17,24 +17,49 @@ import {
   Box,
   Warehouse
 } from 'lucide-react';
+import { InventoryItem } from '@shared/types';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog';
+import { Edit, Trash2 } from 'lucide-react';
+import { InventoryEditDialog } from '@/components/inventory/InventoryEditDialog';
 export default function InventoryPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editItem, setEditItem] = useState<InventoryItem | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [pendingDeleteItem, setPendingDeleteItem] = useState<InventoryItem | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const currency = useAppStore((s) => s.currency);
   const { data: inventory, isLoading } = useInventory();
-  const updateStock = useUpdateInventoryItem();
+  const updateInventoryItem = useUpdateInventoryItem();
+  const deleteInventoryItem = useDeleteInventoryItem();
   const filteredItems = inventory?.filter(i =>
     i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     i.type.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
   const criticalCount = inventory?.filter(i => i.quantity <= i.lowStockThreshold).length || 0;
   const lowCount = inventory?.filter(i => i.quantity > i.lowStockThreshold && i.quantity < i.lowStockThreshold * 2).length || 0;
-  const handleQuickRestock = async (id: string, current: number) => {
+  const handleQuickRestock = async (id: string, current: number, itemName: string, itemUnit: string) => {
     try {
-      await updateStock.mutateAsync({ id, quantity: current + 10 });
-      toast.success(`Inventory updated: ${formatPrice(10, currency)} worth added to stock`);
+      await updateInventoryItem.mutateAsync({ id, quantity: current + 10 });
+      toast.success(`Restocked ${itemName}: +10 ${itemUnit}`);
     } catch (e) {
       toast.error('Failed to update stock');
     }
@@ -167,14 +192,40 @@ export default function InventoryPage() {
                                 variant="ghost"
                                 size="sm"
                                 className="h-8 rounded-lg font-bold text-indigo-600 hover:bg-indigo-50"
-                                onClick={() => handleQuickRestock(item.id, item.quantity)}
-                                disabled={updateStock.isPending}
+                                onClick={() => handleQuickRestock(item.id, item.quantity, item.name, item.unit)}
+                                disabled={updateInventoryItem.isPending}
                               >
                                 +10
                               </Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                    <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48">
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setEditItem(item);
+                                      setIsEditOpen(true);
+                                    }}
+                                  >
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Edit Item
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setPendingDeleteItem(item);
+                                      setShowDeleteConfirm(true);
+                                    }}
+                                    className="text-destructive focus:bg-destructive/10"
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </div>
                           </td>
                         </tr>
@@ -188,6 +239,42 @@ export default function InventoryPage() {
         </Card>
       </div>
       <InventoryCreateDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
+      <InventoryEditDialog open={isEditOpen} onOpenChange={setIsEditOpen} item={editItem!} />
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Inventory Item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. "{pendingDeleteItem?.name}" will be permanently removed from the stock list.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowDeleteConfirm(false);
+              setPendingDeleteItem(null);
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={async () => {
+                if (!pendingDeleteItem) return;
+                try {
+                  await deleteInventoryItem.mutateAsync(pendingDeleteItem.id);
+                  toast.success(`"${pendingDeleteItem.name}" deleted from inventory`);
+                } catch {
+                  toast.error('Failed to delete inventory item');
+                } finally {
+                  setShowDeleteConfirm(false);
+                  setPendingDeleteItem(null);
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
