@@ -77,7 +77,9 @@ function updateWranglerJsonc() {
 }
 
 function runSetupCommands() {
-    const commands = [];
+    const commands = [
+    "bun add lucide-react clsx tailwind-merge date-fns zustand framer-motion @tanstack/react-query react-hook-form @hookform/resolvers zod sonner"
+];
     
     if (commands.length === 0) {
         console.log('⊘ No setup commands to run');
