@@ -44,19 +44,19 @@ export function AppLayout({
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />
       <SidebarInset className={cn("bg-background min-w-0 flex flex-col relative", className)}>
-        <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-black/10 bg-brand-wheat px-6 backdrop-blur-2xl sm:px-10 w-full shrink-0">
+        <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-border bg-background/80 px-6 backdrop-blur-2xl sm:px-10 w-full shrink-0">
           <div className="flex flex-1 items-center gap-4">
             <div className="flex flex-col">
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-black/40">LEAfrique Artisans</p>
-              <p className="text-sm font-serif font-black italic text-black">Atelier Suite v2.0</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground/40">LEAfrique Artisans</p>
+              <p className="text-sm font-serif font-black italic text-foreground">Atelier Suite v2.0</p>
             </div>
           </div>
           <div className="flex items-center gap-6">
             <Select value={currency} onValueChange={(v) => setCurrency(v as any)}>
-              <SelectTrigger className="w-[120px] h-11 rounded-xl border-black/10 bg-brand-wheat font-black text-sm shadow-sm text-black">
+              <SelectTrigger className="w-[120px] h-11 rounded-xl border-border bg-card font-black text-sm shadow-sm text-foreground">
                 <SelectValue placeholder="USD" />
               </SelectTrigger>
-              <SelectContent className="rounded-xl border-black/10 shadow-2xl bg-brand-wheat">
+              <SelectContent className="rounded-xl border-border shadow-2xl bg-card">
                 <SelectItem value="USD" className="text-sm font-bold">USD ($)</SelectItem>
                 <SelectItem value="EUR" className="text-sm font-bold">EUR (€)</SelectItem>
                 <SelectItem value="NGN" className="text-sm font-bold">NGN (₦)</SelectItem>
@@ -64,8 +64,8 @@ export function AppLayout({
                 <SelectItem value="KES" className="text-sm font-bold">KES (KSh)</SelectItem>
               </SelectContent>
             </Select>
-            <div className="h-10 w-px bg-black/10 mx-1" />
-            <ThemeToggle className="static h-12 w-12 rounded-xl bg-brand-wheat border-2 border-black/10 hover:bg-black hover:text-brand-wheat text-black" />
+            <div className="h-10 w-px bg-border mx-1" />
+            <ThemeToggle className="static h-12 w-12 rounded-xl bg-card border-2 border-border hover:bg-primary hover:text-primary-foreground text-foreground" />
           </div>
         </header>
         <AnimatePresence mode="wait">

@@ -9,17 +9,17 @@
     --card-foreground: 0 0% 0%;
     --popover: 60 56% 95%;
     --popover-foreground: 0 0% 0%;
-    --primary: 0 0% 0%; /* Solid black primary */
+    --primary: 0 0% 0%; /* Solid black primary in light mode */
     --primary-foreground: 60 56% 98%;
     --secondary: 34 20% 85%;
     --secondary-foreground: 0 0% 0%;
     --muted: 34 20% 88%;
-    --muted-foreground: 0 0% 0% / 0.7; /* Forced high-contrast muted text */
-    --accent: 0 0% 0%;
+    --muted-foreground: 0 0% 0% / 0.7;
+    --accent: 25 75% 47%; /* Wood #D2691E */
     --accent-foreground: 60 56% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 60 9.1% 97.8%;
-    --border: 0 0% 0% / 0.15; /* Defined black borders */
+    --border: 0 0% 0% / 0.15;
     --input: 0 0% 0% / 0.15;
     --ring: 0 0% 0%;
     --radius: 1.25rem;
@@ -33,25 +33,32 @@
     --sidebar-ring: 0 0% 0%;
   }
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 60 56% 95%;
-    --card: 0 0% 5%;
-    --card-foreground: 60 56% 95%;
-    --popover: 0 0% 5%;
-    --popover-foreground: 60 56% 95%;
-    --primary: 60 56% 95%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 60 56% 95%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 60 56% 70%;
-    --accent: 60 56% 95%;
-    --accent-foreground: 0 0% 0%;
+    --background: 29 33% 12%; /* Soil #2A1F15 */
+    --foreground: 60 56% 91%; /* Wheat #F5F5DC for high contrast text */
+    --card: 35 29% 18%; /* Darker Leather #3A2F20 */
+    --card-foreground: 60 56% 91%;
+    --popover: 35 29% 18%;
+    --popover-foreground: 60 56% 91%;
+    --primary: 120 61% 34%; /* Forest Green #228B22 */
+    --primary-foreground: 60 56% 95%;
+    --secondary: 80 45% 25%; /* Moss Green #4A5D23 */
+    --secondary-foreground: 60 56% 91%;
+    --muted: 29 33% 18%;
+    --muted-foreground: 60 56% 75%;
+    --accent: 25 75% 47%; /* Wood #D2691E */
+    --accent-foreground: 60 56% 95%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 60 56% 95%;
-    --border: 60 56% 20%;
-    --input: 60 56% 20%;
-    --ring: 60 56% 95%;
+    --border: 25 60% 23%; /* Deep Leather Brown #5C3317 */
+    --input: 25 60% 23%;
+    --ring: 120 61% 34%;
+    --sidebar-background: 29 33% 10%; /* Even deeper soil */
+    --sidebar-foreground: 60 56% 91%;
+    --sidebar-primary: 120 61% 34%;
+    --sidebar-primary-foreground: 60 56% 95%;
+    --sidebar-accent: 25 60% 23%;
+    --sidebar-accent-foreground: 60 56% 91%;
+    --sidebar-border: 25 60% 20%;
   }
 }
 @layer base {
@@ -63,25 +70,20 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     position: relative;
     -webkit-font-smoothing: antialiased;
-    color: #000000; /* Force pure black primary text */
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-black;
-    color: #000000;
+    @apply font-serif font-black text-foreground;
   }
   p, span, label {
-    @apply font-bold; /* Increased weight for legibility */
-  }
-  .text-muted-foreground {
-    color: rgba(0, 0, 0, 0.7) !important;
+    @apply font-bold;
   }
 }
 @layer utilities {
   .parchment {
-    @apply bg-brand-wheat border-black/20 shadow-[inset_0_0_60px_rgba(0,0,0,0.03)] border-2;
+    @apply bg-card border-border shadow-[inset_0_0_60px_rgba(0,0,0,0.03)] border-2;
   }
   .leather-edge {
-    @apply border-2 border-black/30 shadow-2xl;
+    @apply border-2 border-border shadow-2xl;
   }
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
@@ -90,6 +92,6 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-black/10 rounded-full;
+    @apply bg-foreground/10 rounded-full;
   }
 }
