@@ -2,7 +2,7 @@ import React from 'react';
 import { Order, OrderItem } from '@shared/types';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Printer, Scissors } from 'lucide-react';
+import { Printer, Scissors, Package } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { useAppStore } from '@/store/use-app-store';
 interface ReceiptViewProps {
@@ -40,19 +40,26 @@ export function ReceiptView({ order }: ReceiptViewProps) {
         </div>
       </div>
       <div className="space-y-6 mb-10 relative z-10">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-forest/60">Bespoke Commission Details</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-forest/60">Registry Entries</p>
         {order.items.map((item: OrderItem, idx: number) => (
-          <div key={idx} className="space-y-2">
+          <div key={idx} className="space-y-1.5 border-b border-brand-tan/10 pb-4 last:border-0">
             <div className="flex justify-between font-serif font-bold text-lg text-brand-soil">
-              <span>{item.garmentName}</span>
-              <span className="font-sans text-brand-saddle">{formatPrice(item.price, currency)}</span>
+              <span className="flex items-center gap-2">
+                {item.quantity} x {item.garmentName}
+              </span>
+              <span className="font-sans text-brand-saddle">{formatPrice(item.price * item.quantity, currency)}</span>
             </div>
-            {item.fabric && (
-              <p className="text-xs text-brand-forest font-bold italic bg-brand-forest/5 px-2 py-1 rounded-md inline-block">Fabric: {item.fabric}</p>
-            )}
+            <div className="flex items-center gap-2">
+              <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-brand-saddle/5 text-brand-saddle flex items-center gap-1">
+                {item.itemType === 'retail' ? <Package className="h-2 w-2" /> : <Scissors className="h-2 w-2" />}
+                {item.itemType}
+              </span>
+              {item.fabric && (
+                <span className="text-[9px] text-brand-forest font-bold italic">Fabric: {item.fabric}</span>
+              )}
+            </div>
             {item.notes && (
-              <p className="text-xs text-brand-soil/70 leading-relaxed pl-2 border-l-2 border-brand-tan/50">
-                <span className="font-black text-[10px] uppercase block mb-1 text-brand-soil/40">Tailor Notes</span>
+              <p className="text-[10px] text-brand-soil/70 leading-relaxed pl-2 border-l-2 border-brand-tan/30 mt-2">
                 {item.notes}
               </p>
             )}
@@ -65,7 +72,7 @@ export function ReceiptView({ order }: ReceiptViewProps) {
           <span>{formatPrice(subtotal, currency)}</span>
         </div>
         <div className="flex justify-between text-xs font-black text-brand-soil/50">
-          <span>Value Added Tax (5%)</span>
+          <span>VAT (5%)</span>
           <span>{formatPrice(tax, currency)}</span>
         </div>
         <div className="flex justify-between text-2xl font-serif font-bold pt-4 border-t border-dashed border-brand-tan/80 text-brand-saddle">
@@ -76,8 +83,7 @@ export function ReceiptView({ order }: ReceiptViewProps) {
       <div className="mt-14 text-center space-y-6 relative z-10">
         <div className="space-y-1">
           <p className="text-[10px] font-black uppercase tracking-widest text-brand-soil/40 leading-relaxed">
-            Thank you for entrusting your style to LEAfrique.<br />
-            Your masterpiece will be ready for fitting by
+             Masterpiece Collection fitting by
           </p>
           <p className="text-lg font-serif font-bold text-brand-forest italic">{format(order.dueDate, 'MMMM dd, yyyy')}</p>
         </div>

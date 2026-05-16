@@ -28,7 +28,7 @@ export const MOCK_INVENTORY: InventoryItem[] = [
     quantity: 8,
     unit: 'meters',
     unitPrice: 12.50,
-    lowStockThreshold: 15, // Low stock state
+    lowStockThreshold: 15,
     createdAt: Date.now(),
     updatedAt: Date.now()
   },
@@ -39,7 +39,7 @@ export const MOCK_INVENTORY: InventoryItem[] = [
     quantity: 2,
     unit: 'packs',
     unitPrice: 18.00,
-    lowStockThreshold: 5, // Critical state
+    lowStockThreshold: 5,
     createdAt: Date.now(),
     updatedAt: Date.now()
   },
@@ -91,6 +91,7 @@ export const MOCK_ORDERS: Order[] = [
         quantity: 1,
         price: 850,
         fabric: 'Italian Wool',
+        itemType: 'bespoke',
         createdAt: Date.now(),
         updatedAt: Date.now()
       }

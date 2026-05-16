@@ -93,6 +93,7 @@ export class OrderItemEntity extends IndexedEntity<OrderItem> {
     garmentName: "",
     quantity: 1,
     price: 0,
+    itemType: 'bespoke',
     createdAt: 0,
     updatedAt: 0
   };

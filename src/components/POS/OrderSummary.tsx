@@ -19,7 +19,7 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
   const clearCart = usePOSStore(s => s.clearCart);
   const currency = useAppStore(s => s.currency);
   const { data: customersData } = useCustomers();
-  const selectedCustomer = React.useMemo(() =>
+  const selectedCustomer = React.useMemo(() => 
     customersData?.items.find(c => c.id === selectedCustomerId),
     [customersData, selectedCustomerId]
   );
@@ -96,15 +96,15 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
             items.map((item) => <CartItem key={item.id} item={item} />)
           )}
         </div>
-        <div className="pt-6 mt-4 border-t-2 border-border space-y-4">
+        <div className="pt-6 mt-4 border-t-2 border-border space-y-6">
           <div className="flex items-center justify-between px-1">
              <div className="flex flex-col">
                <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/40">Bespoke Pieces</span>
-               <span className="font-bold text-sm text-foreground">{bespokeCount}</span>
+               <span className="font-black text-sm text-foreground">{bespokeCount}</span>
              </div>
              <div className="flex flex-col text-right">
                <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/40">Stock Items</span>
-               <span className="font-bold text-sm text-foreground">{retailCount}</span>
+               <span className="font-black text-sm text-foreground">{retailCount}</span>
              </div>
           </div>
           {selectedCustomer && (
@@ -113,27 +113,27 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
               <p className="font-serif font-bold text-foreground text-xl italic">{selectedCustomer.name}</p>
             </div>
           )}
-          <div className="space-y-2 px-1">
-            <div className="flex items-center justify-between text-foreground/70 text-xs font-bold uppercase tracking-widest">
+          <div className="space-y-3 px-1">
+            <div className="flex items-center justify-between text-foreground/60 text-xs font-black uppercase tracking-widest">
               <span>Subtotal</span>
               <span className="font-mono">{formatPrice(subtotal, currency)}</span>
             </div>
-            <div className="flex items-center justify-between text-foreground/70 text-xs font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-between text-foreground/60 text-xs font-black uppercase tracking-widest">
               <span>VAT (5%)</span>
               <span className="font-mono">{formatPrice(tax, currency)}</span>
             </div>
-          </div>
-          <div className="flex items-center justify-between pt-4 border-t border-dashed border-border px-1">
-            <span className="text-xl font-serif font-bold text-foreground tracking-tight">Total</span>
-            <span className="text-3xl font-sans font-bold text-accent tracking-tighter">
-              {formatPrice(total, currency)}
-            </span>
+            <div className="flex items-center justify-between pt-4 border-t-2 border-dashed border-border">
+              <span className="text-xl font-serif font-bold text-foreground tracking-tight">Total Valuation</span>
+              <span className="text-3xl font-sans font-black text-accent tracking-tighter">
+                {formatPrice(total, currency)}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-      <div className="p-6 bg-accent/10 border-t border-border">
+      <div className="p-6 bg-accent/5 border-t border-border">
         <Button
-          className="w-full h-16 text-xl font-bold bg-primary hover:opacity-90 text-primary-foreground rounded-2xl shadow-xl transition-all active:scale-95 gap-4 disabled:bg-foreground/10 disabled:text-foreground/20"
+          className="w-full h-16 text-xl font-black bg-primary hover:opacity-90 text-primary-foreground rounded-2xl shadow-xl transition-all active:scale-[0.98] active:shadow-inner gap-4 disabled:bg-foreground/10 disabled:text-foreground/20 group overflow-hidden relative"
           disabled={items.length === 0 || !selectedCustomerId || createOrder.isPending}
           onClick={handleProcessOrder}
         >
@@ -141,9 +141,9 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
             <Loader2 className="h-8 w-8 animate-spin" />
           ) : (
             <>
-              <CreditCard className="h-6 w-6" />
-              Secure Order
-              <ChevronRight className="h-6 w-6 ml-auto opacity-40" />
+              <CreditCard className="h-6 w-6 relative z-10" />
+              <span className="relative z-10">Secure Masterpiece</span>
+              <ChevronRight className="h-6 w-6 ml-auto opacity-40 group-hover:translate-x-1 transition-transform relative z-10" />
             </>
           )}
         </Button>

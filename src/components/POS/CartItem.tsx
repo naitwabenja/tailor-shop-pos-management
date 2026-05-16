@@ -1,11 +1,11 @@
 import React from 'react';
-import { Trash2, MessageSquare, Info, Plus, Minus, Package, Scissors } from 'lucide-react';
+import { Trash2, MessageSquare, Plus, Minus, Package, Scissors } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { usePOSStore } from '@/store/use-pos-store';
 import { useAppStore } from '@/store/use-app-store';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, cn } from '@/lib/utils';
 import type { GarmentItem } from '@shared/types';
 import { Badge } from '@/components/ui/badge';
 interface CartItemProps {
@@ -72,9 +72,9 @@ export function CartItem({ item }: CartItemProps) {
       </div>
       <div className="flex items-center justify-between pt-2 border-t border-brand-brown/5">
          <div className="flex items-center gap-2 bg-brand-brown/5 rounded-lg p-1">
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="h-7 w-7 rounded-md hover:bg-white text-brand-brown"
               onClick={() => updateQuantity(item.id, item.quantity - 1)}
               disabled={item.quantity <= 1}
@@ -82,9 +82,9 @@ export function CartItem({ item }: CartItemProps) {
               <Minus className="h-3 w-3" />
             </Button>
             <span className="text-xs font-black w-6 text-center text-brand-brown">{item.quantity}</span>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="h-7 w-7 rounded-md hover:bg-white text-brand-brown"
               onClick={() => updateQuantity(item.id, item.quantity + 1)}
             >

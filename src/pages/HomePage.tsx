@@ -8,7 +8,8 @@ import {
   Scissors,
   ArrowRight,
   Loader2,
-  Sparkles
+  Sparkles,
+  Package
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
@@ -25,8 +26,17 @@ export function HomePage() {
     const inProgressCount = orders.filter(o => o.status === 'In Progress').length;
     const readyCount = orders.filter(o => o.status === 'Ready').length;
     const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
+    const bespokeRevenue = orders.reduce((acc, o) => 
+      acc + o.items.filter(i => i.itemType === 'bespoke').reduce((sub, i) => sub + (i.price * i.quantity), 0), 0);
     return [
-      { label: 'Valuation', value: formatPrice(totalRevenue, currency), icon: TrendingUp, color: 'text-foreground', sub: 'Total Volume', count: 0 },
+      { 
+        label: 'Valuation', 
+        value: formatPrice(totalRevenue, currency), 
+        icon: TrendingUp, 
+        color: 'text-foreground', 
+        sub: `Bespoke: ${formatPrice(bespokeRevenue, currency)}`, 
+        count: 0 
+      },
       { label: 'Pending', value: pendingCount, icon: Clock, color: 'text-foreground', sub: 'In Queue', count: pendingCount },
       { label: 'On Bench', value: inProgressCount, icon: Scissors, color: 'text-foreground', sub: 'Under Hand', count: inProgressCount },
       { label: 'Ready', value: readyCount, icon: CheckCircle2, color: 'text-foreground', sub: 'Masterworks', count: readyCount },
@@ -90,37 +100,43 @@ export function HomePage() {
             </div>
           ) : (
             <div className="divide-y-2 divide-border">
-              {orders.slice(0, 5).map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-6 hover:bg-foreground/5 transition-all group cursor-default">
-                  <div className="flex items-center gap-6">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground text-xl font-serif font-bold shadow-lg group-hover:scale-105 transition-transform">
-                      {order.customerName.split(' ').map(n => n[0]).join('')}
+              {orders.slice(0, 5).map((order) => {
+                const hasBespoke = order.items.some(i => i.itemType === 'bespoke');
+                return (
+                  <div key={order.id} className="flex items-center justify-between p-6 hover:bg-foreground/5 transition-all group cursor-default">
+                    <div className="flex items-center gap-6">
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground text-xl font-serif font-bold shadow-lg group-hover:scale-105 transition-transform">
+                        {order.customerName.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-foreground text-xl tracking-tight leading-none mb-1">{order.customerName}</h4>
+                        <div className="flex items-center gap-4 text-xs text-foreground/50 font-bold">
+                          <span className="uppercase tracking-wider text-foreground flex items-center gap-1.5">
+                            {hasBespoke ? <Scissors className="h-3 w-3" /> : <Package className="h-3 w-3" />}
+                            {order.items[0]?.garmentName}
+                          </span>
+                          <span className="opacity-20">|</span>
+                          <span className="italic">Due {format(order.dueDate, 'MMM d')}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-foreground text-xl tracking-tight leading-none mb-1">{order.customerName}</h4>
-                      <div className="flex items-center gap-4 text-xs text-foreground/50 font-bold">
-                        <span className="uppercase tracking-wider text-foreground">{order.items[0]?.garmentName}</span>
-                        <span className="opacity-20">|</span>
-                        <span className="italic">Due {format(order.dueDate, 'MMM d')}</span>
+                    <div className="flex items-center gap-8">
+                      <Badge className={cn(
+                        "px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-[0.1em] border-none shadow-sm",
+                        order.status === 'Ready' && "bg-primary text-primary-foreground",
+                        order.status === 'Pending' && "bg-card text-foreground border-2 border-border",
+                        order.status === 'In Progress' && "bg-secondary text-secondary-foreground",
+                        order.status === 'Delivered' && "bg-foreground/10 text-foreground"
+                      )}>
+                        {order.status}
+                      </Badge>
+                      <div className="text-right min-w-[140px]">
+                        <div className="font-serif font-bold text-foreground text-2xl italic">{formatPrice(order.total, currency)}</div>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-8">
-                    <Badge className={cn(
-                      "px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-[0.1em] border-none shadow-sm",
-                      order.status === 'Ready' && "bg-primary text-primary-foreground",
-                      order.status === 'Pending' && "bg-card text-foreground border-2 border-border",
-                      order.status === 'In Progress' && "bg-secondary text-secondary-foreground",
-                      order.status === 'Delivered' && "bg-foreground/10 text-foreground"
-                    )}>
-                      {order.status}
-                    </Badge>
-                    <div className="text-right min-w-[140px]">
-                      <div className="font-serif font-bold text-foreground text-2xl italic">{formatPrice(order.total, currency)}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
