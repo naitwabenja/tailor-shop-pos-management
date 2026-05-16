@@ -1,11 +1,8 @@
 import React from "react";
 import {
-  LayoutDashboard,
   Calculator,
-  Users,
   Scissors,
   Store,
-  Ruler,
   Package,
   LogOut
 } from "lucide-react";
@@ -25,11 +22,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "POS Terminal", href: "/dashboard/pos", icon: Calculator },
-  { name: "Customers", href: "/dashboard/customers", icon: Users },
   { name: "Order Tracking", href: "/dashboard/orders", icon: Scissors },
-  { name: "Measurements", href: "/dashboard/measurements", icon: Ruler },
   { name: "Inventory", href: "/dashboard/inventory", icon: Package },
 ];
 export function AppSidebar(): JSX.Element {

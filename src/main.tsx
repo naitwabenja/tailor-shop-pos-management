@@ -1,7 +1,6 @@
 import '@/lib/errorReporter';
 import { enableMapSet } from "immer";
 enableMapSet();
-
 import { createRoot } from 'react-dom/client'
 import {
   createBrowserRouter,
@@ -12,11 +11,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
 import '@/index.css'
-import { HomePage } from '@/pages/HomePage'
 import POSPage from '@/pages/POSPage'
-import CustomersPage from '@/pages/CustomersPage'
 import OrdersPage from '@/pages/OrdersPage'
-import MeasurementsPage from '@/pages/MeasurementsPage'
 import InventoryPage from '@/pages/InventoryPage'
 import LoginPage from '@/pages/LoginPage'
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -34,23 +30,15 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: <Navigate to="/dashboard/pos" replace />,
       },
       {
         path: "pos",
         element: <POSPage />,
       },
       {
-        path: "customers",
-        element: <CustomersPage />,
-      },
-      {
         path: "orders",
         element: <OrdersPage />,
-      },
-      {
-        path: "measurements",
-        element: <MeasurementsPage />,
       },
       {
         path: "inventory",
