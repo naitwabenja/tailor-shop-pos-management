@@ -148,6 +148,21 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       return bad(c, 'Failed to refine stock details');
     }
   });
+  app.delete('/api/inventory/:id', async (c) => {
+    try {
+      const id = c.req.param('id');
+      const entity = new InventoryItemEntity(c.env, id);
+      if (!await entity.exists()) return notFound(c);
+      
+      await entity.softDelete();
+      // We also remove it from the index so it doesn't show up in lists
+      await InventoryItemEntity.removeFromIndex(c.env, id);
+      return ok(c, { id, deleted: true });
+    } catch (e) {
+      console.error('[API] Delete Inventory Failed:', e);
+      return bad(c, 'Failed to archive workshop stock');
+    }
+  });
   // ORDERS
   app.get('/api/orders', async (c) => {
     try {

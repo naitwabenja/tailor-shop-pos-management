@@ -51,6 +51,9 @@ export class InventoryItemEntity extends IndexedEntity<InventoryItem> {
     updatedAt: 0
   };
   static seedData = MOCK_INVENTORY;
+  async softDelete(): Promise<void> {
+    await this.mutate(s => ({ ...s, deletedAt: Date.now() }));
+  }
 }
 export class GarmentEntity extends IndexedEntity<Garment> {
   static readonly entityName = "garment";
