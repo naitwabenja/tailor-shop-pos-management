@@ -24,10 +24,12 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
     [customersData, selectedCustomerId]
   );
   const createOrder = useCreateOrder();
-  const subtotal = items.reduce((acc, item) => acc + item.price, 0);
+  const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const taxRate = 0.05;
   const tax = subtotal * taxRate;
   const total = subtotal + tax;
+  const bespokeCount = items.filter(i => i.itemType === 'bespoke').length;
+  const retailCount = items.filter(i => i.itemType === 'retail').reduce((acc, i) => acc + i.quantity, 0);
   const handleProcessOrder = async () => {
     if (!selectedCustomerId || !selectedCustomer) {
       toast.error('Please select a customer first');
@@ -39,12 +41,14 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
     }
     try {
       const mappedItems = items.map(item => ({
-        garmentId: 'custom',
+        garmentId: item.inventoryItemId ? item.inventoryItemId : 'custom',
         garmentName: item.type,
-        quantity: 1,
+        quantity: item.quantity,
         price: item.price,
         fabric: item.fabric,
         notes: item.notes,
+        inventoryItemId: item.inventoryItemId,
+        itemType: item.itemType
       }));
       const newOrder = await createOrder.mutateAsync({
         customerId: selectedCustomerId,
@@ -60,9 +64,9 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
         onOrderComplete(newOrder);
       }
       clearCart();
-    } catch (error) {
+    } catch (error: any) {
       console.error('[POS] Order creation error:', error);
-      toast.error('Failed to create order. Please check the logs.');
+      toast.error(error.message || 'Failed to create order.');
     }
   };
   return (
@@ -85,7 +89,7 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
               </div>
               <div className="text-center space-y-1">
                 <p className="font-serif italic text-lg text-foreground/40 font-bold">The bench is clear</p>
-                <p className="text-[9px] font-bold uppercase tracking-widest text-foreground/30">Select garments to begin</p>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-foreground/30">Select garments or stock to begin</p>
               </div>
             </div>
           ) : (
@@ -93,6 +97,16 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
           )}
         </div>
         <div className="pt-6 mt-4 border-t-2 border-border space-y-4">
+          <div className="flex items-center justify-between px-1">
+             <div className="flex flex-col">
+               <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/40">Bespoke Pieces</span>
+               <span className="font-bold text-sm text-foreground">{bespokeCount}</span>
+             </div>
+             <div className="flex flex-col text-right">
+               <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/40">Stock Items</span>
+               <span className="font-bold text-sm text-foreground">{retailCount}</span>
+             </div>
+          </div>
           {selectedCustomer && (
             <div className="p-4 bg-accent/10 rounded-xl border border-accent/20 shadow-sm">
               <p className="text-[9px] font-bold text-accent uppercase tracking-[0.2em] mb-1">Artisan Client</p>

@@ -12,6 +12,7 @@ export interface BaseEntity {
 export type OrderStatus = 'Pending' | 'In Progress' | 'Ready' | 'Delivered' | 'Cancelled';
 export type PaymentMethod = 'Cash' | 'Mobile Money' | 'Card';
 export type InventoryType = 'Fabric' | 'Garment' | 'Supply';
+export type CartItemType = 'bespoke' | 'retail';
 export interface Measurements extends Record<string, number | undefined> {
   neck?: number;
   chest?: number;
@@ -55,6 +56,9 @@ export interface GarmentItem {
   fabric?: string;
   notes?: string;
   price: number;
+  quantity: number;
+  inventoryItemId?: string;
+  itemType: CartItemType;
 }
 export interface OrderItem extends BaseEntity {
   orderId: string;
@@ -64,6 +68,8 @@ export interface OrderItem extends BaseEntity {
   price: number;
   fabric?: string;
   notes?: string;
+  inventoryItemId?: string;
+  itemType: CartItemType;
 }
 export interface Payment extends BaseEntity {
   orderId: string;

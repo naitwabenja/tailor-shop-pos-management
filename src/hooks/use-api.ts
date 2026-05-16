@@ -1,11 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import type { Customer, Order, OrderStatus, Garment, InventoryItem, MeasurementRecord } from '@shared/types';
-/**
- * Global Query Client Options for Production Hardening
- * staleTime: 30s - prevents frequent refetches during active use
- * gcTime: 5m - keeps data in cache for background sessions
- */
 export const queryClientConfig = {
   defaultOptions: {
     queries: {
@@ -29,6 +24,18 @@ export function useGarments() {
   return useQuery({
     queryKey: ['garments'],
     queryFn: () => api<Garment[]>('/api/garments'),
+  });
+}
+export function useCreateGarment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Partial<Garment>) => api<Garment>('/api/garments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['garments'] });
+    },
   });
 }
 export function useInventory() {
@@ -121,6 +128,7 @@ export function useCreateOrder() {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
     },
   });
 }

@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import type { Env } from './core-utils';
 import { CustomerEntity, OrderEntity, MeasurementEntity, InventoryItemEntity, GarmentEntity } from "./entities";
 import { ok, bad, notFound } from './core-utils';
-import type { OrderStatus, InventoryItem, Measurements } from "@shared/types";
+import type { OrderStatus, InventoryItem, Measurements, OrderItem } from "@shared/types";
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
   // GARMENTS
   app.get('/api/garments', async (c) => {
@@ -13,6 +13,24 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     } catch (e) {
       console.error('[API] Get Garments Failed:', e);
       return bad(c, 'Failed to retrieve garment library');
+    }
+  });
+  app.post('/api/garments', async (c) => {
+    try {
+      const data = await c.req.json();
+      if (!data.name?.trim()) return bad(c, 'name required');
+      const now = Date.now();
+      const garment = await GarmentEntity.create(c.env, {
+        id: crypto.randomUUID(),
+        name: data.name.trim(),
+        basePrice: Number(data.basePrice) || 0,
+        createdAt: now,
+        updatedAt: now
+      });
+      return ok(c, garment);
+    } catch (e) {
+      console.error('[API] Create Garment Failed:', e);
+      return bad(c, 'Failed to register garment');
     }
   });
   // CUSTOMERS
@@ -80,58 +98,6 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       return bad(c, 'Failed to retrieve measurement archives');
     }
   });
-  app.post('/api/measurements/import', async (c) => {
-    try {
-      const rows = await c.req.json() as any[];
-      if (!Array.isArray(rows)) return bad(c, 'Expected array of measurement rows');
-      const { items: customers } = await CustomerEntity.list(c.env);
-      const results = { success: 0, failed: 0, errors: [] as string[] };
-      const now = Date.now();
-      for (const row of rows) {
-        if (!row || typeof row !== 'object') continue;
-        try {
-          const rowName = String(row.customerName || row.name || "").trim().toLowerCase();
-          const rowPhone = String(row.phone || "").trim();
-          const customer = customers.find(cust =>
-            cust.id === row.customerId ||
-            (rowPhone && cust.phone.trim() === rowPhone) ||
-            (rowName && cust.name.trim().toLowerCase() === rowName)
-          );
-          if (!customer) {
-            results.failed++;
-            results.errors.push(`Customer not found for row: ${row.customerName || row.name || 'Unknown'}`);
-            continue;
-          }
-          const measurements: Measurements = {
-            neck: parseFloat(row.neck) || undefined,
-            chest: parseFloat(row.chest) || undefined,
-            waist: parseFloat(row.waist) || undefined,
-            hips: parseFloat(row.hips) || undefined,
-            shoulder: parseFloat(row.shoulder) || undefined,
-            sleeve: parseFloat(row.sleeve) || undefined,
-            inseam: parseFloat(row.inseam) || undefined,
-            length: parseFloat(row.length) || undefined,
-          };
-          await MeasurementEntity.create(c.env, {
-            id: crypto.randomUUID(),
-            customerId: customer.id,
-            values: measurements,
-            notes: row.notes || "Imported via CSV",
-            createdAt: row.date ? new Date(row.date).getTime() : now,
-            updatedAt: now
-          });
-          results.success++;
-        } catch (err) {
-          results.failed++;
-          results.errors.push(`Error processing row: ${err instanceof Error ? err.message : String(err)}`);
-        }
-      }
-      return ok(c, results);
-    } catch (e) {
-      console.error('[API] Import Failed:', e);
-      return bad(c, 'Critical failure during batch import');
-    }
-  });
   // INVENTORY
   app.get('/api/inventory', async (c) => {
     try {
@@ -170,28 +136,16 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       const data = await c.req.json();
       const entity = new InventoryItemEntity(c.env, id);
       if (!await entity.exists()) return notFound(c);
-      const sanitized = {
-        ...data,
-        quantity: data.quantity !== undefined ? Number(data.quantity) : undefined,
-        unitPrice: data.unitPrice !== undefined ? Number(data.unitPrice) : undefined,
-        lowStockThreshold: data.lowStockThreshold !== undefined ? Number(data.lowStockThreshold) : undefined,
-      };
-      const updated = await entity.mutate(s => ({ ...s, ...sanitized, updatedAt: Date.now() }));
+      const updated = await entity.mutate(s => ({ 
+        ...s, 
+        ...data, 
+        quantity: data.quantity !== undefined ? Number(data.quantity) : s.quantity,
+        updatedAt: Date.now() 
+      }));
       return ok(c, updated);
     } catch (e) {
       console.error('[API] Update Inventory Failed:', e);
       return bad(c, 'Failed to refine stock details');
-    }
-  });
-  app.delete('/api/inventory/:id', async (c) => {
-    try {
-      const id = c.req.param('id');
-      const existed = await InventoryItemEntity.delete(c.env, id);
-      if (!existed) return notFound(c, 'item not found');
-      return ok(c, { id, deleted: true });
-    } catch (e) {
-      console.error('[API] Delete Inventory Failed:', e);
-      return bad(c, 'Failed to archive workshop material');
     }
   });
   // ORDERS
@@ -211,6 +165,23 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       if (!data.customerId || !data.items?.length) return bad(c, 'customerId and items required');
       const now = Date.now();
       const orderId = crypto.randomUUID();
+      // Inventory Processing
+      for (const item of data.items as OrderItem[]) {
+        if (item.inventoryItemId && item.itemType === 'retail') {
+          const inv = new InventoryItemEntity(c.env, item.inventoryItemId);
+          if (await inv.exists()) {
+            const current = await inv.getState();
+            if (current.quantity < item.quantity) {
+              return bad(c, `Insufficient stock for ${item.garmentName}`);
+            }
+            await inv.mutate(s => ({ 
+              ...s, 
+              quantity: s.quantity - item.quantity, 
+              updatedAt: now 
+            }));
+          }
+        }
+      }
       const order = {
         id: orderId,
         customerId: data.customerId,

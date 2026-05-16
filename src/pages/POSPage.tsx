@@ -2,23 +2,26 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Search,
   Plus,
   UserPlus,
   Scissors,
   Loader2,
+  Package,
+  Sparkles,
 } from 'lucide-react';
-import { MOCK_GARMENT_TYPES } from '@shared/mock-data';
 import { cn, formatPrice } from '@/lib/utils';
 import { usePOSStore } from '@/store/use-pos-store';
-import { useCustomers, useGarments } from '@/hooks/use-api';
+import { useCustomers, useGarments, useInventory, useCreateGarment } from '@/hooks/use-api';
 import { MeasurementForm } from '@/components/POS/MeasurementForm';
 import { OrderSummary } from '@/components/POS/OrderSummary';
 import { CustomerCreateDialog } from '@/components/customers/CustomerCreateDialog';
 import { OrderSuccessDialog } from '@/components/POS/OrderSuccessDialog';
 import { useAppStore } from '@/store/use-app-store';
 import { Order } from '@shared/types';
+import { toast } from 'sonner';
 export default function POSPage() {
   const selectedCustomerId = usePOSStore((s) => s.selectedCustomerId);
   const setCustomer = usePOSStore((s) => s.setCustomer);
@@ -26,19 +29,41 @@ export default function POSPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isCustomerDialogOpen, setIsCustomerDialogOpen] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
+  const [customGarmentName, setCustomGarmentName] = useState('');
+  const [customGarmentPrice, setCustomGarmentPrice] = useState('');
   const { data: customersData, isLoading: customersLoading } = useCustomers();
   const currency = useAppStore(s => s.currency);
   const { data: garmentsData, isLoading: garmentsLoading } = useGarments();
+  const { data: inventoryData, isLoading: inventoryLoading } = useInventory();
+  const createGarment = useCreateGarment();
   const filteredCustomers = customersData?.items.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.phone.includes(searchTerm)
   ).slice(0, 4) || [];
-  const garmentLibrary = garmentsData && garmentsData.length > 0
-    ? garmentsData.map(g => ({ id: g.id, name: g.name, basePrice: g.basePrice }))
-    : MOCK_GARMENT_TYPES;
+  const handleAddCustomGarment = async () => {
+    if (!customGarmentName || !customGarmentPrice) {
+      toast.error('Please enter name and price for custom garment');
+      return;
+    }
+    try {
+      const g = await createGarment.mutateAsync({
+        name: customGarmentName,
+        basePrice: parseFloat(customGarmentPrice)
+      });
+      addItem({ 
+        type: g.name, 
+        price: g.basePrice, 
+        itemType: 'bespoke' 
+      });
+      setCustomGarmentName('');
+      setCustomGarmentPrice('');
+      toast.success('Custom garment added to library and cart');
+    } catch (e) {
+      toast.error('Failed to create garment');
+    }
+  };
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 flex-1 overflow-hidden h-full">
-      {/* Left Side: Inputs and Selection */}
       <div className="lg:col-span-8 flex flex-col flex-1 min-w-0 overflow-y-auto p-6 md:p-8 space-y-8 bg-background/50 custom-scrollbar">
         <section className="space-y-6">
           <div className="flex items-center justify-between">
@@ -103,35 +128,104 @@ export default function POSPage() {
           )}
         </section>
         <section className="space-y-6">
-          <h2 className="text-2xl font-serif font-bold flex items-center gap-3 text-foreground italic">
-            <div className="p-2 bg-primary text-primary-foreground rounded-xl shadow-md">
-              <Scissors className="h-5 w-5" />
+          <Tabs defaultValue="garments" className="w-full">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-serif font-bold flex items-center gap-3 text-foreground italic">
+                <div className="p-2 bg-primary text-primary-foreground rounded-xl shadow-md">
+                  <Package className="h-5 w-5" />
+                </div>
+                Artisan Storefront
+              </h2>
+              <TabsList className="bg-card border-2 border-border h-12 rounded-xl p-1 gap-1">
+                <TabsTrigger value="garments" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold text-xs px-6">Garments</TabsTrigger>
+                <TabsTrigger value="inventory" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold text-xs px-6">Stock</TabsTrigger>
+              </TabsList>
             </div>
-            Garment Library
-          </h2>
-          {garmentsLoading ? (
-            <div className="flex justify-center p-12"><Loader2 className="animate-spin text-foreground h-10 w-10" /></div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {garmentLibrary.map(type => (
-                <Card
-                  key={type.id}
-                  className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all border-none shadow-sm active:scale-95 duration-75 overflow-hidden group bg-card"
-                  onClick={() => addItem({ type: type.name, price: type.basePrice })}
-                >
-                  <CardContent className="p-6 flex flex-col items-center text-center gap-4 group-hover:bg-foreground/5 transition-colors">
-                    <div className="p-4 rounded-2xl bg-foreground/5 text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all shadow-sm">
-                      <Plus className="h-6 w-6" />
-                    </div>
-                    <div className="space-y-1">
-                      <div className="font-bold text-foreground text-lg tracking-tight leading-tight">{type.name}</div>
-                      <div className="text-sm font-serif font-bold italic text-foreground/40">From {formatPrice(type.basePrice, currency)}</div>
-                    </div>
-                  </CardContent>
+            <TabsContent value="garments" className="mt-0">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <Card className="border-2 border-dashed border-border bg-transparent shadow-none hover:bg-foreground/5 transition-all group p-4 flex flex-col justify-between gap-4">
+                   <div className="space-y-2">
+                     <p className="text-[9px] font-bold uppercase tracking-widest text-foreground/40">New Custom Apparel</p>
+                     <Input 
+                       placeholder="Item Name" 
+                       className="h-9 text-xs rounded-lg"
+                       value={customGarmentName}
+                       onChange={(e) => setCustomGarmentName(e.target.value)}
+                     />
+                     <Input 
+                       type="number" 
+                       placeholder="Base Price" 
+                       className="h-9 text-xs rounded-lg"
+                       value={customGarmentPrice}
+                       onChange={(e) => setCustomGarmentPrice(e.target.value)}
+                     />
+                   </div>
+                   <Button 
+                     size="sm" 
+                     className="w-full font-bold h-9 rounded-lg"
+                     onClick={handleAddCustomGarment}
+                     disabled={createGarment.isPending}
+                   >
+                     {createGarment.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Plus className="h-3 w-3 mr-2"/> Add to Library</>}
+                   </Button>
                 </Card>
-              ))}
-            </div>
-          )}
+                {garmentsLoading ? (
+                  <div className="flex justify-center p-12"><Loader2 className="animate-spin text-foreground h-10 w-10" /></div>
+                ) : (
+                  garmentsData?.map(type => (
+                    <Card
+                      key={type.id}
+                      className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all border-none shadow-sm active:scale-95 duration-75 overflow-hidden group bg-card"
+                      onClick={() => addItem({ type: type.name, price: type.basePrice, itemType: 'bespoke' })}
+                    >
+                      <CardContent className="p-6 flex flex-col items-center text-center gap-4 group-hover:bg-foreground/5 transition-colors h-full">
+                        <div className="p-4 rounded-2xl bg-foreground/5 text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all shadow-sm">
+                          <Scissors className="h-6 w-6" />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="font-bold text-foreground text-lg tracking-tight leading-tight">{type.name}</div>
+                          <div className="text-sm font-serif font-bold italic text-foreground/40">From {formatPrice(type.basePrice, currency)}</div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+            </TabsContent>
+            <TabsContent value="inventory" className="mt-0">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {inventoryLoading ? (
+                  <div className="flex justify-center p-12"><Loader2 className="animate-spin text-foreground h-10 w-10" /></div>
+                ) : inventoryData?.filter(i => i.quantity > 0).length === 0 ? (
+                   <div className="col-span-full p-10 text-center text-foreground/30 font-serif italic border-2 border-dashed rounded-2xl">Workshop stock is currently unavailable.</div>
+                ) : (
+                  inventoryData?.filter(i => i.quantity > 0).map(item => (
+                    <Card
+                      key={item.id}
+                      className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all border-none shadow-sm active:scale-95 duration-75 overflow-hidden group bg-card"
+                      onClick={() => addItem({ 
+                        type: item.name, 
+                        price: item.unitPrice, 
+                        inventoryItemId: item.id, 
+                        itemType: 'retail' 
+                      })}
+                    >
+                      <CardContent className="p-6 flex flex-col items-center text-center gap-4 group-hover:bg-foreground/5 transition-colors">
+                        <div className="p-4 rounded-2xl bg-foreground/5 text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all shadow-sm relative">
+                          <Package className="h-6 w-6" />
+                          <div className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[8px] px-1 rounded font-bold">{item.quantity} {item.unit[0]}</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="font-bold text-foreground text-lg tracking-tight leading-tight">{item.name}</div>
+                          <div className="text-sm font-serif font-bold italic text-foreground/40">{formatPrice(item.unitPrice, currency)} / {item.unit}</div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
         </section>
         {selectedCustomerId && (
           <section className="space-y-6 pb-12" key={selectedCustomerId}>
@@ -147,7 +241,6 @@ export default function POSPage() {
           </section>
         )}
       </div>
-      {/* Right Side: Order Summary */}
       <div className="lg:col-span-4 bg-card border-l border-border flex flex-col overflow-hidden shadow-xl relative z-20">
         <OrderSummary onOrderComplete={setCompletedOrder} />
       </div>
