@@ -36,7 +36,8 @@ export function AppSidebar(): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
   const logout = useAppStore((s) => s.logout);
-  const userName = useAppStore((s) => s.user?.name);
+  const user = useAppStore((s) => s.user);
+  const userName = user?.name;
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -91,7 +92,7 @@ export function AppSidebar(): JSX.Element {
       <SidebarFooter className="border-t-2 border-sidebar-border/5 p-8 bg-sidebar-accent/50">
         <div className="flex items-center gap-5 mb-8 px-2">
           <div className="h-14 w-14 shrink-0 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center font-black text-2xl shadow-xl uppercase">
-            {userName?.[0]}
+            {userName?.[0] || 'A'}
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-lg font-black text-foreground truncate">{userName}</span>

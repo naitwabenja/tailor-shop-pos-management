@@ -39,7 +39,7 @@ export default function POSPage() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 flex-1 overflow-hidden h-full">
       {/* Left Side: Inputs and Selection */}
-      <div className="lg:col-span-8 flex flex-col flex-1 min-w-0 overflow-y-auto p-8 md:p-10 space-y-12 bg-background/50 custom-scrollbar">
+      <div className="lg:col-span-8 flex flex-col flex-1 min-w-0 overflow-y-auto p-6 md:p-10 space-y-12 bg-background/50 custom-scrollbar">
         <section className="space-y-8">
           <div className="flex items-center justify-between">
             <h2 className="text-3xl font-serif font-black flex items-center gap-4 text-foreground italic">
@@ -50,7 +50,7 @@ export default function POSPage() {
             </h2>
             <Button
               variant="outline"
-              className="gap-3 rounded-2xl border-border text-foreground bg-card hover:bg-primary hover:text-primary-foreground h-14 px-8 font-black shadow-sm"
+              className="gap-3 rounded-2xl border-2 border-border text-foreground bg-card hover:bg-primary hover:text-primary-foreground h-14 px-8 font-black shadow-sm"
               onClick={() => setIsCustomerDialogOpen(true)}
             >
               <UserPlus className="h-5 w-5" /> New Customer
@@ -60,7 +60,7 @@ export default function POSPage() {
             <Search className="absolute left-5 top-5 h-6 w-6 text-foreground/20" />
             <Input
               placeholder="Search clients by name or identification..."
-              className="pl-14 h-16 rounded-[1.5rem] bg-card border-border focus-visible:ring-primary shadow-xl shadow-foreground/5 text-xl font-bold placeholder:text-foreground/20 text-foreground"
+              className="pl-14 h-16 rounded-[1.5rem] bg-card border-2 border-border focus-visible:ring-primary shadow-xl shadow-foreground/5 text-xl font-bold placeholder:text-foreground/20 text-foreground"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -139,7 +139,7 @@ export default function POSPage() {
               <Button variant="link" className="text-foreground font-black p-0 text-lg decoration-foreground/20">Metrics History</Button>
             </div>
             <Card className="border-none shadow-xl bg-card rounded-[2.5rem] overflow-hidden">
-              <CardContent className="p-10">
+              <CardContent className="p-8 md:p-10">
                 <MeasurementForm />
               </CardContent>
             </Card>

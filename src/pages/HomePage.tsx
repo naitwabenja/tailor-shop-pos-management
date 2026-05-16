@@ -54,7 +54,7 @@ export function HomePage() {
               <stat.icon className={cn("h-10 w-10", stat.color)} />
             </CardHeader>
             <CardContent className="pb-12 px-10">
-              <div className="text-5xl md:text-6xl lg:text-7xl font-serif font-black text-foreground tracking-tighter leading-none whitespace-nowrap overflow-visible">
+              <div className="text-4xl md:text-5xl lg:text-6xl font-serif font-black text-foreground tracking-tighter leading-none truncate overflow-visible">
                 {stat.value}
               </div>
               <p className="text-xs text-foreground/40 mt-6 font-black uppercase tracking-[0.2em] italic">{stat.sub}</p>

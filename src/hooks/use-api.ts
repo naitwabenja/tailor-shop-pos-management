@@ -1,6 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import type { Customer, Order, OrderStatus, Garment, InventoryItem, MeasurementRecord } from '@shared/types';
+/**
+ * Global Query Client Options for Production Hardening
+ * staleTime: 30s - prevents frequent refetches during active use
+ * gcTime: 5m - keeps data in cache for background sessions
+ */
+export const queryClientConfig = {
+  defaultOptions: {
+    queries: {
+      staleTime: 30 * 1000,
+      gcTime: 5 * 60 * 1000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+};
 export function useCustomers(cursor?: string, limit?: number) {
   return useQuery({
     queryKey: ['customers', cursor, limit],
