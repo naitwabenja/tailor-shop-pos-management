@@ -80,7 +80,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       return bad(c, 'Failed to formalize registry entry');
     }
   });
-  // MEASUREMENTS
+  // MEASUREMENTS & IMPORT
   app.get('/api/measurements', async (c) => {
     try {
       const { items } = await MeasurementEntity.list(c.env);
@@ -96,6 +96,58 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     } catch (e) {
       console.error('[API] Get Measurements Failed:', e);
       return bad(c, 'Failed to retrieve measurement archives');
+    }
+  });
+  app.post('/api/measurements/import', async (c) => {
+    try {
+      const payload = await c.req.json();
+      if (!Array.isArray(payload)) return bad(c, 'Payload must be an array of measurement records');
+      const { items: allCustomers } = await CustomerEntity.list(c.env);
+      let successCount = 0;
+      let failedCount = 0;
+      const errors: string[] = [];
+      for (const record of payload) {
+        try {
+          if (!record.customerName || !record.values) {
+            failedCount++;
+            errors.push(`Missing data for record: ${JSON.stringify(record)}`);
+            continue;
+          }
+          let customer = allCustomers.find(cu => 
+            cu.name.toLowerCase() === record.customerName.toLowerCase() ||
+            (record.customerPhone && cu.phone === record.customerPhone)
+          );
+          const now = Date.now();
+          if (!customer) {
+            customer = await CustomerEntity.create(c.env, {
+              id: crypto.randomUUID(),
+              name: record.customerName,
+              phone: record.customerPhone || "N/A",
+              email: "",
+              measurements: record.values,
+              createdAt: now,
+              updatedAt: now,
+              deletedAt: null
+            });
+          }
+          await MeasurementEntity.create(c.env, {
+            id: crypto.randomUUID(),
+            customerId: customer.id,
+            values: record.values,
+            notes: record.notes || "Imported from archive",
+            createdAt: now,
+            updatedAt: now
+          });
+          successCount++;
+        } catch (err) {
+          failedCount++;
+          errors.push(err instanceof Error ? err.message : String(err));
+        }
+      }
+      return ok(c, { success: successCount, failed: failedCount, errors });
+    } catch (e) {
+      console.error('[API] Import Measurements Failed:', e);
+      return bad(c, 'Critical failure during batch import');
     }
   });
   // INVENTORY
@@ -136,11 +188,11 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       const data = await c.req.json();
       const entity = new InventoryItemEntity(c.env, id);
       if (!await entity.exists()) return notFound(c);
-      const updated = await entity.mutate(s => ({ 
-        ...s, 
-        ...data, 
+      const updated = await entity.mutate(s => ({
+        ...s,
+        ...data,
         quantity: data.quantity !== undefined ? Number(data.quantity) : s.quantity,
-        updatedAt: Date.now() 
+        updatedAt: Date.now()
       }));
       return ok(c, updated);
     } catch (e) {
@@ -153,9 +205,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       const id = c.req.param('id');
       const entity = new InventoryItemEntity(c.env, id);
       if (!await entity.exists()) return notFound(c);
-      
       await entity.softDelete();
-      // We also remove it from the index so it doesn't show up in lists
       await InventoryItemEntity.removeFromIndex(c.env, id);
       return ok(c, { id, deleted: true });
     } catch (e) {
@@ -180,7 +230,6 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       if (!data.customerId || !data.items?.length) return bad(c, 'customerId and items required');
       const now = Date.now();
       const orderId = crypto.randomUUID();
-      // Inventory Processing
       for (const item of data.items as OrderItem[]) {
         if (item.inventoryItemId && item.itemType === 'retail') {
           const inv = new InventoryItemEntity(c.env, item.inventoryItemId);
@@ -189,10 +238,10 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
             if (current.quantity < item.quantity) {
               return bad(c, `Insufficient stock for ${item.garmentName}`);
             }
-            await inv.mutate(s => ({ 
-              ...s, 
-              quantity: s.quantity - item.quantity, 
-              updatedAt: now 
+            await inv.mutate(s => ({
+              ...s,
+              quantity: s.quantity - item.quantity,
+              updatedAt: now
             }));
           }
         }

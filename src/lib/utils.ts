@@ -12,16 +12,26 @@ export function formatPrice(amount: number, currency: string = 'USD'): string {
     KES: 'KSh ',
   };
   const symbol = symbols[currency] || symbols.USD;
+  const absAmount = Math.abs(amount);
   try {
     const formatted = new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(Math.abs(amount));
+    }).format(absAmount);
     return `${amount < 0 ? '-' : ''}${symbol}${formatted}`;
   } catch (error) {
     console.error('[UTILS] Price formatting failed:', error);
-    // Fallback for environments where Intl might fail or behave unexpectedly
-    const fallback = Math.abs(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    // Safe manual fallback for environments without robust Intl support
+    const parts = absAmount.toFixed(2).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const fallback = parts.join('.');
     return `${amount < 0 ? '-' : ''}${symbol}${fallback}`;
   }
+}
+export function formatDate(timestamp: number): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  }).format(new Date(timestamp));
 }
