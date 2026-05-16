@@ -183,6 +183,17 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
       return bad(c, 'Failed to refine stock details');
     }
   });
+  app.delete('/api/inventory/:id', async (c) => {
+    try {
+      const id = c.req.param('id');
+      const existed = await InventoryItemEntity.delete(c.env, id);
+      if (!existed) return notFound(c, 'item not found');
+      return ok(c, { id, deleted: true });
+    } catch (e) {
+      console.error('[API] Delete Inventory Failed:', e);
+      return bad(c, 'Failed to archive workshop material');
+    }
+  });
   // ORDERS
   app.get('/api/orders', async (c) => {
     try {
