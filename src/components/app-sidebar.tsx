@@ -43,24 +43,24 @@ export function AppSidebar(): JSX.Element {
     navigate("/");
   };
   return (
-    <Sidebar collapsible="none" className="bg-sidebar border-r-2 border-sidebar-border w-[280px] min-w-[280px] h-screen shrink-0 overflow-hidden flex flex-col z-40">
-      <SidebarHeader className="border-b-2 border-sidebar-border/5 px-8 py-12">
-        <div className="flex items-center gap-5">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-2xl">
-            <Store className="h-8 w-8" />
+    <Sidebar collapsible="none" className="bg-sidebar border-r-2 border-sidebar-border w-[240px] min-w-[240px] h-screen shrink-0 overflow-hidden flex flex-col z-40">
+      <SidebarHeader className="border-b-2 border-sidebar-border/5 px-6 py-6">
+        <div className="flex items-center gap-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg">
+            <Store className="h-6 w-6" />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-2xl font-serif font-black tracking-tighter text-foreground leading-tight truncate">LEAfrique</span>
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Atelier Suite v2.0</span>
+            <span className="text-xl font-serif font-bold tracking-tighter text-foreground leading-tight truncate">LEAfrique</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-foreground/40">Atelier Suite</span>
           </div>
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-4 py-10 custom-scrollbar flex-1">
+      <SidebarContent className="px-3 py-6 custom-scrollbar flex-1">
         <SidebarGroup>
-          <SidebarGroupLabel className="px-5 text-[11px] font-black uppercase tracking-[0.3em] text-foreground/30 mb-6">
+          <SidebarGroupLabel className="px-4 text-[9px] font-bold uppercase tracking-[0.2em] text-foreground/30 mb-4">
             Workshop Navigator
           </SidebarGroupLabel>
-          <SidebarMenu className="space-y-3">
+          <SidebarMenu className="space-y-1.5">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -69,18 +69,18 @@ export function AppSidebar(): JSX.Element {
                     asChild
                     isActive={isActive}
                     className={cn(
-                      "group relative flex items-center gap-5 rounded-2xl px-6 py-4 transition-all duration-300 h-16",
+                      "group relative flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-300 h-11",
                       isActive
-                        ? "bg-primary text-primary-foreground shadow-2xl scale-[1.02]"
+                        ? "bg-primary text-primary-foreground shadow-md"
                         : "text-foreground/60 hover:bg-sidebar-accent hover:text-foreground"
                     )}
                   >
                     <Link to={item.href}>
                       <item.icon className={cn(
-                        "h-6 w-6 shrink-0 transition-colors",
+                        "h-5 w-5 shrink-0 transition-colors",
                         isActive ? "text-primary-foreground" : "opacity-40 group-hover:opacity-100"
                       )} />
-                      <span className="font-black tracking-tight text-xl">{item.name}</span>
+                      <span className="font-bold tracking-tight text-base">{item.name}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -89,23 +89,23 @@ export function AppSidebar(): JSX.Element {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t-2 border-sidebar-border/5 p-8 bg-sidebar-accent/50">
-        <div className="flex items-center gap-5 mb-8 px-2">
-          <div className="h-14 w-14 shrink-0 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center font-black text-2xl shadow-xl uppercase">
+      <SidebarFooter className="border-t-2 border-sidebar-border/5 p-6 bg-sidebar-accent/50">
+        <div className="flex items-center gap-4 mb-4 px-1">
+          <div className="h-10 w-10 shrink-0 rounded-xl bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg shadow-md uppercase">
             {userName?.[0] || 'A'}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-lg font-black text-foreground truncate">{userName}</span>
-            <span className="text-[10px] text-foreground/40 uppercase font-black tracking-[0.2em]">Master Artisan</span>
+            <span className="text-sm font-bold text-foreground truncate">{userName}</span>
+            <span className="text-[9px] text-foreground/40 uppercase font-bold tracking-[0.1em]">Master Artisan</span>
           </div>
         </div>
         <Button
           variant="ghost"
           onClick={handleLogout}
-          className="w-full justify-start gap-5 rounded-2xl text-foreground/40 hover:bg-primary hover:text-primary-foreground transition-all h-16 px-6"
+          className="w-full justify-start gap-4 rounded-xl text-foreground/40 hover:bg-primary hover:text-primary-foreground transition-all h-11 px-4"
         >
-          <LogOut className="h-6 w-6" />
-          <span className="font-black text-xl">Close Session</span>
+          <LogOut className="h-5 w-5" />
+          <span className="font-bold text-sm">Close Session</span>
         </Button>
       </SidebarFooter>
     </Sidebar>

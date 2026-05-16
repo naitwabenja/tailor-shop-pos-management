@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -45,104 +44,101 @@ export default function CustomersPage() {
   ) || [];
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="py-8 md:py-10 lg:py-12 space-y-8">
+      <div className="py-6 space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-serif font-bold text-brand-brown tracking-tight italic">Artisan Registry</h1>
-            <p className="text-brand-brown/60 font-medium">Managing relationships and metrics for LEAfrique's esteemed clients</p>
+            <h1 className="text-2xl font-serif font-bold text-brand-brown tracking-tight italic">Artisan Registry</h1>
+            <p className="text-xs text-brand-brown/60 font-bold">Managing relationships and metrics</p>
           </div>
           <Button
-            className="bg-brand-brown hover:bg-brand-green text-white font-bold gap-2 shadow-xl shadow-brand-brown/20 rounded-2xl px-8 h-14 text-lg transition-all active:scale-95"
+            size="sm"
+            className="bg-brand-brown hover:bg-brand-green text-white font-bold gap-2 shadow-lg shadow-brand-brown/20 rounded-xl px-6 h-11 text-base transition-all active:scale-95"
             onClick={() => setIsCreateDialogOpen(true)}
           >
-            <UserPlus className="h-6 w-6" /> Register Client
+            <UserPlus className="h-5 w-5" /> Register Client
           </Button>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-3.5 h-5 w-5 text-brand-brown/30" />
+            <Search className="absolute left-3.5 top-3 h-4 w-4 text-brand-brown/30" />
             <Input
-              placeholder="Search by name, phone or identification..."
-              className="pl-12 h-14 rounded-2xl bg-white/60 backdrop-blur-sm border-brand-brown/10 focus-visible:ring-brand-brown shadow-soft"
+              placeholder="Search registry..."
+              className="pl-10 h-11 rounded-xl bg-white/60 backdrop-blur-sm border-brand-brown/10 focus-visible:ring-brand-brown text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button variant="outline" size="icon" className="h-14 w-14 rounded-2xl border-brand-brown/10 bg-white/60 hover:bg-brand-brown/5">
-            <Filter className="h-6 w-6 text-brand-brown/60" />
+          <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl border-brand-brown/10 bg-white/60">
+            <Filter className="h-5 w-5 text-brand-brown/60" />
           </Button>
         </div>
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="border-none shadow-soft h-56 bg-white/40">
-                <CardContent className="p-8 space-y-6">
+              <Card key={i} className="border-none shadow-sm h-48 bg-white/40">
+                <CardContent className="p-6 space-y-4">
                   <div className="flex items-center gap-4">
-                    <Skeleton className="h-16 w-16 rounded-2xl" />
-                    <div className="space-y-3">
-                      <Skeleton className="h-6 w-32" />
-                      <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-12 w-12 rounded-xl" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-5 w-24" />
+                      <Skeleton className="h-3 w-16" />
                     </div>
                   </div>
-                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-3 w-full" />
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCustomers.map((customer) => (
-              <Card key={customer.id} className="border-none shadow-soft hover:shadow-xl transition-all overflow-hidden group bg-white/60 backdrop-blur-sm">
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-6 p-8">
-                  <div className="flex items-center gap-5">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-tan/30 text-brand-brown text-2xl font-serif font-bold group-hover:bg-brand-brown group-hover:text-white transition-all">
+              <Card key={customer.id} className="border-none shadow-sm hover:shadow-md transition-all overflow-hidden group bg-white/60 backdrop-blur-sm">
+                <CardHeader className="flex flex-row items-start justify-between space-y-0 p-6 pb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-tan/30 text-brand-brown text-xl font-serif font-bold group-hover:bg-brand-brown group-hover:text-white transition-all">
                       {customer.name.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div>
-                      <CardTitle className="text-xl font-bold text-brand-brown group-hover:underline decoration-brand-brown/20 transition-all">{customer.name}</CardTitle>
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <Badge variant="secondary" className="bg-brand-tan/10 text-brand-brown/60 font-bold border-none text-[9px] uppercase tracking-widest">Client</Badge>
-                        <span className="text-xs text-brand-brown/40 font-bold flex items-center gap-1">
-                          <ShoppingBag className="h-3 w-3" /> {customerOrderCounts[customer.id] || 0} Commissions
+                      <CardTitle className="text-lg font-bold text-brand-brown group-hover:underline decoration-brand-brown/20 leading-tight">{customer.name}</CardTitle>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="secondary" className="bg-brand-tan/10 text-brand-brown/60 font-bold border-none text-[8px] uppercase tracking-wider px-1.5 py-0">Client</Badge>
+                        <span className="text-[10px] text-brand-brown/40 font-bold flex items-center gap-1">
+                          <ShoppingBag className="h-2.5 w-2.5" /> {customerOrderCounts[customer.id] || 0}
                         </span>
                       </div>
                     </div>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-brand-brown/30 hover:bg-brand-brown/5 rounded-full">
-                        <MoreVertical className="h-5 w-5" />
+                      <Button variant="ghost" size="icon" className="text-brand-brown/30 hover:bg-brand-brown/5 rounded-full h-8 w-8">
+                        <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 rounded-2xl border-brand-brown/10">
-                      <DropdownMenuItem className="font-bold text-brand-brown">Edit Profile</DropdownMenuItem>
-                      <DropdownMenuItem className="font-bold text-brand-brown">View Commissions</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600 font-bold">Archive Profile</DropdownMenuItem>
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl border-brand-brown/10">
+                      <DropdownMenuItem className="font-bold text-brand-brown text-xs">Edit Profile</DropdownMenuItem>
+                      <DropdownMenuItem className="font-bold text-brand-brown text-xs">View History</DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-600 font-bold text-xs">Archive</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </CardHeader>
-                <CardContent className="space-y-5 px-8 pb-8 pt-0">
-                  <div className="grid gap-3">
-                    <div className="flex items-center gap-3 text-sm font-medium text-brand-brown/70">
-                      <Phone className="h-4 w-4 text-brand-brown/20" />
+                <CardContent className="space-y-4 px-6 pb-6 pt-0">
+                  <div className="grid gap-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-brand-brown/70">
+                      <Phone className="h-3.5 w-3.5 text-brand-brown/20" />
                       {customer.phone}
                     </div>
-                    <div className="flex items-center gap-3 text-sm font-medium text-brand-brown/70">
-                      <Mail className="h-4 w-4 text-brand-brown/20" />
-                      {customer.email || "No digital address"}
-                    </div>
-                    <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-brand-brown/30">
-                      <Calendar className="h-3.5 w-3.5" />
-                      Registry Date: {customer.createdAt ? format(customer.createdAt, 'MMM yyyy') : 'Recent'}
+                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-brand-brown/30">
+                      <Calendar className="h-3 w-3" />
+                      Joined: {customer.createdAt ? format(customer.createdAt, 'MMM yyyy') : 'Recent'}
                     </div>
                   </div>
-                  <div className="pt-6 flex gap-3 border-t border-brand-brown/5">
-                    <Button asChild variant="outline" size="sm" className="flex-1 rounded-xl gap-2 border-brand-brown/10 text-brand-brown font-bold hover:bg-brand-brown/5">
+                  <div className="pt-4 flex gap-2 border-t border-brand-brown/5">
+                    <Button asChild variant="outline" size="sm" className="flex-1 rounded-lg gap-1.5 h-8 border-brand-brown/10 text-brand-brown font-bold text-[10px] uppercase">
                       <Link to="/dashboard/measurements">
-                        <Ruler className="h-4 w-4" /> Metrics
+                        <Ruler className="h-3 w-3" /> Metrics
                       </Link>
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1 rounded-xl border-brand-brown/10 text-brand-brown font-bold hover:bg-brand-brown/5">History</Button>
+                    <Button variant="outline" size="sm" className="flex-1 rounded-lg h-8 border-brand-brown/10 text-brand-brown font-bold text-[10px] uppercase">History</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -150,9 +146,9 @@ export default function CustomersPage() {
           </div>
         )}
         {!isLoading && filteredCustomers.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-24 text-brand-brown/20 space-y-6">
-            <Users className="h-24 w-24 opacity-10" />
-            <p className="text-2xl font-serif italic text-brand-brown/40">No artisan profiles found in the current registry</p>
+          <div className="flex flex-col items-center justify-center py-16 text-brand-brown/20 space-y-4">
+            <Users className="h-16 w-16 opacity-10" />
+            <p className="text-lg font-serif italic text-brand-brown/40">No profiles found</p>
           </div>
         )}
       </div>

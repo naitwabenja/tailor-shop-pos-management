@@ -25,10 +25,10 @@ export function MeasurementForm() {
     updateDraftMeasurement(name, isNaN(numValue) ? 0 : numValue);
   };
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {fields.map((field) => (
-        <div key={field.name} className="space-y-2">
-          <Label htmlFor={field.name} className="text-[10px] uppercase font-extrabold tracking-[0.3em] text-brand-brown/40 ml-1">
+        <div key={field.name} className="space-y-1.5">
+          <Label htmlFor={field.name} className="text-[9px] uppercase font-bold tracking-[0.2em] text-brand-brown/40 ml-1">
             {field.label}
           </Label>
           <Input
@@ -37,7 +37,7 @@ export function MeasurementForm() {
             step="0.1"
             value={draftMeasurements[field.name] ?? ''}
             onChange={(e) => handleChange(field.name, e.target.value)}
-            className="h-14 text-xl font-bold bg-white/80 border-brand-brown/10 focus-visible:ring-brand-brown rounded-2xl shadow-sm text-brand-brown"
+            className="h-11 text-lg font-bold bg-white/80 border-brand-brown/10 focus-visible:ring-brand-brown rounded-xl shadow-sm text-brand-brown"
             placeholder="0.0"
           />
         </div>

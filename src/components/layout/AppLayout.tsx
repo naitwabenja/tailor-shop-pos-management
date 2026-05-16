@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store/use-app-store";
-import { useShallow } from "zustand/react/shallow";
 import {
   Select,
   SelectContent,
@@ -45,45 +44,47 @@ export function AppLayout({
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />
       <SidebarInset className={cn("bg-background min-w-0 flex flex-col relative", className)}>
-        <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-border bg-background/80 px-6 backdrop-blur-2xl sm:px-10 w-full shrink-0">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background/80 px-6 backdrop-blur-2xl sm:px-8 w-full shrink-0">
           <div className="flex flex-1 items-center gap-4">
             <div className="flex flex-col">
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground/40">LEAfrique Artisans</p>
-              <p className="text-sm font-serif font-black italic text-foreground">Atelier Suite v2.0</p>
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-foreground/40 leading-none">LEAfrique Artisans</p>
+              <p className="text-xs font-serif font-bold italic text-foreground mt-0.5">Atelier Suite v2.0</p>
             </div>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <Select value={currency} onValueChange={(v) => setCurrency(v as any)}>
-              <SelectTrigger className="w-[120px] h-11 rounded-xl border-border bg-card font-black text-sm shadow-sm text-foreground">
+              <SelectTrigger className="w-[100px] h-9 rounded-lg border-border bg-card font-bold text-xs shadow-sm text-foreground">
                 <SelectValue placeholder="USD" />
               </SelectTrigger>
-              <SelectContent className="rounded-xl border-border shadow-2xl bg-card">
-                <SelectItem value="USD" className="text-sm font-bold">USD ($)</SelectItem>
-                <SelectItem value="EUR" className="text-sm font-bold">EUR (€)</SelectItem>
-                <SelectItem value="NGN" className="text-sm font-bold">NGN (₦)</SelectItem>
-                <SelectItem value="GBP" className="text-sm font-bold">GBP (£)</SelectItem>
-                <SelectItem value="KES" className="text-sm font-bold">KES (KSh)</SelectItem>
+              <SelectContent className="rounded-lg border-border shadow-2xl bg-card">
+                <SelectItem value="USD" className="text-xs font-bold">USD ($)</SelectItem>
+                <SelectItem value="EUR" className="text-xs font-bold">EUR (€)</SelectItem>
+                <SelectItem value="NGN" className="text-xs font-bold">NGN (₦)</SelectItem>
+                <SelectItem value="GBP" className="text-xs font-bold">GBP (£)</SelectItem>
+                <SelectItem value="KES" className="text-xs font-bold">KES (KSh)</SelectItem>
               </SelectContent>
             </Select>
-            <div className="h-10 w-px bg-border mx-1" />
-            <ThemeToggle className="static h-12 w-12 rounded-xl bg-card border-2 border-border hover:bg-primary hover:text-primary-foreground text-foreground" />
+            <div className="h-8 w-px bg-border mx-1" />
+            <ThemeToggle className="static h-9 w-9 rounded-lg bg-card border border-border hover:bg-primary hover:text-primary-foreground text-foreground flex items-center justify-center p-0" />
           </div>
         </header>
         <AnimatePresence mode="wait">
           <motion.main
             key={location.pathname}
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
               "flex-1 overflow-y-auto min-w-0 custom-scrollbar",
-              !fullBleed && container && "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 lg:py-12 w-full",
-              fullBleed && "p-0 h-[calc(100vh-theme(spacing.20))]",
+              !fullBleed && container && "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6 lg:py-8 w-full",
+              fullBleed && "p-0 h-[calc(100vh-theme(spacing.16))]",
               contentClassName
             )}
           >
-            {children || <Outlet />}
+            <div className={cn(!fullBleed && "space-y-8")}>
+              {children || <Outlet />}
+            </div>
           </motion.main>
         </AnimatePresence>
         <Toaster richColors closeButton position="top-right" expand={false} />

@@ -22,7 +22,7 @@
     --border: 0 0% 0% / 0.15;
     --input: 0 0% 0% / 0.15;
     --ring: 0 0% 0%;
-    --radius: 1.25rem;
+    --radius: 1rem;
     --sidebar-background: 60 56% 91%;
     --sidebar-foreground: 0 0% 0%;
     --sidebar-primary: 0 0% 0%;
@@ -66,13 +66,13 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-sm;
     font-feature-settings: "rlig" 1, "calt" 1;
     position: relative;
     -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-black text-foreground;
+    @apply font-serif font-bold text-foreground;
   }
   p, span, label {
     @apply font-bold;
@@ -80,16 +80,13 @@
 }
 @layer utilities {
   .parchment {
-    @apply bg-card border-border shadow-[inset_0_0_60px_rgba(0,0,0,0.03)] border-2;
+    @apply bg-card border-border shadow-[inset_0_0_40px_rgba(0,0,0,0.02)] border-2;
   }
   .leather-edge {
-    @apply border-2 border-border shadow-2xl;
-  }
-  .high-contrast-shadow {
-    @apply shadow-[0_20px_50px_rgba(0,0,0,0.2)];
+    @apply border-2 border-border shadow-xl;
   }
   .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;

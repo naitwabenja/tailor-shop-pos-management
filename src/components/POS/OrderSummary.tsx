@@ -67,69 +67,69 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
   };
   return (
     <div className="flex flex-col h-full bg-card/80 backdrop-blur-md">
-      <div className="p-10 flex-1 flex flex-col overflow-hidden">
-        <div className="flex items-center gap-5 mb-10">
-          <div className="p-4 rounded-2xl bg-accent text-accent-foreground shadow-2xl">
-            <ShoppingCart className="h-7 w-7" />
+      <div className="p-6 flex-1 flex flex-col overflow-hidden">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="p-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+            <ShoppingCart className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-4xl font-serif font-black text-foreground italic tracking-tight">Workbench</h2>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/50">Active Commission Registry</p>
+            <h2 className="text-2xl font-serif font-bold text-foreground italic tracking-tight">Workbench</h2>
+            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-foreground/50">Active Commission Registry</p>
           </div>
         </div>
-        <div className="flex-1 space-y-6 overflow-y-auto pr-3 custom-scrollbar">
+        <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-foreground/30 space-y-8 py-10">
-              <div className="p-10 rounded-full bg-foreground/5 border-4 border-dashed border-border">
-                <Sparkles className="h-16 w-16" />
+            <div className="flex flex-col items-center justify-center h-full text-foreground/30 space-y-6 py-8">
+              <div className="p-6 rounded-full bg-foreground/5 border-2 border-dashed border-border">
+                <Sparkles className="h-10 w-10" />
               </div>
-              <div className="text-center space-y-2">
-                <p className="font-serif italic text-2xl text-foreground/40 font-bold">The artisan's bench is clear</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30">Select garments from the library to begin</p>
+              <div className="text-center space-y-1">
+                <p className="font-serif italic text-lg text-foreground/40 font-bold">The bench is clear</p>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-foreground/30">Select garments to begin</p>
               </div>
             </div>
           ) : (
             items.map((item) => <CartItem key={item.id} item={item} />)
           )}
         </div>
-        <div className="pt-10 mt-10 border-t-4 border-border space-y-6">
+        <div className="pt-6 mt-4 border-t-2 border-border space-y-4">
           {selectedCustomer && (
-            <div className="p-6 bg-accent/10 rounded-[2rem] border-2 border-accent/20 shadow-sm">
-              <p className="text-[11px] font-black text-accent uppercase tracking-[0.4em] mb-2">Artisan Client</p>
-              <p className="font-serif font-black text-foreground text-2xl italic">{selectedCustomer.name}</p>
+            <div className="p-4 bg-accent/10 rounded-xl border border-accent/20 shadow-sm">
+              <p className="text-[9px] font-bold text-accent uppercase tracking-[0.2em] mb-1">Artisan Client</p>
+              <p className="font-serif font-bold text-foreground text-xl italic">{selectedCustomer.name}</p>
             </div>
           )}
-          <div className="space-y-3 px-2">
-            <div className="flex items-center justify-between text-foreground/70 text-sm font-black uppercase tracking-widest">
-              <span>Atelier Subtotal</span>
+          <div className="space-y-2 px-1">
+            <div className="flex items-center justify-between text-foreground/70 text-xs font-bold uppercase tracking-widest">
+              <span>Subtotal</span>
               <span className="font-mono">{formatPrice(subtotal, currency)}</span>
             </div>
-            <div className="flex items-center justify-between text-foreground/70 text-sm font-black uppercase tracking-widest">
+            <div className="flex items-center justify-between text-foreground/70 text-xs font-bold uppercase tracking-widest">
               <span>VAT (5%)</span>
               <span className="font-mono">{formatPrice(tax, currency)}</span>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-6 border-t border-dashed border-border px-2">
-            <span className="text-3xl font-serif font-black text-foreground tracking-tight">Master Total</span>
-            <span className="text-5xl font-sans font-black text-accent tracking-tighter">
+          <div className="flex items-center justify-between pt-4 border-t border-dashed border-border px-1">
+            <span className="text-xl font-serif font-bold text-foreground tracking-tight">Total</span>
+            <span className="text-3xl font-sans font-bold text-accent tracking-tighter">
               {formatPrice(total, currency)}
             </span>
           </div>
         </div>
       </div>
-      <div className="p-10 bg-accent/10 border-t-2 border-border">
+      <div className="p-6 bg-accent/10 border-t border-border">
         <Button
-          className="w-full h-24 text-2xl font-black bg-primary hover:opacity-90 text-primary-foreground rounded-[2.5rem] shadow-2xl transition-all active:scale-95 gap-6 disabled:bg-foreground/10 disabled:text-foreground/20 leather-edge"
+          className="w-full h-16 text-xl font-bold bg-primary hover:opacity-90 text-primary-foreground rounded-2xl shadow-xl transition-all active:scale-95 gap-4 disabled:bg-foreground/10 disabled:text-foreground/20"
           disabled={items.length === 0 || !selectedCustomerId || createOrder.isPending}
           onClick={handleProcessOrder}
         >
           {createOrder.isPending ? (
-            <Loader2 className="h-10 w-10 animate-spin" />
+            <Loader2 className="h-8 w-8 animate-spin" />
           ) : (
             <>
-              <CreditCard className="h-8 w-8" />
-              Secure Commission
-              <ChevronRight className="h-8 w-8 ml-auto opacity-40" />
+              <CreditCard className="h-6 w-6" />
+              Secure Order
+              <ChevronRight className="h-6 w-6 ml-auto opacity-40" />
             </>
           )}
         </Button>
