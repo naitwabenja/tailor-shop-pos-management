@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store/use-app-store";
+import { useShallow } from "zustand/react/shallow";
 import {
   Select,
   SelectContent,
@@ -29,9 +30,9 @@ export function AppLayout({
 }): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
-  const isAuthenticated = useAppStore((s) => s.isAuthenticated);
-  const currency = useAppStore((s) => s.currency);
-  const setCurrency = useAppStore((s) => s.setCurrency);
+  const isAuthenticated = useAppStore(s => s.isAuthenticated);
+  const currency = useAppStore(s => s.currency);
+  const setCurrency = useAppStore(s => s.setCurrency);
   const isPOS = location.pathname.includes("/pos");
   const fullBleed = manualFullBleed || isPOS;
   useEffect(() => {

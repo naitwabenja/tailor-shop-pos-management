@@ -1,9 +1,20 @@
 import { Hono } from "hono";
 import type { Env } from './core-utils';
-import { CustomerEntity, OrderEntity, MeasurementEntity, InventoryItemEntity } from "./entities";
+import { CustomerEntity, OrderEntity, MeasurementEntity, InventoryItemEntity, GarmentEntity } from "./entities";
 import { ok, bad, notFound } from './core-utils';
-import type { OrderStatus, PaymentMethod, InventoryItem, Measurements } from "@shared/types";
+import type { OrderStatus, InventoryItem, Measurements } from "@shared/types";
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
+  // GARMENTS
+  app.get('/api/garments', async (c) => {
+    try {
+      await GarmentEntity.ensureSeed(c.env);
+      const { items } = await GarmentEntity.list(c.env);
+      return ok(c, items);
+    } catch (e) {
+      console.error('[API] Get Garments Failed:', e);
+      return bad(c, 'Failed to retrieve garment library');
+    }
+  });
   // CUSTOMERS
   app.get('/api/customers', async (c) => {
     try {
@@ -81,10 +92,10 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
         try {
           const rowName = String(row.customerName || row.name || "").trim().toLowerCase();
           const rowPhone = String(row.phone || "").trim();
-          const customer = customers.find(cust => 
-            cust.id === row.customerId || 
-            cust.phone.trim() === rowPhone || 
-            cust.name.trim().toLowerCase() === rowName
+          const customer = customers.find(cust =>
+            cust.id === row.customerId ||
+            (rowPhone && cust.phone.trim() === rowPhone) ||
+            (rowName && cust.name.trim().toLowerCase() === rowName)
           );
           if (!customer) {
             results.failed++;

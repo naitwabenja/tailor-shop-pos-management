@@ -35,8 +35,8 @@ const navigation = [
 export function AppSidebar(): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
-  const logout = useAppStore((s) => s.logout);
-  const user = useAppStore((s) => s.user);
+  const user = useAppStore(s => s.user);
+  const logout = useAppStore(s => s.logout);
   const userName = user?.name;
   const handleLogout = () => {
     logout();

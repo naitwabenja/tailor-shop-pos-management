@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -18,12 +18,22 @@ import { useOrders } from '@/hooks/use-api';
 import { useAppStore } from '@/store/use-app-store';
 export function HomePage() {
   const { data: ordersData, isLoading } = useOrders();
-  const currency = useAppStore((s) => s.currency);
+  const currency = useAppStore(s => s.currency);
   const orders = ordersData?.items || [];
-  const pendingCount = orders.filter(o => o.status === 'Pending').length;
-  const inProgressCount = orders.filter(o => o.status === 'In Progress').length;
-  const readyCount = orders.filter(o => o.status === 'Ready').length;
-  const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
+  const stats = useMemo(() => {
+    const pendingCount = orders.filter(o => o.status === 'Pending').length;
+    const inProgressCount = orders.filter(o => o.status === 'In Progress').length;
+    const readyCount = orders.filter(o => o.status === 'Ready').length;
+    const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
+    return [
+      { label: 'Valuation', value: formatPrice(totalRevenue, currency), icon: TrendingUp, color: 'text-foreground', sub: 'Total Volume', count: 0 },
+      { label: 'Pending', value: pendingCount, icon: Clock, color: 'text-foreground', sub: 'In Queue', count: pendingCount },
+      { label: 'On Bench', value: inProgressCount, icon: Scissors, color: 'text-foreground', sub: 'Under Hand', count: inProgressCount },
+      { label: 'Ready', value: readyCount, icon: CheckCircle2, color: 'text-foreground', sub: 'Masterworks', count: readyCount },
+    ];
+  }, [orders, currency]);
+  const pendingCount = stats.find(s => s.label === 'Pending')?.count || 0;
+  const inProgressCount = stats.find(s => s.label === 'On Bench')?.count || 0;
   return (
     <div className="space-y-12 w-full">
       <div className="relative overflow-hidden rounded-[2.5rem] bg-card px-10 py-20 text-foreground shadow-2xl border-2 border-border">
@@ -42,12 +52,7 @@ export function HomePage() {
         <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-secondary/20 blur-3xl" />
       </div>
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 w-full">
-        {[
-          { label: 'Valuation', value: formatPrice(totalRevenue, currency), icon: TrendingUp, color: 'text-foreground', sub: 'Total Volume' },
-          { label: 'Pending', value: pendingCount, icon: Clock, color: 'text-foreground', sub: 'In Queue' },
-          { label: 'On Bench', value: inProgressCount, icon: Scissors, color: 'text-foreground', sub: 'Under Hand' },
-          { label: 'Ready', value: readyCount, icon: CheckCircle2, color: 'text-foreground', sub: 'Masterworks' },
-        ].map((stat, i) => (
+        {stats.map((stat, i) => (
           <Card key={i} className="parchment min-h-[18rem] md:min-h-[20rem] flex flex-col justify-between overflow-visible hover:scale-[1.02] transition-transform duration-300 border-2 border-border">
             <CardHeader className="flex flex-row items-center justify-between pb-0 pt-10 px-10">
               <CardTitle className="text-xs font-black text-foreground/50 uppercase tracking-[0.4em]">{stat.label}</CardTitle>
