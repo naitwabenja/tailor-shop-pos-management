@@ -1,146 +1,130 @@
-import React, { useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  TrendingUp,
-  Clock,
-  CheckCircle2,
-  Scissors,
-  ArrowRight,
-  Loader2,
-  Sparkles,
-  Package
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { cn, formatPrice } from '@/lib/utils';
-import { useOrders } from '@/hooks/use-api';
-import { useAppStore } from '@/store/use-app-store';
+// Home page of the app.
+// Currently a demo placeholder "please wait" screen.
+// Replace this file with your actual app UI. Do not delete it to use some other file as homepage. Simply replace the entire contents of this file.
+
+import { useEffect, useMemo, useState } from 'react'
+import { Sparkles } from 'lucide-react'
+
+import { ThemeToggle } from '@/components/ThemeToggle'
+
+import { Button } from '@/components/ui/button'
+import { Toaster, toast } from '@/components/ui/sonner'
+
+function formatDuration(ms: number): string {
+  const total = Math.max(0, Math.floor(ms / 1000))
+  const m = Math.floor(total / 60)
+  const s = total % 60
+  return `${m}:${s.toString().padStart(2, '0')}`
+}
+
 export function HomePage() {
-  const { data: ordersData, isLoading } = useOrders();
-  const currency = useAppStore(s => s.currency);
-  const orders = useMemo(() => ordersData?.items || [], [ordersData]);
-  const stats = useMemo(() => {
-    const pendingCount = orders.filter(o => o.status === 'Pending').length;
-    const inProgressCount = orders.filter(o => o.status === 'In Progress').length;
-    const readyCount = orders.filter(o => o.status === 'Ready').length;
-    const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
-    const bespokeRevenue = orders.reduce((acc, o) => 
-      acc + o.items.filter(i => i.itemType === 'bespoke').reduce((sub, i) => sub + (i.price * i.quantity), 0), 0);
-    return [
-      { 
-        label: 'Valuation', 
-        value: formatPrice(totalRevenue, currency), 
-        icon: TrendingUp, 
-        color: 'text-foreground', 
-        sub: `Bespoke: ${formatPrice(bespokeRevenue, currency)}`, 
-        count: 0 
-      },
-      { label: 'Pending', value: pendingCount, icon: Clock, color: 'text-foreground', sub: 'In Queue', count: pendingCount },
-      { label: 'On Bench', value: inProgressCount, icon: Scissors, color: 'text-foreground', sub: 'Under Hand', count: inProgressCount },
-      { label: 'Ready', value: readyCount, icon: CheckCircle2, color: 'text-foreground', sub: 'Masterworks', count: readyCount },
-    ];
-  }, [orders, currency]);
-  const pendingCount = stats.find(s => s.label === 'Pending')?.count || 0;
-  const inProgressCount = stats.find(s => s.label === 'On Bench')?.count || 0;
+  const [coins, setCoins] = useState(0)
+  const [isRunning, setIsRunning] = useState(false)
+  const [startedAt, setStartedAt] = useState<number | null>(null)
+  const [elapsedMs, setElapsedMs] = useState(0)
+
+  useEffect(() => {
+    if (!isRunning || startedAt === null) return
+
+    const t = setInterval(() => {
+      setElapsedMs(Date.now() - startedAt)
+    }, 250)
+
+    return () => clearInterval(t)
+  }, [isRunning, startedAt])
+
+  const formatted = useMemo(() => formatDuration(elapsedMs), [elapsedMs])
+
+  const onPleaseWait = () => {
+    setCoins((c) => c + 1)
+
+    if (!isRunning) {
+      // Resume from the current elapsed time
+      setStartedAt(Date.now() - elapsedMs)
+      setIsRunning(true)
+      toast.success('Building your app…', {
+        description: "Hang tight — we're setting everything up.",
+      })
+      return
+    }
+
+    setIsRunning(false)
+    toast.info('Still working…', {
+      description: 'You can come back in a moment.',
+    })
+  }
+
+  const onReset = () => {
+    setCoins(0)
+    setIsRunning(false)
+    setStartedAt(null)
+    setElapsedMs(0)
+    toast('Reset complete')
+  }
+
+  const onAddCoin = () => {
+    setCoins((c) => c + 1)
+    toast('Coin added')
+  }
+
   return (
-    <div className="space-y-8 w-full">
-      <div className="relative overflow-hidden rounded-[1.5rem] bg-card px-8 py-12 text-foreground shadow-xl border-2 border-border">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="space-y-3">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-tight italic">Workshop Desk</h1>
-            <p className="text-foreground/80 max-w-xl text-xl md:text-2xl leading-relaxed font-bold">
-              Overseeing {pendingCount} commissions and {inProgressCount} masterpieces in the atelier.
-            </p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4 overflow-hidden relative">
+      <ThemeToggle />
+      <div className="absolute inset-0 bg-gradient-rainbow opacity-10 dark:opacity-20 pointer-events-none" />
+
+      <div className="text-center space-y-8 relative z-10 animate-fade-in w-full">
+        <div className="flex justify-center">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-primary floating">
+            <Sparkles className="w-8 h-8 text-white rotating" />
           </div>
-          <Button asChild size="lg" className="bg-primary text-primary-foreground hover:opacity-90 font-bold px-8 rounded-2xl shadow-xl h-16 text-xl shrink-0 transition-all active:scale-95">
-            <Link to="/dashboard/pos">New Commission</Link>
-          </Button>
         </div>
-        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
-      </div>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 w-full">
-        {stats.map((stat, i) => (
-          <Card key={i} className="parchment min-h-[14rem] flex flex-col justify-between overflow-visible hover:scale-[1.02] transition-transform duration-300 border-2 border-border">
-            <CardHeader className="flex flex-row items-center justify-between pb-0 pt-6 px-6">
-              <CardTitle className="text-[10px] font-bold text-foreground/50 uppercase tracking-[0.3em]">{stat.label}</CardTitle>
-              <stat.icon className={cn("h-8 w-8", stat.color)} />
-            </CardHeader>
-            <CardContent className="pb-8 px-6">
-              <div className="text-3xl md:text-4xl font-serif font-bold text-foreground tracking-tighter leading-none truncate">
-                {stat.value}
+
+        <div className="space-y-3">
+          <h1 className="text-5xl md:text-7xl font-display font-bold text-balance leading-tight">
+            Creating your <span className="text-gradient">app</span>
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto text-pretty">
+            Your application would be ready soon.
+          </p>
+        </div>
+
+            <div className="flex justify-center gap-4">
+              <Button
+                size="lg"
+                onClick={onPleaseWait}
+                className="btn-gradient px-8 py-4 text-lg font-semibold hover:-translate-y-0.5 transition-all duration-200"
+                aria-live="polite"
+              >
+                Please Wait
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+              <div>
+                Time elapsed:{' '}
+                <span className="font-medium tabular-nums text-foreground">{formatted}</span>
               </div>
-              <p className="text-[10px] text-foreground/40 mt-4 font-bold uppercase tracking-[0.1em] italic">{stat.sub}</p>
-            </CardContent>
-          </Card>
-        ))}
+              <div>
+                Coins:{' '}
+                <span className="font-medium tabular-nums text-foreground">{coins}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-center gap-2">
+              <Button variant="outline" size="sm" onClick={onReset}>
+                Reset
+              </Button>
+              <Button variant="outline" size="sm" onClick={onAddCoin}>
+                Add Coin
+              </Button>
+            </div>
       </div>
-      <Card className="parchment overflow-hidden rounded-[1.5rem] border-2 border-border">
-        <CardHeader className="border-b-2 border-border px-8 py-6 bg-foreground/5">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-serif font-bold text-foreground italic">Commission Registry</h2>
-              <p className="text-foreground/40 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Latest Atelier Entries</p>
-            </div>
-            <Button variant="outline" size="sm" asChild className="font-bold text-foreground border-2 border-border hover:bg-primary hover:text-primary-foreground rounded-xl h-10 px-6 shadow-sm text-sm">
-              <Link to="/dashboard/orders" className="flex items-center gap-2">
-                Full Queue <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {isLoading ? (
-            <div className="flex justify-center py-20"><Loader2 className="animate-spin h-10 w-10 text-foreground" /></div>
-          ) : orders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-foreground/10 space-y-4">
-              <Sparkles className="h-20 w-20 opacity-10" />
-              <p className="text-xl font-serif italic font-bold">Workshop gallery is currently silent.</p>
-            </div>
-          ) : (
-            <div className="divide-y-2 divide-border">
-              {orders.slice(0, 5).map((order) => {
-                const hasBespoke = order.items.some(i => i.itemType === 'bespoke');
-                return (
-                  <div key={order.id} className="flex items-center justify-between p-6 hover:bg-foreground/5 transition-all group cursor-default">
-                    <div className="flex items-center gap-6">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground text-xl font-serif font-bold shadow-lg group-hover:scale-105 transition-transform">
-                        {order.customerName.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-foreground text-xl tracking-tight leading-none mb-1">{order.customerName}</h4>
-                        <div className="flex items-center gap-4 text-xs text-foreground/50 font-bold">
-                          <span className="uppercase tracking-wider text-foreground flex items-center gap-1.5">
-                            {hasBespoke ? <Scissors className="h-3 w-3" /> : <Package className="h-3 w-3" />}
-                            {order.items[0]?.garmentName}
-                          </span>
-                          <span className="opacity-20">|</span>
-                          <span className="italic">Due {format(order.dueDate, 'MMM d')}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-8">
-                      <Badge className={cn(
-                        "px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-[0.1em] border-none shadow-sm",
-                        order.status === 'Ready' && "bg-primary text-primary-foreground",
-                        order.status === 'Pending' && "bg-card text-foreground border-2 border-border",
-                        order.status === 'In Progress' && "bg-secondary text-secondary-foreground",
-                        order.status === 'Delivered' && "bg-foreground/10 text-foreground"
-                      )}>
-                        {order.status}
-                      </Badge>
-                      <div className="text-right min-w-[140px]">
-                        <div className="font-serif font-bold text-foreground text-2xl italic">{formatPrice(order.total, currency)}</div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+
+      <footer className="absolute bottom-8 text-center text-muted-foreground/80">
+        <p>Powered by Cloudflare</p>
+      </footer>
+
+      <Toaster richColors closeButton />
     </div>
-  );
+  )
 }

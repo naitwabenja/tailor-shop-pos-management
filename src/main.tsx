@@ -14,6 +14,7 @@ import '@/index.css'
 import POSPage from '@/pages/POSPage'
 import OrdersPage from '@/pages/OrdersPage'
 import LoginPage from '@/pages/LoginPage'
+import InventoryPage from '@/pages/InventoryPage'
 import { AppLayout } from '@/components/layout/AppLayout';
 
 const queryClient = new QueryClient();
