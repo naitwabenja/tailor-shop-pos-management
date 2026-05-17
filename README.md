@@ -1,6 +1,6 @@
 # Stitch POS
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/naitwabenja/tailor-shop-pos-management)
 
 A production-ready full-stack Point of Sale (POS) application built on Cloudflare Workers. This template provides a modern React frontend with shadcn/ui components, Tailwind CSS styling, and a robust backend using Durable Objects for real-time state management. Designed for scalability, performance, and ease of deployment on Cloudflare's global edge network.
 
@@ -98,7 +98,7 @@ Full API in `worker/user-routes.ts`.
    ```
 
 3. **One-Click Deploy**:
-   [cloudflarebutton]
+   [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/naitwabenja/tailor-shop-pos-management)
 
 **Notes**:
 - Durable Objects auto-migrate via `wrangler.jsonc`.
