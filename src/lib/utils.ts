@@ -21,7 +21,6 @@ export function formatPrice(amount: number, currency: string = 'USD'): string {
     return `${amount < 0 ? '-' : ''}${symbol}${formatted}`;
   } catch (error) {
     console.error('[UTILS] Price formatting failed:', error);
-    // Safe manual fallback for environments without robust Intl support
     const parts = absAmount.toFixed(2).split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     const fallback = parts.join('.');
