@@ -12,11 +12,9 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
 import '@/index.css'
 import POSPage from '@/pages/POSPage'
-import OrdersPage from '@/pages/OrdersPage'
 import LoginPage from '@/pages/LoginPage'
 import InventoryPage from '@/pages/InventoryPage'
 import { AppLayout } from '@/components/layout/AppLayout';
-
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
@@ -36,10 +34,6 @@ const router = createBrowserRouter([
       {
         path: "pos",
         element: <POSPage />,
-      },
-      {
-        path: "orders",
-        element: <OrdersPage />,
       },
       {
         path: "inventory",

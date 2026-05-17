@@ -19,7 +19,7 @@ export function OrderSummary({ onOrderComplete }: OrderSummaryProps) {
   const clearCart = usePOSStore(s => s.clearCart);
   const currency = useAppStore(s => s.currency);
   const { data: customersData } = useCustomers();
-  const selectedCustomer = React.useMemo(() => 
+  const selectedCustomer = React.useMemo(() =>
     customersData?.items.find(c => c.id === selectedCustomerId),
     [customersData, selectedCustomerId]
   );

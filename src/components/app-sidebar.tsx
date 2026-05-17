@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Calculator,
-  Scissors,
   Store,
   Package,
   LogOut
@@ -23,7 +22,6 @@ import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
 const navigation = [
   { name: "POS Terminal", href: "/dashboard/pos", icon: Calculator },
-  { name: "Order Tracking", href: "/dashboard/orders", icon: Scissors },
   { name: "Inventory", href: "/dashboard/inventory", icon: Package },
 ];
 export function AppSidebar(): JSX.Element {

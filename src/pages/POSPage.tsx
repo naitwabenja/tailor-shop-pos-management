@@ -2,22 +2,27 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/tabs';
 import {
   Search,
   Plus,
-  UserPlus,
   Scissors,
   Loader2,
   Package,
-  Sparkles,
+  PackagePlus,
 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn, formatPrice } from '@/lib/utils';
 import { usePOSStore } from '@/store/use-pos-store';
-import { useCustomers, useGarments, useInventory, useCreateGarment } from '@/hooks/use-api';
+import { useCustomers, useGarments, useInventory, useCreateGarment, useCreateInventoryItem } from '@/hooks/use-api';
 import { MeasurementForm } from '@/components/POS/MeasurementForm';
 import { OrderSummary } from '@/components/POS/OrderSummary';
-import { CustomerCreateDialog } from '@/components/customers/CustomerCreateDialog';
 import { OrderSuccessDialog } from '@/components/POS/OrderSuccessDialog';
 import { useAppStore } from '@/store/use-app-store';
 import { Order } from '@shared/types';
@@ -27,15 +32,18 @@ export default function POSPage() {
   const setCustomer = usePOSStore((s) => s.setCustomer);
   const addItem = usePOSStore((s) => s.addItem);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isCustomerDialogOpen, setIsCustomerDialogOpen] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
+  // Custom Garment State
   const [customGarmentName, setCustomGarmentName] = useState('');
   const [customGarmentPrice, setCustomGarmentPrice] = useState('');
+  // Quick Stock State
+  const [quickStock, setQuickStock] = useState({ name: '', price: '', qty: '1', unit: 'pcs', type: 'Supply' as 'Fabric' | 'Supply' });
   const { data: customersData, isLoading: customersLoading } = useCustomers();
   const currency = useAppStore(s => s.currency);
   const { data: garmentsData, isLoading: garmentsLoading } = useGarments();
   const { data: inventoryData, isLoading: inventoryLoading } = useInventory();
   const createGarment = useCreateGarment();
+  const createInventoryItem = useCreateInventoryItem();
   const filteredCustomers = customersData?.items.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.phone.includes(searchTerm)
@@ -50,16 +58,42 @@ export default function POSPage() {
         name: customGarmentName,
         basePrice: parseFloat(customGarmentPrice)
       });
-      addItem({ 
-        type: g.name, 
-        price: g.basePrice, 
-        itemType: 'bespoke' 
+      addItem({
+        type: g.name,
+        price: g.basePrice,
+        itemType: 'bespoke'
       });
       setCustomGarmentName('');
       setCustomGarmentPrice('');
       toast.success('Custom garment added to library and cart');
     } catch (e) {
       toast.error('Failed to create garment');
+    }
+  };
+  const handleAddQuickStock = async () => {
+    if (!quickStock.name || !quickStock.price || !quickStock.qty) {
+      toast.error('Please fill stock details');
+      return;
+    }
+    try {
+      const item = await createInventoryItem.mutateAsync({
+        name: quickStock.name,
+        type: quickStock.type,
+        unitPrice: parseFloat(quickStock.price),
+        quantity: parseFloat(quickStock.qty),
+        unit: quickStock.unit,
+        lowStockThreshold: 1
+      });
+      addItem({
+        type: item.name,
+        price: item.unitPrice,
+        inventoryItemId: item.id,
+        itemType: 'retail'
+      });
+      setQuickStock({ name: '', price: '', qty: '1', unit: 'pcs', type: 'Supply' });
+      toast.success('New stock registered and added to cart');
+    } catch (e) {
+      toast.error('Failed to register stock');
     }
   };
   return (
@@ -73,19 +107,11 @@ export default function POSPage() {
               </div>
               Select Client
             </h2>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 rounded-xl border-2 border-border text-foreground bg-card hover:bg-primary hover:text-primary-foreground h-11 px-6 font-bold shadow-sm"
-              onClick={() => setIsCustomerDialogOpen(true)}
-            >
-              <UserPlus className="h-4 w-4" /> New Customer
-            </Button>
           </div>
           <div className="relative">
             <Search className="absolute left-4 top-3.5 h-5 w-5 text-foreground/20" />
             <Input
-              placeholder="Search clients by name or identification..."
+              placeholder="Search existing clients by name or identification..."
               className="pl-12 h-12 rounded-xl bg-card border-2 border-border focus-visible:ring-primary shadow-lg shadow-foreground/5 text-lg font-bold placeholder:text-foreground/20 text-foreground"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -146,22 +172,22 @@ export default function POSPage() {
                 <Card className="border-2 border-dashed border-border bg-transparent shadow-none hover:bg-foreground/5 transition-all group p-4 flex flex-col justify-between gap-4">
                    <div className="space-y-2">
                      <p className="text-[9px] font-bold uppercase tracking-widest text-foreground/40">New Custom Apparel</p>
-                     <Input 
-                       placeholder="Item Name" 
+                     <Input
+                       placeholder="Item Name"
                        className="h-9 text-xs rounded-lg"
                        value={customGarmentName}
                        onChange={(e) => setCustomGarmentName(e.target.value)}
                      />
-                     <Input 
-                       type="number" 
-                       placeholder="Base Price" 
+                     <Input
+                       type="number"
+                       placeholder="Base Price"
                        className="h-9 text-xs rounded-lg"
                        value={customGarmentPrice}
                        onChange={(e) => setCustomGarmentPrice(e.target.value)}
                      />
                    </div>
-                   <Button 
-                     size="sm" 
+                   <Button
+                     size="sm"
                      className="w-full font-bold h-9 rounded-lg"
                      onClick={handleAddCustomGarment}
                      disabled={createGarment.isPending}
@@ -194,20 +220,62 @@ export default function POSPage() {
             </TabsContent>
             <TabsContent value="inventory" className="mt-0">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <Card className="border-2 border-dashed border-border bg-transparent shadow-none hover:bg-foreground/5 transition-all group p-4 flex flex-col justify-between gap-4">
+                   <div className="space-y-2">
+                     <p className="text-[9px] font-bold uppercase tracking-widest text-foreground/40">Quick Add Stock</p>
+                     <Input
+                       placeholder="Item Name"
+                       className="h-8 text-[10px] rounded-lg"
+                       value={quickStock.name}
+                       onChange={(e) => setQuickStock({ ...quickStock, name: e.target.value })}
+                     />
+                     <div className="grid grid-cols-2 gap-1">
+                       <Input
+                         type="number"
+                         placeholder="Price"
+                         className="h-8 text-[10px] rounded-lg"
+                         value={quickStock.price}
+                         onChange={(e) => setQuickStock({ ...quickStock, price: e.target.value })}
+                       />
+                       <Input
+                         type="number"
+                         placeholder="Qty"
+                         className="h-8 text-[10px] rounded-lg"
+                         value={quickStock.qty}
+                         onChange={(e) => setQuickStock({ ...quickStock, qty: e.target.value })}
+                       />
+                     </div>
+                     <Select value={quickStock.type} onValueChange={(v) => setQuickStock({ ...quickStock, type: v as any })}>
+                        <SelectTrigger className="h-8 text-[10px] rounded-lg">
+                          <SelectValue placeholder="Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Supply">Supply</SelectItem>
+                          <SelectItem value="Fabric">Fabric</SelectItem>
+                        </SelectContent>
+                     </Select>
+                   </div>
+                   <Button
+                     size="sm"
+                     className="w-full font-bold h-9 rounded-lg bg-accent text-accent-foreground"
+                     onClick={handleAddQuickStock}
+                     disabled={createInventoryItem.isPending}
+                   >
+                     {createInventoryItem.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <><PackagePlus className="h-3 w-3 mr-2"/> Add & Sell</>}
+                   </Button>
+                </Card>
                 {inventoryLoading ? (
                   <div className="flex justify-center p-12"><Loader2 className="animate-spin text-foreground h-10 w-10" /></div>
-                ) : inventoryData?.filter(i => i.quantity > 0).length === 0 ? (
-                   <div className="col-span-full p-10 text-center text-foreground/30 font-serif italic border-2 border-dashed rounded-2xl">Workshop stock is currently unavailable.</div>
                 ) : (
                   inventoryData?.filter(i => i.quantity > 0).map(item => (
                     <Card
                       key={item.id}
                       className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all border-none shadow-sm active:scale-95 duration-75 overflow-hidden group bg-card"
-                      onClick={() => addItem({ 
-                        type: item.name, 
-                        price: item.unitPrice, 
-                        inventoryItemId: item.id, 
-                        itemType: 'retail' 
+                      onClick={() => addItem({
+                        type: item.name,
+                        price: item.unitPrice,
+                        inventoryItemId: item.id,
+                        itemType: 'retail'
                       })}
                     >
                       <CardContent className="p-6 flex flex-col items-center text-center gap-4 group-hover:bg-foreground/5 transition-colors">
@@ -231,7 +299,6 @@ export default function POSPage() {
           <section className="space-y-6 pb-12" key={selectedCustomerId}>
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-serif font-bold text-foreground italic">Artisan Metrics</h2>
-              <Button variant="link" size="sm" className="text-foreground font-bold p-0 text-base decoration-foreground/20">Metrics History</Button>
             </div>
             <Card className="border-none shadow-lg bg-card rounded-2xl overflow-hidden">
               <CardContent className="p-6 md:p-8">
@@ -244,11 +311,6 @@ export default function POSPage() {
       <div className="lg:col-span-4 bg-card border-l border-border flex flex-col overflow-hidden shadow-xl relative z-20">
         <OrderSummary onOrderComplete={setCompletedOrder} />
       </div>
-      <CustomerCreateDialog
-        open={isCustomerDialogOpen}
-        onOpenChange={setIsCustomerDialogOpen}
-        onSuccess={(customer) => setCustomer(customer.id, customer.measurements)}
-      />
       <OrderSuccessDialog
         order={completedOrder}
         onClose={() => setCompletedOrder(null)}
